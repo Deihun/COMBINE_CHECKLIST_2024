@@ -13,6 +13,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistory
 {
     public partial class Add_Group_confirmation: Form
     {
+
         private FlowLayoutPanel parent;
         private Create creation_parent;
         public Add_Group_confirmation(FlowLayoutPanel flowlayout, Create creation_parent)
@@ -41,7 +42,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistory
                 return;
             }
 
-            grouping_of_items group = new grouping_of_items();
+            grouping_of_items group = new grouping_of_items(datefrom,dateTo);
             creation_parent.addNewGroups(group);
             group.TopLevel = false;
             parent.Controls.Add(group);

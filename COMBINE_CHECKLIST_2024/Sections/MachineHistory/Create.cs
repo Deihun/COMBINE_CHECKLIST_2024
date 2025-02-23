@@ -1,4 +1,5 @@
 ﻿using COMBINE_CHECKLIST_2024.Sections.MachineHistory;
+using COMBINE_CHECKLIST_2024;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,7 +9,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using SQL_support;
+using SQL_Connection_support;
+using System.Data.SqlClient;
+
 
 namespace COMBINE_CHECKLIST_2024.Sections.Currugator
 {
@@ -39,9 +42,66 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
 
         private void create_new_history_btn_Click(object sender, EventArgs e)
         {
-            //CREATION OF DATAs
-            SQL_Manager server = new SQL_Manager("DESKTOP-HBKPAB1\\SQLEXPRESS","Microsoft SQL Server (SqlClient)","","");
+         order_a_SelectAsync();
+
             
+
+        }
+
+        private async Task order_a_SelectAsync()
+        {
+            SQL_Support sql = new SQL_Support("DESKTOP-HBKPAB1\\SQLEXPRESS", "GOODYEAR_MACHINE_HISTORY");
+            Dictionary<string, object> history_log = new Dictionary<string, object> { { "date_commit", DateTime.Now } };
+
+            string query_construct;
+            int _last_identity;
+            sql._isDebugShow = true;
+
+            _last_identity = sql.InsertDataAndGetId("EXECUTION_HISTORY", history_log);
+
+            foreach (Form groups in groupOf_groupforms)
+                {
+                    if (groups is grouping_of_items groupForm) // Correct type
+                    {
+                        Dictionary<string, object> groupData = new Dictionary<string, object>
+                            {
+                                {"From_Date", groupForm._from_dt},
+                                {"historylog_id", _last_identity },
+                                {"To_Date", groupForm._to_dt}
+                            };
+                    _last_identity = sql.InsertDataAndGetId("GROUP_TABLE", groupData);
+
+                    //INCOMPLETE - NO MONITORED BY AND MACHINENAME YET
+                    foreach (Form deepgroup in groupForm.group_of_logs)
+                    {
+                        if  (deepgroup is Item_Record logGroup)
+                        {
+                            Dictionary<string, object> logData = new Dictionary<string, object>
+                            {
+                                {"defect_part", logGroup.get_defectiveparts()},
+                                {"defec_desc", logGroup.get_defectiveDescription()},
+                                {"suggested_replacement_repair", logGroup.get_suggestion()},
+                                {"remark_analysis", logGroup.get_remarks()},
+                                {"overall_status", logGroup.get_overallAnalysis()},
+                                {"checked_by", logGroup.get_checkby()},
+                                {"groupID", _last_identity },
+                                {"datemark", logGroup.my_targeted_date }
+                            };
+                            sql.InsertDataAsync("LOG_MACHINETABLE", logData);
+                        }
+                    }
+                    }
+                    
+
+                    
+
+                }
+        }
+
+
+        private void Create_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -73,6 +73,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "Create";
             this.Text = "Checklist";
+            this.Load += new System.EventHandler(this.Create_Load);
             this.ResumeLayout(false);
 
         }

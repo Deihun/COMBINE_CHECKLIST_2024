@@ -35,13 +35,11 @@
             this.defective_tb = new System.Windows.Forms.TextBox();
             this.defectivepart_label = new System.Windows.Forms.Label();
             this.defectivedesc_label = new System.Windows.Forms.Label();
-            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+            this.suggestion_rtb = new System.Windows.Forms.RichTextBox();
             this.suggest_label = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.richTextBox2 = new System.Windows.Forms.RichTextBox();
             this.label4 = new System.Windows.Forms.Label();
-            this.richTextBox3 = new System.Windows.Forms.RichTextBox();
+            this.remarks_rtb = new System.Windows.Forms.RichTextBox();
             this.changeablemonth_label = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
@@ -80,7 +78,7 @@
             // 
             // defective_description_rtb
             // 
-            this.defective_description_rtb.Location = new System.Drawing.Point(330, 73);
+            this.defective_description_rtb.Location = new System.Drawing.Point(355, 74);
             this.defective_description_rtb.Name = "defective_description_rtb";
             this.defective_description_rtb.Size = new System.Drawing.Size(210, 83);
             this.defective_description_rtb.TabIndex = 5;
@@ -89,7 +87,7 @@
             // 
             // defective_tb
             // 
-            this.defective_tb.Location = new System.Drawing.Point(330, 31);
+            this.defective_tb.Location = new System.Drawing.Point(355, 31);
             this.defective_tb.Name = "defective_tb";
             this.defective_tb.Size = new System.Drawing.Size(210, 20);
             this.defective_tb.TabIndex = 6;
@@ -100,7 +98,7 @@
             this.defectivepart_label.AutoSize = true;
             this.defectivepart_label.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.defectivepart_label.ForeColor = System.Drawing.Color.White;
-            this.defectivepart_label.Location = new System.Drawing.Point(327, 11);
+            this.defectivepart_label.Location = new System.Drawing.Point(352, 11);
             this.defectivepart_label.Name = "defectivepart_label";
             this.defectivepart_label.Size = new System.Drawing.Size(108, 17);
             this.defectivepart_label.TabIndex = 7;
@@ -112,28 +110,28 @@
             this.defectivedesc_label.AutoSize = true;
             this.defectivedesc_label.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.defectivedesc_label.ForeColor = System.Drawing.Color.White;
-            this.defectivedesc_label.Location = new System.Drawing.Point(327, 53);
+            this.defectivedesc_label.Location = new System.Drawing.Point(352, 53);
             this.defectivedesc_label.Name = "defectivedesc_label";
             this.defectivedesc_label.Size = new System.Drawing.Size(142, 17);
             this.defectivedesc_label.TabIndex = 8;
             this.defectivedesc_label.Text = "Defective Description";
             this.defectivedesc_label.Click += new System.EventHandler(this.defectivedesc_label_Click);
             // 
-            // richTextBox1
+            // suggestion_rtb
             // 
-            this.richTextBox1.Location = new System.Drawing.Point(549, 32);
-            this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(210, 124);
-            this.richTextBox1.TabIndex = 9;
-            this.richTextBox1.Text = "";
-            this.richTextBox1.TextChanged += new System.EventHandler(this.richTextBox1_TextChanged);
+            this.suggestion_rtb.Location = new System.Drawing.Point(599, 32);
+            this.suggestion_rtb.Name = "suggestion_rtb";
+            this.suggestion_rtb.Size = new System.Drawing.Size(210, 124);
+            this.suggestion_rtb.TabIndex = 9;
+            this.suggestion_rtb.Text = "";
+            this.suggestion_rtb.TextChanged += new System.EventHandler(this.richTextBox1_TextChanged);
             // 
             // suggest_label
             // 
             this.suggest_label.AutoSize = true;
             this.suggest_label.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.suggest_label.ForeColor = System.Drawing.Color.White;
-            this.suggest_label.Location = new System.Drawing.Point(546, 11);
+            this.suggest_label.Location = new System.Drawing.Point(596, 11);
             this.suggest_label.Name = "suggest_label";
             this.suggest_label.Size = new System.Drawing.Size(209, 17);
             this.suggest_label.TabIndex = 10;
@@ -150,43 +148,24 @@
             this.label2.TabIndex = 11;
             this.label2.Text = "Overall Status:";
             // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.ForeColor = System.Drawing.Color.White;
-            this.label3.Location = new System.Drawing.Point(762, 12);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(209, 17);
-            this.label3.TabIndex = 13;
-            this.label3.Text = "Suggested Replacement/Repair";
-            // 
-            // richTextBox2
-            // 
-            this.richTextBox2.Location = new System.Drawing.Point(765, 33);
-            this.richTextBox2.Name = "richTextBox2";
-            this.richTextBox2.Size = new System.Drawing.Size(210, 124);
-            this.richTextBox2.TabIndex = 12;
-            this.richTextBox2.Text = "";
-            // 
             // label4
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.ForeColor = System.Drawing.Color.White;
-            this.label4.Location = new System.Drawing.Point(983, 12);
+            this.label4.Location = new System.Drawing.Point(815, 12);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(128, 17);
             this.label4.TabIndex = 15;
             this.label4.Text = "Remarks / Analysis";
             // 
-            // richTextBox3
+            // remarks_rtb
             // 
-            this.richTextBox3.Location = new System.Drawing.Point(986, 33);
-            this.richTextBox3.Name = "richTextBox3";
-            this.richTextBox3.Size = new System.Drawing.Size(210, 124);
-            this.richTextBox3.TabIndex = 14;
-            this.richTextBox3.Text = "";
+            this.remarks_rtb.Location = new System.Drawing.Point(818, 33);
+            this.remarks_rtb.Name = "remarks_rtb";
+            this.remarks_rtb.Size = new System.Drawing.Size(210, 124);
+            this.remarks_rtb.TabIndex = 14;
+            this.remarks_rtb.Text = "";
             // 
             // changeablemonth_label
             // 
@@ -206,12 +185,10 @@
             this.ClientSize = new System.Drawing.Size(1271, 166);
             this.Controls.Add(this.changeablemonth_label);
             this.Controls.Add(this.label4);
-            this.Controls.Add(this.richTextBox3);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.richTextBox2);
+            this.Controls.Add(this.remarks_rtb);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.suggest_label);
-            this.Controls.Add(this.richTextBox1);
+            this.Controls.Add(this.suggestion_rtb);
             this.Controls.Add(this.defective_tb);
             this.Controls.Add(this.defective_description_rtb);
             this.Controls.Add(this.defectivepart_label);
@@ -236,13 +213,11 @@
         private System.Windows.Forms.TextBox defective_tb;
         private System.Windows.Forms.Label defectivepart_label;
         private System.Windows.Forms.Label defectivedesc_label;
-        private System.Windows.Forms.RichTextBox richTextBox1;
+        private System.Windows.Forms.RichTextBox suggestion_rtb;
         private System.Windows.Forms.Label suggest_label;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.RichTextBox richTextBox2;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.RichTextBox richTextBox3;
+        private System.Windows.Forms.RichTextBox remarks_rtb;
         private System.Windows.Forms.Label changeablemonth_label;
     }
 }

@@ -13,6 +13,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
     public partial class Item_Record: Form
     {
         private Form myParent;
+        public DateTime my_targeted_date;
         public bool isDefect = true;
         public Item_Record(Form myParent)
         {
@@ -29,9 +30,39 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
 
         public void setDate(DateTime date)
         {
+            my_targeted_date = date;
             changeablemonth_label.Text = (convert_monthText(date) + " - " + date.Day);
         }
 
+        public string get_defectiveparts()
+        {
+            return defective_tb.Text;
+        }
+
+        public string get_defectiveDescription()
+        {
+            return defective_description_rtb.Text;
+        }
+
+        public string get_suggestion()
+        {
+            return suggestion_rtb.Text;
+        }
+
+        public string get_remarks()
+        {
+            return remarks_rtb.Text;
+        }
+
+        public int get_overallAnalysis()
+        {
+            return isDefect ? 1 : 0;
+        }
+
+        public string get_checkby()
+        {
+            return checkby_textfield.Text;
+        }
         private string convert_monthText(DateTime month)
         {
             string _month = "";

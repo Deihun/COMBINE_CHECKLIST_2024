@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -12,10 +13,15 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistory
 {
     public partial class grouping_of_items: Form
     {
-        List <Form> group_of_logs = new List<Form>();
-        public grouping_of_items()
+        public DateTime _from_dt { get; set; }
+        public DateTime _to_dt { get; set; }
+
+        public List <Form> group_of_logs = new List<Form>();
+        public grouping_of_items(DateTime from_dt, DateTime to_dt)
         {
             InitializeComponent();
+            _from_dt = from_dt;
+            _to_dt = to_dt;
         }
 
         public void add_item(Form item)
