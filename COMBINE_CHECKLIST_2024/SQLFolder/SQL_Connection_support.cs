@@ -15,14 +15,23 @@ namespace SQL_Connection_support
 
         public SQL_Support(string server, string database, string user = null, string password = null)
         {
-            if (!string.IsNullOrEmpty(user) && !string.IsNullOrEmpty(password))
+            try
             {
-                _connection_server = $"Server={server};Database={database};User Id={user};Password={password};";
+                if (!string.IsNullOrEmpty(user) && !string.IsNullOrEmpty(password))
+                {
+                    _connection_server = $"Server={server};Database={database};User Id={user};Password={password};";
+                }
+                else
+                {
+                    _connection_server = $"Server={server};Database={database};Integrated Security=True;";
+                }
             }
-            else
+            catch (Exception e)
             {
-                _connection_server = $"Server={server};Database={database};Integrated Security=True;";
+                if (_isDebugShow) Console.WriteLine($"\n\n//ERROR: " + e.Message);
             }
+
+
         }
 
         /// <summary>
@@ -45,6 +54,29 @@ namespace SQL_Connection_support
                 }
             }
         }
+
+
+        public DataTable ExecuteQuery(string query)
+        {
+            if (_isDebugShow) Console.WriteLine($"Executing Query: {query}");
+
+            DataTable dt = new DataTable();
+            using (SqlConnection conn = new SqlConnection(_connection_server))
+            {
+                conn.Open();
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
+                    {
+                        adapter.MissingSchemaAction = MissingSchemaAction.AddWithKey; // Ensures schema is fully loaded
+                        adapter.Fill(dt);
+                    }
+                }
+            }
+            Console.WriteLine($"DEBUG// Rows Retrieved: {dt.Rows.Count}");
+            return dt;
+        }
+
 
         /// <summary>
         /// Executes a stored procedure asynchronously and returns the result as a DataTable.
@@ -226,6 +258,50 @@ namespace SQL_Connection_support
                         }
 
                         int rowsAffected = await cmd.ExecuteNonQueryAsync();
+
+                        if (_isDebugShow) Console.WriteLine($"Rows Affected: {rowsAffected}");
+
+                        return rowsAffected > 0;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                if (_isDebugShow) Console.WriteLine($"SQL Error: {ex.Message}");
+                return false;
+            }
+        }
+
+
+        public bool InsertData(string tableName, Dictionary<string, object> data)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connection_server))
+                {
+                    conn.Open();
+
+                    string columns = string.Join(", ", data.Keys);
+                    string parameters = string.Join(", ", data.Keys.Select(k => "@" + k));
+                    string query = $"INSERT INTO {tableName} ({columns}) VALUES ({parameters})";
+
+                    if (_isDebugShow) // Debugging Enabled
+                    {
+                        Console.WriteLine($"Executing Query: {query}");
+                        foreach (var item in data)
+                        {
+                            Console.WriteLine($"Param {item.Key}: {item.Value}");
+                        }
+                    }
+
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        foreach (var item in data)
+                        {
+                            cmd.Parameters.AddWithValue("@" + item.Key, item.Value ?? DBNull.Value);
+                        }
+
+                        int rowsAffected = cmd.ExecuteNonQuery();
 
                         if (_isDebugShow) Console.WriteLine($"Rows Affected: {rowsAffected}");
 

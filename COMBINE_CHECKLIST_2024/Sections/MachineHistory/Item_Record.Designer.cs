@@ -41,11 +41,17 @@
             this.label4 = new System.Windows.Forms.Label();
             this.remarks_rtb = new System.Windows.Forms.RichTextBox();
             this.changeablemonth_label = new System.Windows.Forms.Label();
+            this.hourUp_btn = new System.Windows.Forms.Button();
+            this.minUp_btn = new System.Windows.Forms.Button();
+            this.hourDown_btn = new System.Windows.Forms.Button();
+            this.hour_tb = new System.Windows.Forms.TextBox();
+            this.min_tb = new System.Windows.Forms.TextBox();
+            this.minDown_btn = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // checkby_textfield
             // 
-            this.checkby_textfield.Location = new System.Drawing.Point(8, 83);
+            this.checkby_textfield.Location = new System.Drawing.Point(8, 60);
             this.checkby_textfield.Name = "checkby_textfield";
             this.checkby_textfield.Size = new System.Drawing.Size(152, 20);
             this.checkby_textfield.TabIndex = 2;
@@ -55,7 +61,7 @@
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.ForeColor = System.Drawing.Color.White;
-            this.label1.Location = new System.Drawing.Point(5, 59);
+            this.label1.Location = new System.Drawing.Point(5, 36);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(86, 17);
             this.label1.TabIndex = 3;
@@ -68,7 +74,7 @@
             this.isdefect_toggle_btn.FlatAppearance.BorderSize = 3;
             this.isdefect_toggle_btn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.isdefect_toggle_btn.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.isdefect_toggle_btn.Location = new System.Drawing.Point(189, 31);
+            this.isdefect_toggle_btn.Location = new System.Drawing.Point(180, 31);
             this.isdefect_toggle_btn.Name = "isdefect_toggle_btn";
             this.isdefect_toggle_btn.Size = new System.Drawing.Size(123, 126);
             this.isdefect_toggle_btn.TabIndex = 4;
@@ -78,7 +84,7 @@
             // 
             // defective_description_rtb
             // 
-            this.defective_description_rtb.Location = new System.Drawing.Point(355, 74);
+            this.defective_description_rtb.Location = new System.Drawing.Point(581, 71);
             this.defective_description_rtb.Name = "defective_description_rtb";
             this.defective_description_rtb.Size = new System.Drawing.Size(210, 83);
             this.defective_description_rtb.TabIndex = 5;
@@ -87,7 +93,7 @@
             // 
             // defective_tb
             // 
-            this.defective_tb.Location = new System.Drawing.Point(355, 31);
+            this.defective_tb.Location = new System.Drawing.Point(581, 28);
             this.defective_tb.Name = "defective_tb";
             this.defective_tb.Size = new System.Drawing.Size(210, 20);
             this.defective_tb.TabIndex = 6;
@@ -98,7 +104,7 @@
             this.defectivepart_label.AutoSize = true;
             this.defectivepart_label.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.defectivepart_label.ForeColor = System.Drawing.Color.White;
-            this.defectivepart_label.Location = new System.Drawing.Point(352, 11);
+            this.defectivepart_label.Location = new System.Drawing.Point(578, 8);
             this.defectivepart_label.Name = "defectivepart_label";
             this.defectivepart_label.Size = new System.Drawing.Size(108, 17);
             this.defectivepart_label.TabIndex = 7;
@@ -110,7 +116,7 @@
             this.defectivedesc_label.AutoSize = true;
             this.defectivedesc_label.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.defectivedesc_label.ForeColor = System.Drawing.Color.White;
-            this.defectivedesc_label.Location = new System.Drawing.Point(352, 53);
+            this.defectivedesc_label.Location = new System.Drawing.Point(578, 50);
             this.defectivedesc_label.Name = "defectivedesc_label";
             this.defectivedesc_label.Size = new System.Drawing.Size(142, 17);
             this.defectivedesc_label.TabIndex = 8;
@@ -119,7 +125,7 @@
             // 
             // suggestion_rtb
             // 
-            this.suggestion_rtb.Location = new System.Drawing.Point(599, 32);
+            this.suggestion_rtb.Location = new System.Drawing.Point(825, 29);
             this.suggestion_rtb.Name = "suggestion_rtb";
             this.suggestion_rtb.Size = new System.Drawing.Size(210, 124);
             this.suggestion_rtb.TabIndex = 9;
@@ -131,7 +137,7 @@
             this.suggest_label.AutoSize = true;
             this.suggest_label.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.suggest_label.ForeColor = System.Drawing.Color.White;
-            this.suggest_label.Location = new System.Drawing.Point(596, 11);
+            this.suggest_label.Location = new System.Drawing.Point(822, 8);
             this.suggest_label.Name = "suggest_label";
             this.suggest_label.Size = new System.Drawing.Size(209, 17);
             this.suggest_label.TabIndex = 10;
@@ -142,7 +148,7 @@
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.ForeColor = System.Drawing.Color.White;
-            this.label2.Location = new System.Drawing.Point(189, 11);
+            this.label2.Location = new System.Drawing.Point(180, 11);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(101, 17);
             this.label2.TabIndex = 11;
@@ -153,7 +159,7 @@
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.ForeColor = System.Drawing.Color.White;
-            this.label4.Location = new System.Drawing.Point(815, 12);
+            this.label4.Location = new System.Drawing.Point(1041, 9);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(128, 17);
             this.label4.TabIndex = 15;
@@ -161,7 +167,7 @@
             // 
             // remarks_rtb
             // 
-            this.remarks_rtb.Location = new System.Drawing.Point(818, 33);
+            this.remarks_rtb.Location = new System.Drawing.Point(1044, 30);
             this.remarks_rtb.Name = "remarks_rtb";
             this.remarks_rtb.Size = new System.Drawing.Size(210, 124);
             this.remarks_rtb.TabIndex = 14;
@@ -177,12 +183,86 @@
             this.changeablemonth_label.TabIndex = 16;
             this.changeablemonth_label.Text = "MONTH";
             // 
+            // hourUp_btn
+            // 
+            this.hourUp_btn.Font = new System.Drawing.Font("Microsoft Sans Serif", 30F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+            this.hourUp_btn.Location = new System.Drawing.Point(357, 73);
+            this.hourUp_btn.Name = "hourUp_btn";
+            this.hourUp_btn.Size = new System.Drawing.Size(34, 29);
+            this.hourUp_btn.TabIndex = 17;
+            this.hourUp_btn.Text = "^";
+            this.hourUp_btn.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.hourUp_btn.UseVisualStyleBackColor = true;
+            this.hourUp_btn.Click += new System.EventHandler(this.hourUp_btn_Click);
+            // 
+            // minUp_btn
+            // 
+            this.minUp_btn.Font = new System.Drawing.Font("Microsoft Sans Serif", 30F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+            this.minUp_btn.Location = new System.Drawing.Point(427, 74);
+            this.minUp_btn.Name = "minUp_btn";
+            this.minUp_btn.Size = new System.Drawing.Size(34, 29);
+            this.minUp_btn.TabIndex = 18;
+            this.minUp_btn.Text = "^";
+            this.minUp_btn.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.minUp_btn.UseVisualStyleBackColor = true;
+            this.minUp_btn.Click += new System.EventHandler(this.minUp_btn_Click);
+            // 
+            // hourDown_btn
+            // 
+            this.hourDown_btn.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+            this.hourDown_btn.Location = new System.Drawing.Point(357, 108);
+            this.hourDown_btn.Name = "hourDown_btn";
+            this.hourDown_btn.Size = new System.Drawing.Size(34, 29);
+            this.hourDown_btn.TabIndex = 19;
+            this.hourDown_btn.Text = "v";
+            this.hourDown_btn.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.hourDown_btn.UseVisualStyleBackColor = true;
+            this.hourDown_btn.Click += new System.EventHandler(this.hourDown_btn_Click);
+            // 
+            // hour_tb
+            // 
+            this.hour_tb.Font = new System.Drawing.Font("Microsoft Sans Serif", 25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.hour_tb.Location = new System.Drawing.Point(353, 22);
+            this.hour_tb.MaxLength = 2;
+            this.hour_tb.Name = "hour_tb";
+            this.hour_tb.Size = new System.Drawing.Size(42, 45);
+            this.hour_tb.TabIndex = 20;
+            this.hour_tb.Text = "22";
+            // 
+            // min_tb
+            // 
+            this.min_tb.Font = new System.Drawing.Font("Microsoft Sans Serif", 25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.min_tb.Location = new System.Drawing.Point(422, 22);
+            this.min_tb.MaxLength = 2;
+            this.min_tb.Name = "min_tb";
+            this.min_tb.Size = new System.Drawing.Size(42, 45);
+            this.min_tb.TabIndex = 21;
+            this.min_tb.Text = "22";
+            // 
+            // minDown_btn
+            // 
+            this.minDown_btn.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+            this.minDown_btn.Location = new System.Drawing.Point(427, 108);
+            this.minDown_btn.Name = "minDown_btn";
+            this.minDown_btn.Size = new System.Drawing.Size(34, 29);
+            this.minDown_btn.TabIndex = 22;
+            this.minDown_btn.Text = "v";
+            this.minDown_btn.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.minDown_btn.UseVisualStyleBackColor = true;
+            this.minDown_btn.Click += new System.EventHandler(this.minDown_btn_Click);
+            // 
             // Item_Record
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.SeaGreen;
             this.ClientSize = new System.Drawing.Size(1271, 166);
+            this.Controls.Add(this.minDown_btn);
+            this.Controls.Add(this.min_tb);
+            this.Controls.Add(this.hour_tb);
+            this.Controls.Add(this.hourDown_btn);
+            this.Controls.Add(this.minUp_btn);
+            this.Controls.Add(this.hourUp_btn);
             this.Controls.Add(this.changeablemonth_label);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.remarks_rtb);
@@ -219,5 +299,11 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.RichTextBox remarks_rtb;
         private System.Windows.Forms.Label changeablemonth_label;
+        private System.Windows.Forms.Button hourUp_btn;
+        private System.Windows.Forms.Button minUp_btn;
+        private System.Windows.Forms.Button hourDown_btn;
+        private System.Windows.Forms.TextBox hour_tb;
+        private System.Windows.Forms.TextBox min_tb;
+        private System.Windows.Forms.Button minDown_btn;
     }
 }

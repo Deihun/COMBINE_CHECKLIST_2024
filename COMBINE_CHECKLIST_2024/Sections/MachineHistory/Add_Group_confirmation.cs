@@ -16,13 +16,20 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistory
 
         private FlowLayoutPanel parent;
         private Create creation_parent;
-        public Add_Group_confirmation(FlowLayoutPanel flowlayout, Create creation_parent)
+
+        private string monitor;
+        private string machine;
+        private string location;
+        public Add_Group_confirmation(FlowLayoutPanel flowlayout, Create creation_parent, string monitor, string machine, string location)
         {
             InitializeComponent();
             from_dtpicker.Value = from_dtpicker.Value;
             to_dtpicker.Value = to_dtpicker.Value;
             parent = flowlayout;
             this.creation_parent = creation_parent;
+            this.monitor = monitor;
+            this.machine = machine;
+            this.location = location;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -42,7 +49,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistory
                 return;
             }
 
-            grouping_of_items group = new grouping_of_items(datefrom,dateTo);
+            grouping_of_items group = new grouping_of_items(datefrom,dateTo,monitor,machine,location);
             creation_parent.addNewGroups(group);
             group.TopLevel = false;
             parent.Controls.Add(group);

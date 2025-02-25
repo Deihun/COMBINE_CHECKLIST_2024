@@ -144,5 +144,36 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
         {
 
         }
+
+        private void _showHour_Properly()
+        {
+            setDate(my_targeted_date);
+            hour_tb.Text = my_targeted_date.Hour.ToString();
+            min_tb.Text = my_targeted_date.Minute.ToString();
+        }
+
+        private void hourUp_btn_Click(object sender, EventArgs e)
+        {
+            my_targeted_date.AddHours(1);
+            _showHour_Properly();
+        }
+
+        private void hourDown_btn_Click(object sender, EventArgs e)
+        {
+            my_targeted_date.AddHours(-1);
+            _showHour_Properly();
+        }
+
+        private void minUp_btn_Click(object sender, EventArgs e)
+        {
+            my_targeted_date.AddMinutes(1);
+            _showHour_Properly();
+        }
+
+        private void minDown_btn_Click(object sender, EventArgs e)
+        {
+            my_targeted_date.AddMinutes(-1);
+            _showHour_Properly();
+        }
     }
 }

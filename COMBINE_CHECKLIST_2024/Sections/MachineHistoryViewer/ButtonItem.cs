@@ -1,4 +1,5 @@
-﻿using SQL_Connection_support;
+﻿using COMBINE_CHECKLIST_2024.DateToText;
+using SQL_Connection_support;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -17,15 +18,18 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
         public DataTable ButtonData;
         SQL_Support ButtonGetData;
         public int groupID;
+
+        private Datetotext converttoText = new Datetotext();
+
         public ButtonItem(int groupid, MachineViewer parent)
         {
             InitializeComponent();
             this.groupID = groupid;
             this.parent = parent;
         }
-        public void RenameBtn(Button button, string newName)
+        public void RenameBtn(DateTime date)
         {
-
+            button1.Text = converttoText.getMonthAsText(date) + " " + date.Day + " " + date.Year + "//" + date.TimeOfDay;
         }
 
         private void button1_Click(object sender, EventArgs e)
