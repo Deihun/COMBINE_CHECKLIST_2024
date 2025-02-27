@@ -50,5 +50,59 @@ namespace COMBINE_CHECKLIST_2024.DateToText
                 default: return "";
             }
         }
+        public string getTime12HoursPreset(DateTime date)
+        {
+            int hour = date.Hour > 12? date.Hour - 12 : date.Hour;
+            hour = hour == 0 ? 12 : hour;
+            int minute = date.Minute;
+            string hourString = hour < 10 ? "0" + hour.ToString() : hour.ToString();
+            string minuteString = minute < 10 ? "0" + minute.ToString() : minute.ToString();
+            string AMorPM = date.Hour > 11 ? "PM" : "AM";
+            return hourString + ":" + minuteString + AMorPM;
+
+        }
+
+        public string getMinutes(DateTime date)
+        {
+            return date.Minute.ToString();
+        }
+
+        public int getMonth(string month)
+        {
+            switch (month.ToUpper())
+            {
+                case "JAN":
+                    return 1;
+                case "FEB":
+                    return 2;
+                case "MAR":
+                    return 3;
+                case "APR":
+                    return 4;
+                case "MAY":
+                    return 5;
+                case "JUN":
+                    return 6;
+                case "JUL":
+                    return 7;
+                case "AUG":
+                    return 8;
+                case "SEPT":
+                    return 9;
+                case "OCT":
+                    return 10;
+                case "NOV":
+                    return 11;
+                case "DEC":
+                    return 12;
+            }
+            return 1;
+        }
+        public string getHour_12HoursPreset(DateTime date)
+        {
+            int hour = date.Hour > 12 ? date.Hour - 12 : date.Hour;
+            hour = hour == 0 ? 12 : hour;
+            return hour.ToString();
+        }
     }
 }

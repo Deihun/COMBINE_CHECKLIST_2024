@@ -54,6 +54,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistory
             group.TopLevel = false;
             parent.Controls.Add(group);
             group.Show();
+            group.parent = creation_parent;
 
             DateTime[] dateRange = getDateRangeArray(datefrom, dateTo);
 

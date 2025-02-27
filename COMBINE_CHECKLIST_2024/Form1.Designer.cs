@@ -130,9 +130,9 @@
             // workpanel_panel
             // 
             this.workpanel_panel.BackColor = System.Drawing.Color.PaleGreen;
-            this.workpanel_panel.Location = new System.Drawing.Point(305, 0);
+            this.workpanel_panel.Location = new System.Drawing.Point(299, 0);
             this.workpanel_panel.Name = "workpanel_panel";
-            this.workpanel_panel.Size = new System.Drawing.Size(1610, 1047);
+            this.workpanel_panel.Size = new System.Drawing.Size(1780, 1102);
             this.workpanel_panel.TabIndex = 4;
             // 
             // Main_Dashboard

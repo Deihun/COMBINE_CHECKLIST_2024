@@ -1,4 +1,5 @@
-﻿using System;
+﻿using COMBINE_CHECKLIST_2024.DateToText;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -19,6 +20,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
         {
             InitializeComponent();
             this.myParent = myParent;
+            _changeColor();
         }
 
         private void isdefect_toggle_btn_Click(object sender, EventArgs e)
@@ -36,22 +38,49 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
 
         public string get_defectiveparts()
         {
-            return defective_tb.Text;
+            return defective_tb.Text.Equals(string.Empty)? "N/A" : defective_tb.Text;
         }
 
         public string get_defectiveDescription()
         {
-            return defective_description_rtb.Text;
+            return defective_description_rtb.Text.Equals(string.Empty)? "N/A" : defective_description_rtb.Text;
         }
 
         public string get_suggestion()
         {
-            return suggestion_rtb.Text;
+            return suggestion_rtb.Text.Equals(string.Empty) ? "N/A" : suggestion_rtb.Text;
         }
 
+        public void set_time()
+        {
+            Datetotext convert = new Datetotext();
+            hour_textbox.Text = convert.getHour_12HoursPreset(DateTime.Now);
+            min_tb.Text = convert.getMinutes(DateTime.Now);
+        }
+
+        public DateTime getTargetDate()
+        {
+            
+            string rawhourstring = hour_textbox.Text; //CAUSING ERROR/ THIS IS CAUSE DUO TO DELETION, solve the deletion of group first.
+            //MessageBox.Show("**DEBUGG //" + rawhourstring);
+            int hour = Convert.ToInt32(rawhourstring);
+            if (!isAM && hour != 12)  // Convert PM hours (except 12 PM)
+                hour += 12;
+            if (isAM && hour == 12)    // Convert 12 AM to 0
+                hour = 0;
+
+            DateTime newDayTime = new DateTime(
+                my_targeted_date.Year,
+                my_targeted_date.Month,
+                my_targeted_date.Day,
+                hour,
+                Convert.ToInt32(min_tb.Text),
+                0);
+            return newDayTime;
+        }
         public string get_remarks()
         {
-            return remarks_rtb.Text;
+            return remarks_rtb.Text.Equals(string.Empty) ? "N/A" : remarks_rtb.Text;
         }
 
         public int get_overallAnalysis()
@@ -61,7 +90,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
 
         public string get_checkby()
         {
-            return checkby_textfield.Text;
+            return checkby_textfield.Text.Equals(string.Empty) ? "N/A" : checkby_textfield.Text;
         }
         private string convert_monthText(DateTime month)
         {
@@ -148,7 +177,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
         private void _showHour_Properly()
         {
             setDate(my_targeted_date);
-            hour_tb.Text = my_targeted_date.Hour.ToString();
+            hour_textbox.Text = my_targeted_date.Hour.ToString();
             min_tb.Text = my_targeted_date.Minute.ToString();
         }
 
@@ -174,6 +203,71 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
         {
             my_targeted_date.AddMinutes(-1);
             _showHour_Properly();
+        }
+
+        private void hour_tb_TextChanged(object sender, EventArgs e)
+        {
+            if (!int.TryParse(hour_textbox.Text, out int hour))
+            {
+                hour_textbox.Text = "";
+                return;
+            }
+
+            // Restrict the value to 12
+            if (hour > 12)
+            {
+                hour_textbox.Text = "12";
+                hour_textbox.SelectionStart = hour_textbox.Text.Length; // Move cursor to the end
+            }
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void checkby_textfield_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void min_tb_TextChanged(object sender, EventArgs e)
+        {
+            if (!int.TryParse(min_tb.Text, out int minutes))
+            {
+                min_tb.Text = "";
+                return;
+            }
+
+            // Restrict the value to 59
+            if (minutes > 59)
+            {
+                min_tb.Text = "59";
+                min_tb.SelectionStart = min_tb.Text.Length; // Move cursor to the end
+            }
+        }
+
+
+
+        private bool isAM = false;
+        private void _changeColor()
+        {
+            am_btn.BackColor = isAM ? Color.White : Color.DarkGray;
+            am_btn.ForeColor = isAM ? Color.Black : Color.DimGray;
+            pm_btn.BackColor = !isAM ? Color.White : Color.DarkGray;
+            pm_btn.ForeColor = !isAM ? Color.Black : Color.DimGray;
+        }
+
+        private void am_btn_Click(object sender, EventArgs e)
+        {
+            isAM = true;
+            _changeColor();
+        }
+
+        private void pm_btn_Click(object sender, EventArgs e)
+        {
+            isAM = false;
+            _changeColor();
         }
     }
 }

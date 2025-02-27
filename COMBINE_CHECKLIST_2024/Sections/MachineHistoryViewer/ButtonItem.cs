@@ -27,9 +27,9 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
             this.groupID = groupid;
             this.parent = parent;
         }
-        public void RenameBtn(DateTime date)
+        public void RenameBtn(string rename)
         {
-            button1.Text = converttoText.getMonthAsText(date) + " " + date.Day + " " + date.Year + "//" + date.TimeOfDay;
+            button1.Text = rename;
         }
 
         private void button1_Click(object sender, EventArgs e)

@@ -1,4 +1,5 @@
 ﻿using COMBINE_CHECKLIST_2024.DateToText;
+using COMBINE_CHECKLIST_2024.Sections.Currugator;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -19,6 +20,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistory
         public DateTime _from_dt { get; set; }
         public DateTime _to_dt { get; set; }
 
+        public Create parent;
         public string monitor;
         public string machine;
         public string location;
@@ -40,6 +42,19 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistory
             location_tb.Text = location;
         }
 
+        public string getMonitor()
+        {
+            return monitored_tb.Text;
+        }
+        public string getMachineName()
+        {
+            return machinename_tb.Text;
+        }
+        public string getLocation()
+        {
+            return location_tb.Text;
+        }
+
         public void add_item(Form item)
         {
 
@@ -58,6 +73,8 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistory
 
         private void deletegroup_btn_Click(object sender, EventArgs e)
         {
+            this.group_of_logs.Clear();
+            this.parent.deleteGroup(this);
             this.Dispose();
         }
     }
