@@ -16,6 +16,8 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
         public int storedID;
         public DateTime target_date;
         public string machinename;
+        public string monitor;
+        public string location;
         private BulkPrintSelection parent;
         private Datetotext date = new Datetotext();
         public SelectionItem(int storedID, DateTime target_date, BulkPrintSelection parent)

@@ -1,4 +1,5 @@
 ﻿using COMBINE_CHECKLIST_2024.DateToText;
+using SQL_Connection_support;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -16,11 +17,19 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
         private Form myParent;
         public DateTime my_targeted_date;
         public bool isDefect = true;
+        public int ID_Edit;
+        private SQL_Support sql = new SQL_Support("DESKTOP-HBKPAB1\\SQLEXPRESS", "GOODYEAR_MACHINE_HISTORY");
         public Item_Record(Form myParent)
         {
             InitializeComponent();
             this.myParent = myParent;
             _changeColor();
+        }
+
+        public Item_Record()
+        {
+            InitializeComponent();
+            
         }
 
         private void isdefect_toggle_btn_Click(object sender, EventArgs e)
@@ -32,9 +41,29 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
 
         public void setDate(DateTime date)
         {
+            Datetotext convert = new Datetotext();
             my_targeted_date = date;
             changeablemonth_label.Text = (convert_monthText(date) + " - " + date.Day);
+            hour_textbox.Text = convert.getHour_12HoursPreset(date);
+            min_tb.Text = date.Minute.ToString();
+            isAM = date.Hour < 12;
+            _changeColor();
         }
+        public void setVarCharData(string defectPart, string defectDesc, string suggestedReplacementRepair, string remarkAnalysis, string checkby)
+        {
+            this.defective_tb.Text = defectPart;
+            this.defective_description_rtb.Text = defectDesc;
+            this.suggestion_rtb.Text = suggestedReplacementRepair;
+            this.remarks_rtb.Text = remarkAnalysis;
+            this.checkby_textfield.Text = checkby;
+        }
+        public void setIsDefect(bool isdefect)
+        {
+            isDefect = isdefect;
+            isdefect_toggle_btn.BackColor = isDefect ? Color.Khaki : Color.Azure;
+            isdefect_toggle_btn.Text = isDefect ? "DEFECTIVE" : "SATISFACTORY";
+        }
+
 
         public string get_defectiveparts()
         {
@@ -57,6 +86,32 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
             hour_textbox.Text = convert.getHour_12HoursPreset(DateTime.Now);
             min_tb.Text = convert.getMinutes(DateTime.Now);
         }
+
+        public void setAutoComplete()
+        {
+            AutoCompleteStringCollection checkedByCollection = new AutoCompleteStringCollection();
+            AutoCompleteStringCollection defectiveParts = new AutoCompleteStringCollection();
+
+
+            DataTable LogMachineTable_DataTable = sql.ExecuteQuery("SELECT * FROM LOG_MACHINETABLE;");
+
+            foreach (DataRow row in LogMachineTable_DataTable.Rows)
+            {
+                checkedByCollection.Add(row["checked_by"].ToString());
+                defectiveParts.Add(row["defect_part"].ToString());
+            }
+            setAutoComplete(checkby_textfield, checkedByCollection);
+            setAutoComplete(defective_tb, defectiveParts);
+        }
+
+        private void setAutoComplete(TextBox textbox, AutoCompleteStringCollection acsc)
+        {
+            textbox.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+            textbox.AutoCompleteSource = AutoCompleteSource.CustomSource;
+            textbox.AutoCompleteCustomSource = acsc;
+        }
+
+
 
         public DateTime getTargetDate()
         {

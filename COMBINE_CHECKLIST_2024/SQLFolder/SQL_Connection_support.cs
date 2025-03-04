@@ -1,9 +1,13 @@
-﻿using System;
+﻿using Microsoft.SqlServer.Management.Smo;
+using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Management;
 using System.Threading.Tasks;
 
 namespace SQL_Connection_support
@@ -19,20 +23,40 @@ namespace SQL_Connection_support
             {
                 if (!string.IsNullOrEmpty(user) && !string.IsNullOrEmpty(password))
                 {
-                    _connection_server = $"Server={server};Database={database};User Id={user};Password={password};";
+                    _connection_server = $"Server={GetSQLServerInstance()};Database={database};User Id={user};Password={password};";
                 }
                 else
                 {
-                    _connection_server = $"Server={server};Database={database};Integrated Security=True;";
+                    _connection_server = $"Server={GetSQLServerInstance()};Database={database};Integrated Security=True;";
                 }
             }
             catch (Exception e)
             {
                 if (_isDebugShow) Console.WriteLine($"\n\n//ERROR: " + e.Message);
             }
-
-
         }
+
+        string GetSQLServerInstance()
+        {
+            string instanceName = "SQLEXPRESS"; // Default instance name
+            string registryPath = @"SOFTWARE\Microsoft\Microsoft SQL Server";
+
+            using (RegistryKey key = Registry.LocalMachine.OpenSubKey(registryPath))
+            {
+                if (key != null)
+                {
+                    object installedInstances = key.GetValue("InstalledInstances");
+                    if (installedInstances is string[] instances && instances.Length > 0)
+                    {
+                        instanceName = instances[0]; // Get first installed instance
+                    }
+                }
+            }
+
+            return $"{Environment.MachineName}\\{instanceName}";
+        }
+
+
 
         /// <summary>
         /// Executes a SQL query asynchronously and returns the result as a DataTable.

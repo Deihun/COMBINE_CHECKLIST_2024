@@ -7,34 +7,70 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
+using COMBINE_CHECKLIST_2024.Addons;
+using COMBINE_CHECKLIST_2024.InitialDiagnostics;
 using COMBINE_CHECKLIST_2024.Sections.Currugator;
+using COMBINE_CHECKLIST_2024.Sections.EditData;
+using COMBINE_CHECKLIST_2024.Sections.HistoryLog;
 using COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer;
+using COMBINE_CHECKLIST_2024.Sections.Settings;
+using SQL_Connection_support;
+
 
 namespace COMBINE_CHECKLIST_2024
 {
     public partial class Main_Dashboard: Form
     {
-        private Dashboard dashboard = new Dashboard();
-        private Create checklist = new Create();
-        private MachineViewer viewMachineHistory = new MachineViewer();
+        private Dashboard dashboard;
+        private Create checklist;
+        private EditDataForm edit;
+        private MachineViewer viewMachineHistory;
+        private Setting settings;
+        private History history;
+
+        private float scaleX;
+        private float scaleY;
+        private float originalWidth = 1920f;
+        private float originalHeight = 1080f;
+
 
         private static Panel viewer;
-
+        SQL_Support sql;
         public Main_Dashboard()
         {
             InitializeComponent();
-            dashboard.all_dashboard_Panel = new Panel[] {currugator_expanded_panel};
-            dashboard.all_SectionTabs = new Form[] { checklist, viewMachineHistory};
-            viewer = workpanel_panel;
+            InitialDiagnostic ini = new InitialDiagnostic();
+            ini.ShowDialog();
+
+
+            sql = new SQL_Support("DESKTOP-HBKPAB1\\SQLEXPRESS", "GOODYEAR_MACHINE_HISTORY");
+            Dictionary<string, object> logHistory = new Dictionary<string, object>
+                    {
+                        { "Context", $"System operation started" },
+                        {"Date_Log", DateTime.Now }
+                    };
+            sql.InsertData("HISTORY_", logHistory);
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            this.FormBorderStyle = FormBorderStyle.None;  // Remove title bar and borders
-            this.WindowState = FormWindowState.Maximized; // Maximize to full screen
-            this.Bounds = Screen.PrimaryScreen.Bounds;
+
+            viewer = work_panel;
+
+
+            dashboard = new Dashboard();
+            checklist = new Create();
+            edit = new EditDataForm(this.Width, this.Height);
+            viewMachineHistory = new MachineViewer();
+            settings = new Setting();
+            history = new History();
+
+            dashboard.all_dashboard_Panel = new Panel[] { currugator_expanded_panel, system_panel };
+            dashboard.all_SectionTabs = new Form[] { checklist, viewMachineHistory, edit, settings, history };
         }
+
+
+
 
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
@@ -43,7 +79,7 @@ namespace COMBINE_CHECKLIST_2024
 
         private void btn_currugator_Click(object sender, EventArgs e)
         {
-            dashboard.expand_currugator_panel(currugator_expanded_panel);
+            dashboard.expand_currugator_panel(currugator_expanded_panel, 165, 50);
         }
 
         private void dashboard_panel_Paint(object sender, PaintEventArgs e)
@@ -59,11 +95,47 @@ namespace COMBINE_CHECKLIST_2024
         private void btn_currugator_machine_history_Click(object sender, EventArgs e)
         {
             dashboard.change_workpanelsection(viewMachineHistory, viewer);
+            Console.WriteLine("MACHINE HISTORY");
         }
 
         private void edititem_currugator_btn_Click(object sender, EventArgs e)
         {
+            dashboard.change_workpanelsection(edit, viewer);
+        }
 
+        private void System_btn_Click(object sender, EventArgs e)
+        {
+            dashboard.expand_currugator_panel(system_panel);
+        }
+
+        private void settings_btn_Click(object sender, EventArgs e)
+        {
+            dashboard.change_workpanelsection(settings, viewer);
+        }
+
+        private void history_btn_Click(object sender, EventArgs e)
+        {
+            dashboard.change_workpanelsection(history, viewer);
+        }
+
+        private void exit_btn_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void workpanel_panel_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void Main_Dashboard_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Dictionary<string, object> logHistory = new Dictionary<string, object>
+                    {
+                        { "Context", $"System operation ended" },
+                        {"Date_Log", DateTime.Now }
+                    };
+            sql.InsertData("HISTORY_", logHistory);
         }
     }
 
@@ -82,7 +154,7 @@ namespace COMBINE_CHECKLIST_2024
         {
             _hide_forms_in_workpanelsection();
             Form_To_Set.TopLevel = false;
-            Form_To_Set.Dock = DockStyle.Fill;
+            //Form_To_Set.Dock = DockStyle.Right;
             viewer.Controls.Clear();
             viewer.Controls.Add(Form_To_Set);
             Form_To_Set.Show();

@@ -19,6 +19,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistory
         private Datetotext date = new Datetotext();
         public DateTime _from_dt { get; set; }
         public DateTime _to_dt { get; set; }
+        public int ID_Edit;
 
         public Create parent;
         public string monitor;
@@ -55,6 +56,11 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistory
             return location_tb.Text;
         }
 
+        public void hideDelete()
+        {
+            deletegroup_btn.Hide();
+        }
+
         public void add_item(Form item)
         {
 
@@ -62,12 +68,12 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistory
             group_of_logs.Add(item);
             this.Size = new Size(1375,(group_of_logs.Count*200)+75);
             //flowlayoutpanel.Size = new Size(1519, ((group_of_logs.Count + 1)* 166));
-            Console.WriteLine(group_of_logs);
+            //Console.WriteLine(group_of_logs);
             item.TopLevel = false;
             flowlayoutpanel.Controls.Add(item);
             item.Show();
-            
         }
+
 
         
 

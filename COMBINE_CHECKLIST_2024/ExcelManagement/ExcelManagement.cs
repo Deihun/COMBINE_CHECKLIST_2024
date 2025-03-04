@@ -12,6 +12,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using GrapeCity.Documents.Excel;
+using System.Drawing.Printing;
+using System.Drawing;
+using DocumentFormat.OpenXml.Wordprocessing;
+using iTextSharp.text.pdf;
+using iTextSharp.text;
+using _pfont = System.Drawing.Font;
+using System.util;
 
 namespace COMBINE_CHECKLIST_2024.ExcelManagement
 {
@@ -131,7 +138,7 @@ namespace COMBINE_CHECKLIST_2024.ExcelManagement
                 }
                 Console.WriteLine("\n\n" + debugString + "\n\n");
                 bulk_set.Add(_grouptable_list, historyLog_filteredContent);
-               // ExportToExcel(_grouptable_list, historyLog_filteredContent);
+                ExportToExcel(bulk_set);
             }
         }
 
@@ -278,7 +285,13 @@ namespace COMBINE_CHECKLIST_2024.ExcelManagement
             Datetotext date = new Datetotext();
             var worksheet = workbook.Worksheets.Add("Users Data");
             string projectRoot = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.FullName;
-            string imagePath = Path.Combine(projectRoot, "Addons", "LOGO.png");
+            var imageStream = new MemoryStream();
+            Properties.Resources.LOGO.Save(imageStream, System.Drawing.Imaging.ImageFormat.Png);
+            imageStream.Position = 0;
+
+            var picture = worksheet.AddPicture(imageStream, "LOGO")
+            .MoveTo(worksheet.Cell("A1"))
+            .Scale(0.8);
 
             worksheet.PageSetup.PageOrientation = XLPageOrientation.Portrait;
             worksheet.PageSetup.Margins.Top = 0;
@@ -304,9 +317,7 @@ namespace COMBINE_CHECKLIST_2024.ExcelManagement
             header_cell.Style.Font.Bold = true;
             header_cell.Style.Font.FontSize = 16;
 
-            var picture = worksheet.AddPicture(imagePath)
-                    .MoveTo(worksheet.Cell("A1"))
-                    .Scale(0.8);
+
 
             int currentRow = 5;
 
@@ -380,8 +391,13 @@ namespace COMBINE_CHECKLIST_2024.ExcelManagement
             Datetotext date = new Datetotext();
             var worksheet = workbook.Worksheets.Add("Users Data");
             string projectRoot = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.FullName;
-            string imagePath = Path.Combine(projectRoot, "Addons", "LOGO.png");
+            var imageStream = new MemoryStream();
+            Properties.Resources.LOGO.Save(imageStream, System.Drawing.Imaging.ImageFormat.Png);
+            imageStream.Position = 0;
 
+            var picture = worksheet.AddPicture(imageStream, "LOGO")
+            .MoveTo(worksheet.Cell("A1"))
+            .Scale(0.8);
             worksheet.PageSetup.PageOrientation = XLPageOrientation.Portrait;
             worksheet.PageSetup.Margins.Top = 0;
             worksheet.PageSetup.Margins.Bottom = 0;
@@ -406,16 +422,13 @@ namespace COMBINE_CHECKLIST_2024.ExcelManagement
             header_cell.Style.Font.Bold = true;
             header_cell.Style.Font.FontSize = 16;
 
-            var picture = worksheet.AddPicture(imagePath)
-                    .MoveTo(worksheet.Cell("A1"))
-                    .Scale(0.8);
 
             int currentRow = 5;
 
 
             foreach (var entry in bulk_group)
             {
-
+                List<DataTable> dataPerSec = entry.Key;
 
                 if (entry.Value.Rows.Count > 0)
                 {
@@ -456,7 +469,7 @@ namespace COMBINE_CHECKLIST_2024.ExcelManagement
                         SetCellData(worksheet, currentRow, 8, "REMARK/ANALYSIS", 8, false, XLColor.Black, null, XLAlignmentHorizontalValues.Center);
 
                         currentRow++;
-                        DataTable firstInsertion = entry.Key.First();
+                        DataTable firstInsertion = dataPerSec.First();
                         foreach (DataRow dataCell in firstInsertion.Rows)
                         {
                             Datetotext convert = new Datetotext();
@@ -474,7 +487,7 @@ namespace COMBINE_CHECKLIST_2024.ExcelManagement
                             SetCellData(worksheet, currentRow, 8, dataCell["remark_analysis"].ToString(), 10, false, XLColor.Black, null);
                             currentRow++;
                         }
-                        entry.Key.RemoveAt(0);
+                        dataPerSec.RemoveAt(0);
                     }
                 }
 
@@ -505,6 +518,41 @@ namespace COMBINE_CHECKLIST_2024.ExcelManagement
                 }
         }
 
+        public void ExportToExcel(Dictionary<List<DataTable>, DataTable> bulk_set)
+        {
+            string filePath = file_path == null ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "UsersData.xlsx") : file_path;
+            CloseSpecificExcelOrWpsFile(filePath);
+            GenerateBulkExcelWorkbook(bulk_set).SaveAs(filePath);
+
+            MessageBox.Show($"Excel file saved at: {filePath}");
+
+            if (auto_print)
+            {
+
+            }
+
+            if (auto_open)
+            {
+                Process openProcess = new Process();
+                openProcess.StartInfo.FileName = filePath;
+                openProcess.Start();
+            }
+        }
+
+        public void ExportToExcel(XLWorkbook workbook)
+        {
+            string filePath = file_path == null ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "UsersData.xlsx") : file_path;
+            CloseSpecificExcelOrWpsFile(filePath);
+            workbook.SaveAs(filePath);
+
+            MessageBox.Show($"Excel file saved at: {filePath}");
+            if (auto_open)
+            {
+                Process openProcess = new Process();
+                openProcess.StartInfo.FileName = filePath;
+                openProcess.Start();
+            }
+        }
 
         private int SetCellData(IXLWorksheet worksheet, int row, int col, string value, double fontSize = 12, bool isBold = false, XLColor fontColor = default, XLColor backgroundColor = default, XLAlignmentHorizontalValues alignment = XLAlignmentHorizontalValues.Left)
         {
@@ -663,5 +711,7 @@ namespace COMBINE_CHECKLIST_2024.ExcelManagement
             // Load HTML in WebBrowser control
             browser.DocumentText = htmlContent;
         }
+
     }
+
 }

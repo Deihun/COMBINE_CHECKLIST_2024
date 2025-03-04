@@ -50,6 +50,7 @@
             this.flowlayoutpanel.Name = "flowlayoutpanel";
             this.flowlayoutpanel.Size = new System.Drawing.Size(1278, 162);
             this.flowlayoutpanel.TabIndex = 0;
+            this.flowlayoutpanel.WrapContents = false;
             // 
             // deletegroup_btn
             // 

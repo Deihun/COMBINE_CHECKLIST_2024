@@ -32,9 +32,7 @@
             this.web = new System.Windows.Forms.WebBrowser();
             this.print_btn = new System.Windows.Forms.Button();
             this.cancel_btn = new System.Windows.Forms.Button();
-            this.textBox1 = new System.Windows.Forms.TextBox();
             this.createFile_btn = new System.Windows.Forms.Button();
-            this.changeFileLocation_btn = new System.Windows.Forms.Button();
             this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
             this.specificDate_rd = new System.Windows.Forms.RadioButton();
             this.Dropdownbox_rd = new System.Windows.Forms.RadioButton();
@@ -49,15 +47,16 @@
             this.monitoredby_cb = new System.Windows.Forms.ComboBox();
             this.location_cb = new System.Windows.Forms.ComboBox();
             this.removeAllSelected_btn = new System.Windows.Forms.Button();
+            this.YearCB = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // selection_container_fl
             // 
             this.selection_container_fl.AutoScroll = true;
             this.selection_container_fl.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.selection_container_fl.Location = new System.Drawing.Point(12, 171);
+            this.selection_container_fl.Location = new System.Drawing.Point(12, 194);
             this.selection_container_fl.Name = "selection_container_fl";
-            this.selection_container_fl.Size = new System.Drawing.Size(217, 504);
+            this.selection_container_fl.Size = new System.Drawing.Size(217, 481);
             this.selection_container_fl.TabIndex = 0;
             this.selection_container_fl.WrapContents = false;
             // 
@@ -66,55 +65,38 @@
             this.web.Location = new System.Drawing.Point(235, 7);
             this.web.MinimumSize = new System.Drawing.Size(20, 20);
             this.web.Name = "web";
-            this.web.Size = new System.Drawing.Size(1031, 603);
+            this.web.Size = new System.Drawing.Size(1031, 639);
             this.web.TabIndex = 1;
             // 
             // print_btn
             // 
-            this.print_btn.Location = new System.Drawing.Point(1123, 618);
+            this.print_btn.Location = new System.Drawing.Point(1123, 648);
             this.print_btn.Name = "print_btn";
             this.print_btn.Size = new System.Drawing.Size(143, 28);
             this.print_btn.TabIndex = 2;
             this.print_btn.Text = "PRINT";
             this.print_btn.UseVisualStyleBackColor = true;
+            this.print_btn.Click += new System.EventHandler(this.print_btn_Click);
             // 
             // cancel_btn
             // 
-            this.cancel_btn.Location = new System.Drawing.Point(235, 618);
+            this.cancel_btn.Location = new System.Drawing.Point(235, 652);
             this.cancel_btn.Name = "cancel_btn";
-            this.cancel_btn.Size = new System.Drawing.Size(143, 58);
+            this.cancel_btn.Size = new System.Drawing.Size(143, 24);
             this.cancel_btn.TabIndex = 3;
             this.cancel_btn.Text = "CLOSE";
             this.cancel_btn.UseVisualStyleBackColor = true;
             this.cancel_btn.Click += new System.EventHandler(this.cancel_btn_Click);
             // 
-            // textBox1
-            // 
-            this.textBox1.Enabled = false;
-            this.textBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox1.Location = new System.Drawing.Point(845, 652);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(421, 18);
-            this.textBox1.TabIndex = 4;
-            this.textBox1.Text = "//..";
-            // 
             // createFile_btn
             // 
-            this.createFile_btn.Location = new System.Drawing.Point(1012, 618);
+            this.createFile_btn.Location = new System.Drawing.Point(1012, 648);
             this.createFile_btn.Name = "createFile_btn";
             this.createFile_btn.Size = new System.Drawing.Size(106, 29);
             this.createFile_btn.TabIndex = 5;
             this.createFile_btn.Text = "CREATE FILE";
             this.createFile_btn.UseVisualStyleBackColor = true;
-            // 
-            // changeFileLocation_btn
-            // 
-            this.changeFileLocation_btn.Location = new System.Drawing.Point(846, 618);
-            this.changeFileLocation_btn.Name = "changeFileLocation_btn";
-            this.changeFileLocation_btn.Size = new System.Drawing.Size(160, 28);
-            this.changeFileLocation_btn.TabIndex = 6;
-            this.changeFileLocation_btn.Text = "CHANGE FILE LOCATION";
-            this.changeFileLocation_btn.UseVisualStyleBackColor = true;
+            this.createFile_btn.Click += new System.EventHandler(this.createFile_btn_Click);
             // 
             // dateTimePicker1
             // 
@@ -178,7 +160,7 @@
             "Dec"});
             this.year_cb.Location = new System.Drawing.Point(120, 144);
             this.year_cb.Name = "year_cb";
-            this.year_cb.Size = new System.Drawing.Size(109, 21);
+            this.year_cb.Size = new System.Drawing.Size(53, 21);
             this.year_cb.TabIndex = 10;
             this.year_cb.SelectedIndexChanged += new System.EventHandler(this.year_cb_SelectedIndexChanged);
             // 
@@ -231,12 +213,13 @@
             this.v.TabIndex = 0;
             this.v.Text = "Auto-Select";
             this.v.UseVisualStyleBackColor = true;
+            this.v.Click += new System.EventHandler(this.v_Click);
             // 
             // clearfilter_btn
             // 
-            this.clearfilter_btn.Location = new System.Drawing.Point(-1, 652);
+            this.clearfilter_btn.Location = new System.Drawing.Point(10, 166);
             this.clearfilter_btn.Name = "clearfilter_btn";
-            this.clearfilter_btn.Size = new System.Drawing.Size(75, 28);
+            this.clearfilter_btn.Size = new System.Drawing.Size(107, 28);
             this.clearfilter_btn.TabIndex = 14;
             this.clearfilter_btn.Text = "Clear Filter";
             this.clearfilter_btn.UseVisualStyleBackColor = true;
@@ -304,6 +287,7 @@
             this.location_cb.Name = "location_cb";
             this.location_cb.Size = new System.Drawing.Size(109, 21);
             this.location_cb.TabIndex = 18;
+            this.location_cb.SelectedIndexChanged += new System.EventHandler(this.location_cb_SelectedIndexChanged);
             // 
             // removeAllSelected_btn
             // 
@@ -313,12 +297,39 @@
             this.removeAllSelected_btn.TabIndex = 19;
             this.removeAllSelected_btn.Text = "Deselect All";
             this.removeAllSelected_btn.UseVisualStyleBackColor = true;
+            this.removeAllSelected_btn.Click += new System.EventHandler(this.removeAllSelected_btn_Click);
+            // 
+            // YearCB
+            // 
+            this.YearCB.AutoCompleteCustomSource.AddRange(new string[] {
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sept",
+            "Oct",
+            "Nov",
+            "Dec"});
+            this.YearCB.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.YearCB.FormattingEnabled = true;
+            this.YearCB.Items.AddRange(new object[] {
+            ""});
+            this.YearCB.Location = new System.Drawing.Point(179, 145);
+            this.YearCB.Name = "YearCB";
+            this.YearCB.Size = new System.Drawing.Size(50, 21);
+            this.YearCB.TabIndex = 20;
+            this.YearCB.SelectedIndexChanged += new System.EventHandler(this.YearCB_SelectedIndexChanged);
             // 
             // BulkPrintSelection
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1278, 678);
+            this.Controls.Add(this.YearCB);
             this.Controls.Add(this.removeAllSelected_btn);
             this.Controls.Add(this.clearfilter_btn);
             this.Controls.Add(this.location_cb);
@@ -333,9 +344,7 @@
             this.Controls.Add(this.Dropdownbox_rd);
             this.Controls.Add(this.specificDate_rd);
             this.Controls.Add(this.dateTimePicker1);
-            this.Controls.Add(this.changeFileLocation_btn);
             this.Controls.Add(this.createFile_btn);
-            this.Controls.Add(this.textBox1);
             this.Controls.Add(this.cancel_btn);
             this.Controls.Add(this.print_btn);
             this.Controls.Add(this.web);
@@ -354,9 +363,7 @@
         private System.Windows.Forms.WebBrowser web;
         private System.Windows.Forms.Button print_btn;
         private System.Windows.Forms.Button cancel_btn;
-        private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Button createFile_btn;
-        private System.Windows.Forms.Button changeFileLocation_btn;
         private System.Windows.Forms.DateTimePicker dateTimePicker1;
         private System.Windows.Forms.RadioButton specificDate_rd;
         private System.Windows.Forms.RadioButton Dropdownbox_rd;
@@ -371,5 +378,6 @@
         private System.Windows.Forms.ComboBox monitoredby_cb;
         private System.Windows.Forms.ComboBox location_cb;
         private System.Windows.Forms.Button removeAllSelected_btn;
+        private System.Windows.Forms.ComboBox YearCB;
     }
 }

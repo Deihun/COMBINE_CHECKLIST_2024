@@ -1,5 +1,6 @@
 ﻿using COMBINE_CHECKLIST_2024.DateToText;
 using COMBINE_CHECKLIST_2024.ExcelManagement;
+using COMBINE_CHECKLIST_2024.OpenFilePath;
 using SQL_Connection_support;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.UI.WebControls;
 using System.Windows.Forms;
+using ScottPlot;
+using ScottPlot.Plottables;
+using COMBINE_CHECKLIST_2024.Addons;
 
 namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
 {
@@ -20,6 +24,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
         private SQL_Support sql = new SQL_Support("DESKTOP-HBKPAB1\\SQLEXPRESS", "GOODYEAR_MACHINE_HISTORY");
         private gridview_adjustment g_adjust;
         private buttonPerHistory buttonManagement;
+        private int selectedID = -1;
         public MachineViewer()
         {
             InitializeComponent();
@@ -32,6 +37,8 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
             button_container_flp.HorizontalScroll.Visible = false;
             button_container_flp.HorizontalScroll.Maximum = 0;
             button_container_flp.AutoScrollMinSize = new Size(0, 1);
+
+            chart1.Titles.Add("STATUS");
         }
 
         
@@ -56,6 +63,8 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
         {
             g_adjust.show_dataPerSection(id);//
             printOption_panel.Show();
+            selectedID = id;
+            chart1.Visible = false;
 
             //
             //dataGridView1.DataSource = MachineView.ExecuteQueryAsync(query);
@@ -63,14 +72,48 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
 
         private void MachineViewer_Load(object sender, EventArgs e)
         {
-
         }
+
+
 
         private void MachineViewer_VisibleChanged(object sender, EventArgs e)
         {
             buttonManagement.showAllResults();
             printOption_panel.Hide();
+            selectedID = -1;
+            chart1.Series["S1"].Points.Clear();
+            chart1.Visible = true;
+            int defective = 0;
+            int satisfactory = 0;
+            g_adjust._delete_all();
+            DataTable status = sql.ExecuteQuery("SELECT overall_status FROM LOG_MACHINETABLE;");
+            foreach (DataRow data in status.Rows)
+            {
+                bool c = (bool)data["overall_status"];
+                if (c) defective += 1;
+                else satisfactory += 1;
+            }
+            if (satisfactory > 0)
+            {
+                chart1.Series["S1"].Color = System.Drawing.Color.Wheat;
+                chart1.Series["S1"].Points.AddXY("SATISFACTORY", satisfactory);
+                chart1.Series["S1"].Points.Last().Font = new Font("Arial", 10, System.Drawing.FontStyle.Bold);
+            }
+            if (defective > 0)
+            {
+                chart1.Series["S1"].Points.AddXY("DEFECTIVE", defective);
+                chart1.Series["S1"].Points.Last().LabelForeColor = System.Drawing.Color.Black;
+                chart1.Series["S1"].Points.Last().Font = new Font("Arial", 10, System.Drawing.FontStyle.Bold);
+            }
+
+            
+
         }
+
+
+
+
+
 
         private void dataPerSection_Paint(object sender, PaintEventArgs e)
         {
@@ -82,6 +125,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
             g_adjust.show_dataPerSection(searchfilter_tb.Text, DateFilter_dt);
             buttonManagement.showResultsWithFilter(searchfilter_tb.Text, DateFilter_dt);
             printOption_panel.Hide();
+            chart1.Visible = false;
         }
 
         private void date_cb_CheckedChanged(object sender, EventArgs e)
@@ -90,6 +134,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
             g_adjust.show_dataPerSection(searchfilter_tb.Text, DateFilter_dt);
             buttonManagement.showResultsWithFilter(searchfilter_tb.Text, DateFilter_dt);
             printOption_panel.Hide();
+            chart1.Visible = false;
         }
 
         private void DateFilter_dt_ValueChanged(object sender, EventArgs e)
@@ -97,12 +142,50 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
             g_adjust.show_dataPerSection(searchfilter_tb.Text, DateFilter_dt);
             buttonManagement.showResultsWithFilter(searchfilter_tb.Text, DateFilter_dt);
             printOption_panel.Hide();
+            chart1.Visible = false;
         }
 
         private void bulkPrint_btn_Click(object sender, EventArgs e)
         {
             BulkPrintSelection bulkprint = new BulkPrintSelection();
             bulkprint.ShowDialog();
+        }
+
+        private void createAs_btn_Click(object sender, EventArgs e)
+        {
+            FolderPathManagement select = new FolderPathManagement();
+            string filepath = select.ShowSaveFileDialog();
+            if (!(filepath == null || filepath == string.Empty))
+            {
+                HistoryExcelGeneration excel = new HistoryExcelGeneration(filepath);
+                excel.ExportToExcel(excel.GenerateExcelWorkbook(selectedID));
+            }
+            Dictionary<string, object> logHistory = new Dictionary<string, object>
+                    {
+                        { "Context", $"A 'SaveFile' has been performed via View-Data in path '{filepath}', referencing data ID {selectedID.ToString()}" },
+                        {"Date_Log", DateTime.Now }
+                    };
+            sql.InsertData("HISTORY_", logHistory);
+        
+        }
+
+        private void btn_singlePrint_Click(object sender, EventArgs e)
+        {
+            HistoryExcelGeneration excel = new HistoryExcelGeneration();
+            WorkbookPrinter a = new WorkbookPrinter(excel.GenerateExcelWorkbook(selectedID));
+            a.Print();
+            Dictionary<string, object> logHistory = new Dictionary<string, object>
+                    {
+                        { "Context", $"A print has been performed via View-Data, referencing data ID {selectedID.ToString()}" },
+                        {"Date_Log", DateTime.Now }
+                    };
+            sql.InsertData("HISTORY_", logHistory);
+
+        }
+
+        private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 
@@ -215,6 +298,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
 
             _data.DataSource = data;
             _data.Width = flowparent.Width - 10; // Fit into the FlowLayoutPanel
+            _data.Height = flowparent.Height;
 
             // Set DataGridView to ensure columns fill available space
             _data.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;

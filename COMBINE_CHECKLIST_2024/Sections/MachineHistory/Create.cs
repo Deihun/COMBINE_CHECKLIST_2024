@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using COMBINE_CHECKLIST_2024.Addons;
 using COMBINE_CHECKLIST_2024.DateToText;
 using COMBINE_CHECKLIST_2024.ExcelManagement;
 using COMBINE_CHECKLIST_2024.OpenFilePath;
@@ -22,10 +23,13 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
     public partial class Create: Form
     {
         public List <Form> groupOf_groupforms = new List<Form>();
+        SQL_Support sql = new SQL_Support("DESKTOP-HBKPAB1\\SQLEXPRESS", "GOODYEAR_MACHINE_HISTORY");
         private string filepath;
+        int _last_identity;
         public Create()
         {
             InitializeComponent();
+            this.AutoScaleMode = AutoScaleMode.Dpi;
 
         }
 
@@ -55,15 +59,16 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
         private void create_new_history_btn_Click(object sender, EventArgs e)
         {
          order_a_SelectAsync();
+
         }
 
         private void order_a_SelectAsync()
         {
-            SQL_Support sql = new SQL_Support("DESKTOP-HBKPAB1\\SQLEXPRESS", "GOODYEAR_MACHINE_HISTORY");
+            
             Dictionary<string, object> history_log = new Dictionary<string, object> { { "date_commit", DateTime.Now } };
 
             string query_construct;
-            int _last_identity;
+            
             int _last_id_identity;
             sql._isDebugShow = true;
 
@@ -84,10 +89,9 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
                             };
                     _last_identity = sql.InsertDataAndGetId("GROUP_TABLE", groupData);
 
-                    //INCOMPLETE - NO MONITORED BY AND MACHINENAME YET
+                    
                     foreach (Form deepgroup in groupForm.group_of_logs)
                     {
-                        Thread.Sleep(1);
                         if  (deepgroup is Item_Record logGroup)
                         {
                             Dictionary<string, object> logData = new Dictionary<string, object>
@@ -105,10 +109,18 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
                             sql.InsertData("LOG_MACHINETABLE", logData);
                         }
                     }
-                    }
+                    after_panel.Show();
+                    Dictionary<string, object> logHistory = new Dictionary<string, object>
+                    {
+                        { "Context", $"{monitor_tb.Text} has added a new data in the database with ID {_last_identity.ToString()}" },
+                        {"Date_Log", DateTime.Now }
+                    };
+                    sql.InsertData("HISTORY_",logHistory);
+                    create_new_history_btn.SendToBack();
+                }
             }
-            HistoryExcelGeneration export = new HistoryExcelGeneration(filepath, open_cb.Checked, print_cb.Checked);
-            export.generate_an_excel(_last_id_identity);
+            //HistoryExcelGeneration export = new HistoryExcelGeneration(filepath);
+            //export.generate_an_excel(_last_id_identity);
         }
 
 
@@ -122,14 +134,80 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
 
         }
 
-        private void changeFilePath_Click(object sender, EventArgs e)
+
+
+        private void Create_VisibleChanged(object sender, EventArgs e)
         {
-            FolderPathManagement select = new FolderPathManagement();
-            filepath = select.ShowSaveFileDialog();
-            changeFileView_tb.Text = filepath;
+            create_new_history_btn.BringToFront();
+            AutoCompleteStringCollection location = new AutoCompleteStringCollection();
+            AutoCompleteStringCollection monitoredBy = new AutoCompleteStringCollection();
+            AutoCompleteStringCollection machinename = new AutoCompleteStringCollection();
+
+
+            DataTable _location = sql.ExecuteQuery("SELECT * FROM GROUP_TABLE;");
+
+            foreach (DataRow row in _location.Rows)
+            {
+                location.Add(row["Location"].ToString());
+                monitoredBy.Add(row["Monitored_By"].ToString());
+                machinename.Add(row["Machine_Name"].ToString());
+            }
+            setAutoComplete(location_tb, location);
+            setAutoComplete(monitor_tb, monitoredBy);
+            setAutoComplete(machine_tb, machinename);
+
+            for (int i = groupOf_groupforms.Count - 1; i >= 0; i--)
+            {
+                groupOf_groupforms[i].Dispose();
+                groupOf_groupforms.RemoveAt(i);
+            }
+            after_panel.Hide();
+            _last_identity = -1;
+        }
+        private void setAutoComplete(TextBox textbox, AutoCompleteStringCollection acsc)
+        {
+            textbox.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+            textbox.AutoCompleteSource = AutoCompleteSource.CustomSource;
+            textbox.AutoCompleteCustomSource = acsc;
         }
 
+        private void saveFile_btn_Click(object sender, EventArgs e)
+        {
+            if (_last_identity > -1)
+            {
+                FolderPathManagement select = new FolderPathManagement();
+                string filepath = select.ShowSaveFileDialog();
+                if (!(filepath == null || filepath == string.Empty))
+                {
+                    HistoryExcelGeneration excel = new HistoryExcelGeneration(filepath);
+                    excel.ExportToExcel(excel.GenerateExcelWorkbook(_last_identity));
+                }
+                Dictionary<string, object> logHistory = new Dictionary<string, object>
+                    {
+                        { "Context", $"{monitor_tb.Text} has save a new file into a path '{filepath}', referencing data ID {_last_identity.ToString()}" },
+                        {"Date_Log", DateTime.Now }
+                    };
+                sql.InsertData("HISTORY_", logHistory);
+            }
 
+        }
+
+        private void print_btn_Click(object sender, EventArgs e)
+        {
+            if (_last_identity > -1)
+            {
+                HistoryExcelGeneration excel = new HistoryExcelGeneration();
+                WorkbookPrinter a = new WorkbookPrinter(excel.GenerateExcelWorkbook(_last_identity));
+                a.Print();
+            }
+            Dictionary<string, object> logHistory = new Dictionary<string, object>
+                    {
+                        { "Context", $"{monitor_tb.Text} Perform a print, referencing data ID {_last_identity.ToString()}" },
+                        {"Date_Log", DateTime.Now }
+                    };
+            sql.InsertData("HISTORY_", logHistory);
+
+        }
     }
 }
 

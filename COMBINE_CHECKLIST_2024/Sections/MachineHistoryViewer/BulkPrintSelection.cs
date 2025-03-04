@@ -1,6 +1,8 @@
 ﻿using COMBINE_CHECKLIST_2024.DateToText;
 using COMBINE_CHECKLIST_2024.ExcelManagement;
+using COMBINE_CHECKLIST_2024.OpenFilePath;
 using DocumentFormat.OpenXml.Bibliography;
+using DocumentFormat.OpenXml.Drawing;
 using SQL_Connection_support;
 using System;
 using System.Collections.Generic;
@@ -32,13 +34,33 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
             selection_container_fl.VerticalScroll.Visible = true;
             selection_container_fl.AutoScrollMinSize = new Size(0, 1);
 
+            monitoredby_cb.Items.Add("");
+            location_cb.Items.Add("");
+            machineName_cb.Items.Add("");
             DataTable results = sql.ExecuteQuery("SELECT DISTINCT [Machine_Name] FROM GROUP_TABLE;");
             foreach (DataRow r in results.Rows)
             {
                 machineName_cb.Items.Add(r["Machine_Name"]);
             }
             results.Clear();
-            
+            results = sql.ExecuteQuery("SELECT DISTINCT [Monitored_By] FROM GROUP_TABLE;");
+            foreach (DataRow r in results.Rows)
+            {
+                monitoredby_cb.Items.Add(r["Monitored_By"]);
+            }
+            results.Clear();
+            results = sql.ExecuteQuery("SELECT DISTINCT [Location] FROM GROUP_TABLE;");
+            foreach (DataRow r in results.Rows)
+            {
+                location_cb.Items.Add(r["Location"]);
+            }
+            results.Clear();
+            results = sql.ExecuteQuery("SELECT DISTINCT YEAR([date_commit]) AS year_commit FROM EXECUTION_HISTORY;");
+            foreach (DataRow r in results.Rows)
+            {
+
+                YearCB.Items.Add(r["year_commit"]);
+            }
         }
 
         public void checkTrigger()
@@ -72,23 +94,79 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
 
         private void machineName_cb_SelectedIndexChanged(object sender, EventArgs e)
         {
-            ad.FilterData_nonSpecificDate(year_cb.Text, machineName_cb.Text);
+            ad.FilterData_nonSpecificDate(year_cb.Text, YearCB.Text, machineName_cb.Text, monitoredby_cb.Text, location_cb.Text);
         }
 
         private void year_cb_SelectedIndexChanged(object sender, EventArgs e)
         {
-            ad.FilterData_nonSpecificDate(year_cb.Text, machineName_cb.Text);
+            ad.FilterData_nonSpecificDate(year_cb.Text, YearCB.Text, machineName_cb.Text, monitoredby_cb.Text, location_cb.Text);
         }
 
         private void clearfilter_btn_Click(object sender, EventArgs e)
         {
             machineName_cb.Text = "";
             year_cb.Text = "";
+            monitoredby_cb.Text = "";
+            location_cb.Text = "";
         }
 
         private void monitoredby_cb_SelectedIndexChanged(object sender, EventArgs e)
         {
+            ad.FilterData_nonSpecificDate(year_cb.Text, YearCB.Text, machineName_cb.Text, monitoredby_cb.Text, location_cb.Text);
+        }
 
+        private void print_btn_Click(object sender, EventArgs e)
+        {
+            HistoryExcelGeneration excel = new HistoryExcelGeneration();
+            WorkbookPrinter a = new WorkbookPrinter(excel.GenerateBulkExcelWorkbook(ad.getCheckedID()));
+            a.Print();
+            Dictionary<string, object> logHistory = new Dictionary<string, object>
+                    {
+                        { "Context", $"A 'BulkPrint' has been performed in View-Data" },
+                        {"Date_Log", DateTime.Now }
+                    };
+            sql.InsertData("HISTORY_", logHistory);
+        }
+        
+
+        private void createFile_btn_Click(object sender, EventArgs e)
+        {
+            FolderPathManagement select = new FolderPathManagement();
+            string filepath = select.ShowSaveFileDialog();
+            if (!(filepath == null || filepath == string.Empty))
+            {
+                HistoryExcelGeneration excel = new HistoryExcelGeneration(filepath);
+                excel.ExportToExcel(excel.GenerateBulkExcelWorkbook(ad.getCheckedID()));
+            }
+            Dictionary<string, object> logHistory = new Dictionary<string, object>
+                    {
+                        { "Context", $"A 'Bulk-Create-File' has been performed in View-Data with path '{filepath}'" },
+                        {"Date_Log", DateTime.Now }
+                    };
+            sql.InsertData("HISTORY_", logHistory);
+        }
+            
+        
+
+        private void removeAllSelected_btn_Click(object sender, EventArgs e)
+        {
+            ad.deselectAllData();
+        }
+
+        private void location_cb_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ad.FilterData_nonSpecificDate(year_cb.Text, YearCB.Text, machineName_cb.Text, monitoredby_cb.Text, location_cb.Text);
+        }
+
+        private void YearCB_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ad.FilterData_nonSpecificDate(year_cb.Text, YearCB.Text, machineName_cb.Text, monitoredby_cb.Text, location_cb.Text);
+        }
+
+        private void v_Click(object sender, EventArgs e)
+        {
+            QuickSelection q = new QuickSelection(machineName_cb, monitoredby_cb, location_cb, year_cb, YearCB, ad.list);
+            q.ShowDialog();
         }
     }
 
@@ -98,7 +176,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
         private SQL_Support sql = new SQL_Support("DESKTOP-HBKPAB1\\SQLEXPRESS", "GOODYEAR_MACHINE_HISTORY");
         private Datetotext convertdate = new Datetotext();
         private FlowLayoutPanel container;
-        List<SelectionItem> list = new List<SelectionItem>();
+        public List<SelectionItem> list = new List<SelectionItem>();
         public AllData(BulkPrintSelection parent, FlowLayoutPanel container)
         {
             this.parent = parent;
@@ -130,8 +208,10 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
             {
                 int id = Convert.ToInt32(row["ID"]);
                 string machineName = row["Machine_Name"].ToString();
+                string monitor = row["Monitored_By"].ToString();
+                string Location = row["Location"].ToString();
                 DateTime date = (DateTime)row["date_commit"];
-                _addNewData(id, date, machineName);
+                _addNewData(id, date, machineName, monitor, Location);
             }
         }
         public void loadAllData()
@@ -158,7 +238,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
             }
         }
 
-        public void FilterData_nonSpecificDate(string month, string MachineName)
+        public void FilterData_nonSpecificDate(string month, string year, string MachineName, string Monitor, string location)
         {
             hideAllData();
 
@@ -166,31 +246,40 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
             {
                 DateTime target_date = s.target_date;
                 int selectedMonth = convertdate.getMonth(month);
+                
 
-                Console.WriteLine($"/DEBUGG Selected Month: {selectedMonth}, Target Date Month: {target_date.Month}, Month Filter: {month}");
-
+                
                 // Fix: Allow all months if `month` is empty
                 bool isMonthValid = (month == "" || selectedMonth == target_date.Month);
-
-                // Fix: Allow all machine names if `MachineName` is empty
+                bool isYearValid = (year == "" || target_date.Year == Convert.ToInt32(year));
+                bool isMonitorValid = (Monitor == "" || Monitor.Equals(s.monitor));
+                bool isLocationValid = (location == "" || location.Equals(s.location));
                 bool isMachineValid = (MachineName == "" || MachineName.Equals(s.machinename));
 
-                if (isMonthValid && isMachineValid)
+                if (isMonthValid && isYearValid && isMachineValid && isLocationValid && isMonitorValid)
                 {
                     s.Visible = true;
                 }
             }
         }
-        public void _addNewData(int id, DateTime date, string machinename)
+        public void _addNewData(int id, DateTime date, string machinename, string monitor, string location)
         {
             SelectionItem si = new SelectionItem(id, date, parent);
             si.TopLevel = false;
             container.Controls.Add(si);
             list.Add(si);
             si.machinename = machinename;
+            si.monitor = monitor;
+            si.location = location;
             si.Show();
         }
 
-
+        public void deselectAllData()
+        {
+            foreach (SelectionItem s in list)
+            {
+                s.hitCheckbox(false);
+            }
+        }
     }
 }
