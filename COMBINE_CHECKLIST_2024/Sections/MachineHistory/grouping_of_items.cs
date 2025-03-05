@@ -1,5 +1,7 @@
 ﻿using COMBINE_CHECKLIST_2024.DateToText;
 using COMBINE_CHECKLIST_2024.Sections.Currugator;
+using Microsoft.SqlServer.Management.Smo;
+using SQL_Connection_support;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -27,6 +29,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistory
         public string location;
 
         public List <Form> group_of_logs = new List<Form>();
+        private SQL_Support sql = new SQL_Support("DESKTOP-HBKPAB1\\SQLEXPRESS", "GOODYEAR_MACHINE_HISTORY");
         public grouping_of_items(DateTime from_dt, DateTime to_dt, string monitor, string machine, string location)
         {
             InitializeComponent();
@@ -45,15 +48,15 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistory
 
         public string getMonitor()
         {
-            return monitored_tb.Text;
+            return sql.FilterQuery(monitored_tb.Text);
         }
         public string getMachineName()
         {
-            return machinename_tb.Text;
+            return sql.FilterQuery(machinename_tb.Text);
         }
         public string getLocation()
         {
-            return location_tb.Text;
+            return sql.FilterQuery(location_tb.Text);
         }
 
         public void hideDelete()
@@ -66,7 +69,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistory
 
             // this.Size
             group_of_logs.Add(item);
-            this.Size = new Size(1375,(group_of_logs.Count*200)+75);
+            this.Size = new Size(1070,(group_of_logs.Count*200)+75);
             //flowlayoutpanel.Size = new Size(1519, ((group_of_logs.Count + 1)* 166));
             //Console.WriteLine(group_of_logs);
             item.TopLevel = false;

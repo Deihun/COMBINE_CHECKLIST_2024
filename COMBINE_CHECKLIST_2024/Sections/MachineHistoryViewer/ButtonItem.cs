@@ -16,7 +16,6 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
     {
         public MachineViewer parent;
         public DataTable ButtonData;
-        SQL_Support ButtonGetData;
         public int groupID;
 
         private Datetotext converttoText = new Datetotext();

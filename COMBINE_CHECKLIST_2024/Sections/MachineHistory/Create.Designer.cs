@@ -39,6 +39,7 @@
             this.location_tb = new System.Windows.Forms.TextBox();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.after_panel = new System.Windows.Forms.Panel();
+            this.add_another_btn = new System.Windows.Forms.Button();
             this.print_btn = new System.Windows.Forms.Button();
             this.saveFile_btn = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
@@ -55,6 +56,7 @@
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.flowLayoutPanel1.Size = new System.Drawing.Size(1353, 637);
             this.flowLayoutPanel1.TabIndex = 0;
+            this.flowLayoutPanel1.WrapContents = false;
             // 
             // additem_btn
             // 
@@ -68,7 +70,7 @@
             // 
             // create_new_history_btn
             // 
-            this.create_new_history_btn.Location = new System.Drawing.Point(1017, 781);
+            this.create_new_history_btn.Location = new System.Drawing.Point(1010, 788);
             this.create_new_history_btn.Name = "create_new_history_btn";
             this.create_new_history_btn.Size = new System.Drawing.Size(348, 68);
             this.create_new_history_btn.TabIndex = 3;
@@ -137,16 +139,27 @@
             // 
             // after_panel
             // 
+            this.after_panel.Controls.Add(this.add_another_btn);
             this.after_panel.Controls.Add(this.print_btn);
             this.after_panel.Controls.Add(this.saveFile_btn);
-            this.after_panel.Location = new System.Drawing.Point(810, 781);
+            this.after_panel.Location = new System.Drawing.Point(862, 781);
             this.after_panel.Name = "after_panel";
-            this.after_panel.Size = new System.Drawing.Size(555, 78);
+            this.after_panel.Size = new System.Drawing.Size(503, 78);
             this.after_panel.TabIndex = 10;
+            // 
+            // add_another_btn
+            // 
+            this.add_another_btn.Location = new System.Drawing.Point(3, 15);
+            this.add_another_btn.Name = "add_another_btn";
+            this.add_another_btn.Size = new System.Drawing.Size(192, 53);
+            this.add_another_btn.TabIndex = 12;
+            this.add_another_btn.Text = "Create Another";
+            this.add_another_btn.UseVisualStyleBackColor = true;
+            this.add_another_btn.Click += new System.EventHandler(this.add_another_btn_Click);
             // 
             // print_btn
             // 
-            this.print_btn.Location = new System.Drawing.Point(405, 7);
+            this.print_btn.Location = new System.Drawing.Point(351, 13);
             this.print_btn.Name = "print_btn";
             this.print_btn.Size = new System.Drawing.Size(144, 55);
             this.print_btn.TabIndex = 1;
@@ -156,7 +169,7 @@
             // 
             // saveFile_btn
             // 
-            this.saveFile_btn.Location = new System.Drawing.Point(255, 7);
+            this.saveFile_btn.Location = new System.Drawing.Point(201, 13);
             this.saveFile_btn.Name = "saveFile_btn";
             this.saveFile_btn.Size = new System.Drawing.Size(144, 55);
             this.saveFile_btn.TabIndex = 0;
@@ -218,5 +231,6 @@
         private System.Windows.Forms.Button saveFile_btn;
         private System.Windows.Forms.Button print_btn;
         private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Button add_another_btn;
     }
 }

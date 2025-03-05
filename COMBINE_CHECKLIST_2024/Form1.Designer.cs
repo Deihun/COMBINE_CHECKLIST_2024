@@ -249,10 +249,9 @@
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Image = global::COMBINE_CHECKLIST_2024.Properties.Resources.header;
-            this.pictureBox1.ImageLocation = "C:\\Users\\POM\\source\\repos\\COMBINE_CHECKLIST_2024\\COMBINE_CHECKLIST_2024\\Addons\\he" +
-    "ader.png";
-            this.pictureBox1.Location = new System.Drawing.Point(325, 319);
+            this.pictureBox1.BackgroundImage = global::COMBINE_CHECKLIST_2024.Properties.Resources.header;
+            this.pictureBox1.ImageLocation = "";
+            this.pictureBox1.Location = new System.Drawing.Point(130, 224);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(996, 299);
             this.pictureBox1.TabIndex = 0;

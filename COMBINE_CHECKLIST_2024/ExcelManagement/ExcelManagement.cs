@@ -19,6 +19,7 @@ using iTextSharp.text.pdf;
 using iTextSharp.text;
 using _pfont = System.Drawing.Font;
 using System.util;
+using DocumentFormat.OpenXml.Math;
 
 namespace COMBINE_CHECKLIST_2024.ExcelManagement
 {
@@ -146,7 +147,6 @@ namespace COMBINE_CHECKLIST_2024.ExcelManagement
         {
             string debugString = "\n\t//EXECUTING GENERATE_AN_EXCEL - METHOD\n";
             SQL_Support sql = new SQL_Support("DESKTOP-HBKPAB1\\SQLEXPRESS", "GOODYEAR_MACHINE_HISTORY");
-
 
             List<DataTable> _grouptable_list = new List<DataTable>();
             List<int> _storedGroupID = new List<int>();
@@ -319,12 +319,15 @@ namespace COMBINE_CHECKLIST_2024.ExcelManagement
 
 
 
-            int currentRow = 5;
+            int currentRow = 6;
+            int startingOutline = currentRow;
+            int endOutline = currentRow;
 
             if (groupHighlight.Rows.Count > 0)
             {
                 foreach (DataRow row in groupHighlight.Rows)
                 {
+                    startingOutline = currentRow;
                     DateTime from = (DateTime)row["From_Date"];
                     DateTime to = (DateTime)row["to_Date"];
                     int rowStart_boarder = currentRow;
@@ -333,9 +336,10 @@ namespace COMBINE_CHECKLIST_2024.ExcelManagement
                     worksheet.Range(range_address).Merge();
                     SetCellData(worksheet, currentRow, 1, row["Machine_Name"].ToString().ToUpper() + " MAINTENANCE MACHINE HISTORY", 14, true, XLColor.Black, XLColor.LightBlue, XLAlignmentHorizontalValues.Center);
                     currentRow++;
+
                     range_address = $"A{currentRow}:B{currentRow}";
-                    worksheet.Range(range_address);
-                    range_address = $"D{currentRow}:E{currentRow}";
+                    worksheet.Range(range_address).Merge();
+                    range_address = $"D{currentRow}:F{currentRow}";
                     worksheet.Range(range_address).Merge();
                     range_address = $"G{currentRow}:H{currentRow}";
                     worksheet.Range(range_address).Merge();
@@ -368,22 +372,95 @@ namespace COMBINE_CHECKLIST_2024.ExcelManagement
                         DateTime _date = (DateTime)dataCell["datemark"];
                         string date_string = _date.Day.ToString() + "-" + convert.getMonthAsShortText(_date);
 
+
+                        List<object> NumChar = new List<object>
+                        {
+                            date_string,
+                            status ? "Defective" : "Satisfactory",
+                            convert.getTime12HoursPreset(_date),
+                            dataCell["defect_part"].ToString(),
+                            dataCell["defec_desc"].ToString(),
+                            dataCell["checked_by"].ToString(),
+                            dataCell["suggested_replacement_repair"].ToString(),
+                            dataCell["remark_analysis"].ToString()
+                        };
+                        int numberOfAddedCell = getTheHighestCount(NumChar);
+                        if (numberOfAddedCell > 1)
+                        {
+                            worksheet.Range($"A{currentRow}:A{currentRow + numberOfAddedCell - 1}").Merge();
+                            worksheet.Range($"B{currentRow}:B{currentRow + numberOfAddedCell - 1}").Merge();
+                            worksheet.Range($"C{currentRow}:C{currentRow + numberOfAddedCell - 1}").Merge();
+                            worksheet.Range($"D{currentRow}:D{currentRow + numberOfAddedCell - 1}").Merge();
+                            worksheet.Range($"E{currentRow}:E{currentRow + numberOfAddedCell - 1}").Merge();
+                            worksheet.Range($"F{currentRow}:F{currentRow + numberOfAddedCell - 1}").Merge();
+                            worksheet.Range($"G{currentRow}:G{currentRow + numberOfAddedCell - 1}").Merge();
+                            worksheet.Range($"H{currentRow}:H{currentRow + numberOfAddedCell - 1}").Merge();
+                        }
+
+
                         SetCellData(worksheet, currentRow, 1, date_string, 10, false, XLColor.Black, null);
-                        SetCellData(worksheet, currentRow, 2, status ? "Defective" : "Satisfactory", 10, false, XLColor.Black, null);
-                        SetCellData(worksheet, currentRow, 3, convert.getTime12HoursPreset(_date), 10, false, XLColor.Black, null);
-                        SetCellData(worksheet, currentRow, 4, dataCell["defect_part"].ToString(), 8, false, XLColor.Black, null);
-                        SetCellData(worksheet, currentRow, 5, dataCell["defec_desc"].ToString(), 8, false, XLColor.Black, null);
-                        SetCellData(worksheet, currentRow, 6, dataCell["checked_by"].ToString(), 10, false, XLColor.Black, null);
-                        SetCellData(worksheet, currentRow, 7, dataCell["suggested_replacement_repair"].ToString(), 10, false, XLColor.Black, null);
-                        SetCellData(worksheet, currentRow, 8, dataCell["remark_analysis"].ToString(), 10, false, XLColor.Black, null);
-                        currentRow++;
+                        SetCellData(worksheet, currentRow, 2, status ? "Defective" : "Satisfactory", 10, false, XLColor.Black, null, XLAlignmentHorizontalValues.Center, XLAlignmentVerticalValues.Center);
+                        SetCellData(worksheet, currentRow, 3, convert.getTime12HoursPreset(_date), 10, false, XLColor.Black, null, XLAlignmentHorizontalValues.Center, XLAlignmentVerticalValues.Center);
+                        SetCellData(worksheet, currentRow, 4, dataCell["defect_part"].ToString(), 8, false, XLColor.Black, null, XLAlignmentHorizontalValues.Center, XLAlignmentVerticalValues.Center);
+                        SetCellData(worksheet, currentRow, 5, dataCell["defec_desc"].ToString(), 8, false, XLColor.Black, null, XLAlignmentHorizontalValues.Center, XLAlignmentVerticalValues.Center);
+                        SetCellData(worksheet, currentRow, 6, dataCell["checked_by"].ToString(), 10, false, XLColor.Black, null, XLAlignmentHorizontalValues.Center, XLAlignmentVerticalValues.Center);
+                        SetCellData(worksheet, currentRow, 7, dataCell["suggested_replacement_repair"].ToString(), 10, false, XLColor.Black, null, XLAlignmentHorizontalValues.Center, XLAlignmentVerticalValues.Center);
+                        SetCellData(worksheet, currentRow, 8, dataCell["remark_analysis"].ToString(), 10, false, XLColor.Black, null, XLAlignmentHorizontalValues.Center, XLAlignmentVerticalValues.Center);
+                        if (numberOfAddedCell > 1)
+                        {
+                            currentRow += numberOfAddedCell - 1;
+                        }
+
+                        if (dataCell != firstInsertion.Rows[firstInsertion.Rows.Count - 1])
+                        {
+                            currentRow++;
+                        }
+
+
+                        }
+                    endOutline = currentRow;
+                    try
+                    {
+                        var range = worksheet.Range($"A{startingOutline}:H{endOutline}");
+                        range.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+                        range.Style.Border.InsideBorderColor = XLColor.Black;
+                        range.Style.Border.OutsideBorder = XLBorderStyleValues.Medium;
+                        range.Style.Border.OutsideBorderColor = XLColor.Black;
                     }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"error: {ex.Message}");
+                    }
+
+                    currentRow += 2;
                     dt.RemoveAt(0);
                 }
             }
 
             return workbook;
         }
+
+        public int getTheHighestCount(List<object> list)
+        {
+            int value = 0;
+            foreach (object o in list)
+            {
+                if (o is int num)
+                {
+                    value = num.ToString().Length > value ? num.ToString().Length : value;
+                }else if(o is string letter)
+                {
+                    value = letter.Length > value ? letter.Length : value;
+                }else if(o is DateTime dt)
+                {
+                    value = dt.Date.ToString().Length > value ? dt.Date.ToString().Length : value;
+                }
+            }
+            int result = Convert.ToInt32(value/14);
+            result = result < 1 ? 1 : result;
+            return result;
+        }
+
 
         public XLWorkbook GenerateBulkExcelWorkbook(Dictionary<List<DataTable>,DataTable> bulk_group)
         {
@@ -423,13 +500,14 @@ namespace COMBINE_CHECKLIST_2024.ExcelManagement
             header_cell.Style.Font.FontSize = 16;
 
 
-            int currentRow = 5;
-
+            int currentRow = 6;
+            int startingOutline = currentRow;
+            int endOutline = currentRow;
 
             foreach (var entry in bulk_group)
             {
                 List<DataTable> dataPerSec = entry.Key;
-
+                startingOutline = currentRow;
                 if (entry.Value.Rows.Count > 0)
                 {
                     foreach (DataRow row in entry.Value.Rows)
@@ -442,9 +520,10 @@ namespace COMBINE_CHECKLIST_2024.ExcelManagement
                         worksheet.Range(range_address).Merge();
                         SetCellData(worksheet, currentRow, 1, row["Machine_Name"].ToString().ToUpper() + " MAINTENANCE MACHINE HISTORY", 14, true, XLColor.Black, XLColor.LightBlue, XLAlignmentHorizontalValues.Center);
                         currentRow++;
+
                         range_address = $"A{currentRow}:B{currentRow}";
-                        worksheet.Range(range_address);
-                        range_address = $"D{currentRow}:E{currentRow}";
+                        worksheet.Range(range_address).Merge();
+                        range_address = $"D{currentRow}:F{currentRow}";
                         worksheet.Range(range_address).Merge();
                         range_address = $"G{currentRow}:H{currentRow}";
                         worksheet.Range(range_address).Merge();
@@ -477,16 +556,61 @@ namespace COMBINE_CHECKLIST_2024.ExcelManagement
                             DateTime _date = (DateTime)dataCell["datemark"];
                             string date_string = _date.Day.ToString() + "-" + convert.getMonthAsShortText(_date);
 
+                            List<object> NumChar = new List<object>
+                        {
+                            date_string,
+                            status ? "Defective" : "Satisfactory",
+                            convert.getTime12HoursPreset(_date),
+                            dataCell["defect_part"].ToString(),
+                            dataCell["defec_desc"].ToString(),
+                            dataCell["checked_by"].ToString(),
+                            dataCell["suggested_replacement_repair"].ToString(),
+                            dataCell["remark_analysis"].ToString()
+                        };
+                            int numberOfAddedCell = getTheHighestCount(NumChar);
+                            if (numberOfAddedCell > 1)
+                            {
+                                worksheet.Range($"A{currentRow}:A{currentRow + numberOfAddedCell - 1}").Merge();
+                                worksheet.Range($"B{currentRow}:B{currentRow + numberOfAddedCell - 1}").Merge();
+                                worksheet.Range($"C{currentRow}:C{currentRow + numberOfAddedCell - 1}").Merge();
+                                worksheet.Range($"D{currentRow}:D{currentRow + numberOfAddedCell - 1}").Merge();
+                                worksheet.Range($"E{currentRow}:E{currentRow + numberOfAddedCell - 1}").Merge();
+                                worksheet.Range($"F{currentRow}:F{currentRow + numberOfAddedCell - 1}").Merge();
+                                worksheet.Range($"G{currentRow}:G{currentRow + numberOfAddedCell - 1}").Merge();
+                                worksheet.Range($"H{currentRow}:H{currentRow + numberOfAddedCell - 1}").Merge();
+                            }
+
                             SetCellData(worksheet, currentRow, 1, date_string, 10, false, XLColor.Black, null);
-                            SetCellData(worksheet, currentRow, 2, status ? "Defective" : "Satisfactory", 10, false, XLColor.Black, null);
-                            SetCellData(worksheet, currentRow, 3, convert.getTime12HoursPreset(_date), 10, false, XLColor.Black, null);
-                            SetCellData(worksheet, currentRow, 4, dataCell["defect_part"].ToString(), 8, false, XLColor.Black, null);
-                            SetCellData(worksheet, currentRow, 5, dataCell["defec_desc"].ToString(), 8, false, XLColor.Black, null);
-                            SetCellData(worksheet, currentRow, 6, dataCell["checked_by"].ToString(), 10, false, XLColor.Black, null);
-                            SetCellData(worksheet, currentRow, 7, dataCell["suggested_replacement_repair"].ToString(), 10, false, XLColor.Black, null);
-                            SetCellData(worksheet, currentRow, 8, dataCell["remark_analysis"].ToString(), 10, false, XLColor.Black, null);
-                            currentRow++;
+                            SetCellData(worksheet, currentRow, 2, status ? "Defective" : "Satisfactory", 10, false, XLColor.Black, null, XLAlignmentHorizontalValues.Center, XLAlignmentVerticalValues.Center);
+                            SetCellData(worksheet, currentRow, 3, convert.getTime12HoursPreset(_date), 10, false, XLColor.Black, null, XLAlignmentHorizontalValues.Center, XLAlignmentVerticalValues.Center);
+                            SetCellData(worksheet, currentRow, 4, dataCell["defect_part"].ToString(), 8, false, XLColor.Black, null, XLAlignmentHorizontalValues.Center, XLAlignmentVerticalValues.Center);
+                            SetCellData(worksheet, currentRow, 5, dataCell["defec_desc"].ToString(), 8, false, XLColor.Black, null, XLAlignmentHorizontalValues.Center, XLAlignmentVerticalValues.Center);
+                            SetCellData(worksheet, currentRow, 6, dataCell["checked_by"].ToString(), 10, false, XLColor.Black, null, XLAlignmentHorizontalValues.Center, XLAlignmentVerticalValues.Center);
+                            SetCellData(worksheet, currentRow, 7, dataCell["suggested_replacement_repair"].ToString(), 10, false, XLColor.Black, null, XLAlignmentHorizontalValues.Center, XLAlignmentVerticalValues.Center);
+                            SetCellData(worksheet, currentRow, 8, dataCell["remark_analysis"].ToString(), 10, false, XLColor.Black, null, XLAlignmentHorizontalValues.Center, XLAlignmentVerticalValues.Center);
+                            if (numberOfAddedCell > 1)
+                            {
+                                currentRow += numberOfAddedCell - 1;
+                            }
+                            if (dataCell != firstInsertion.Rows[firstInsertion.Rows.Count - 1])
+                            {
+                                currentRow++;
+                            }
                         }
+                        endOutline = currentRow;
+                        try
+                        {
+                            var range = worksheet.Range($"A{startingOutline}:H{endOutline}");
+                            range.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+                            range.Style.Border.InsideBorderColor = XLColor.Black;
+                            range.Style.Border.OutsideBorder = XLBorderStyleValues.Medium;
+                            range.Style.Border.OutsideBorderColor = XLColor.Black;
+                        } catch(Exception ex)
+                        {
+                            MessageBox.Show($"error: {ex.Message}");
+                        }
+
+                        currentRow+= 2;
                         dataPerSec.RemoveAt(0);
                     }
                 }
@@ -543,9 +667,15 @@ namespace COMBINE_CHECKLIST_2024.ExcelManagement
         {
             string filePath = file_path == null ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "UsersData.xlsx") : file_path;
             CloseSpecificExcelOrWpsFile(filePath);
-            workbook.SaveAs(filePath);
-
-            MessageBox.Show($"Excel file saved at: {filePath}");
+            try
+            {
+                workbook.SaveAs(filePath);
+                MessageBox.Show($"Excel file saved at: {filePath}");
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show($"Error: {ex.Message}. If you are overwriting a file, please close the specific overwritten file first.");
+            }
             if (auto_open)
             {
                 Process openProcess = new Process();
@@ -554,20 +684,18 @@ namespace COMBINE_CHECKLIST_2024.ExcelManagement
             }
         }
 
-        private int SetCellData(IXLWorksheet worksheet, int row, int col, string value, double fontSize = 12, bool isBold = false, XLColor fontColor = default, XLColor backgroundColor = default, XLAlignmentHorizontalValues alignment = XLAlignmentHorizontalValues.Left)
+        private int SetCellData(IXLWorksheet worksheet, int row, int col, string value, double fontSize = 12, bool isBold = false, XLColor fontColor = default, XLColor backgroundColor = default, XLAlignmentHorizontalValues alignment = XLAlignmentHorizontalValues.Left, XLAlignmentVerticalValues alignmentY = XLAlignmentVerticalValues.Justify)
         {
             var cell = worksheet.Cell(row, col);
-
             cell.Style.Font.FontSize = fontSize;
             cell.Style.Font.Bold = isBold;
             cell.Value = value;
-
+            cell.Style.Alignment.Vertical = alignmentY;
             if (fontColor != default)
                 cell.Style.Font.FontColor = fontColor;
-
             if (backgroundColor != default)
                 cell.Style.Fill.BackgroundColor = backgroundColor;
-
+            cell.Style.Alignment.WrapText = true;
             cell.Style.Alignment.Horizontal = alignment;
             return row + 2;
         }
@@ -576,20 +704,16 @@ namespace COMBINE_CHECKLIST_2024.ExcelManagement
         {
             try
             {
-                // Check if the file is open by trying to access it exclusively
+              
                 using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
                 {
-                    // File is not open by any other process, so just close the stream
                     Console.WriteLine("File is not open. No need to close.");
                 }
             }
             catch (IOException)
             {
-                // File is locked, so we try to close it by finding the process using it
                 CloseProcessUsingFile(filePath);
             }
-
-            // Ensure WPS files are also handled
             CloseWpsFile(filePath);
         }
 

@@ -66,20 +66,25 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
                 DateTime target_date = s.target_date;
                 int selectedMonth = convertdate.getMonth(month_cb.Text);
 
-
+                
 
                 bool isMonthValid = (month_cb.Text == "" || selectedMonth == target_date.Month);
                 bool isYearValid = (year_cb.Text == "" || target_date.Year == Convert.ToInt32(year_cb.Text));
-                bool isMonitorValid = (month_cb.Text == "" || month_cb.Text.Equals(s.monitor));
+                bool isMonitorValid = (monitor_cb.Text == "" || month_cb.Text.Equals(s.monitor));
                 bool isLocationValid = (location_cb.Text == "" || location_cb.Text.Equals(s.location));
                 bool isMachineValid = (machine_cb.Text == "" || machine_cb.Text.Equals(s.machinename));
-
+                Console.WriteLine($"DEBUGG:// {isYearValid} {isMachineValid} {isLocationValid} {isMonitorValid}");
                 if (isMonthValid && isYearValid && isMachineValid && isLocationValid && isMonitorValid)
                 {
                     s.hitCheckbox(true);
                 }
             }
             Dispose();
+        }
+
+        private void month_cb_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

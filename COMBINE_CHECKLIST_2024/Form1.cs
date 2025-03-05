@@ -28,11 +28,6 @@ namespace COMBINE_CHECKLIST_2024
         private Setting settings;
         private History history;
 
-        private float scaleX;
-        private float scaleY;
-        private float originalWidth = 1920f;
-        private float originalHeight = 1080f;
-
 
         private static Panel viewer;
         SQL_Support sql;

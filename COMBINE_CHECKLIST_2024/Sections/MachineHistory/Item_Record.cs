@@ -67,17 +67,17 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
 
         public string get_defectiveparts()
         {
-            return defective_tb.Text.Equals(string.Empty)? "N/A" : defective_tb.Text;
+            return sql.FilterQuery(defective_tb.Text.Equals(string.Empty)? "N/A" : defective_tb.Text);
         }
 
         public string get_defectiveDescription()
         {
-            return defective_description_rtb.Text.Equals(string.Empty)? "N/A" : defective_description_rtb.Text;
+            return sql.FilterQuery(defective_description_rtb.Text.Equals(string.Empty) ? "N/A" : defective_description_rtb.Text);
         }
 
         public string get_suggestion()
         {
-            return suggestion_rtb.Text.Equals(string.Empty) ? "N/A" : suggestion_rtb.Text;
+            return sql.FilterQuery(suggestion_rtb.Text.Equals(string.Empty) ? "N/A" : suggestion_rtb.Text);
         }
 
         public void set_time()
@@ -135,7 +135,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
         }
         public string get_remarks()
         {
-            return remarks_rtb.Text.Equals(string.Empty) ? "N/A" : remarks_rtb.Text;
+            return sql.FilterQuery(remarks_rtb.Text.Equals(string.Empty) ? "N/A" : remarks_rtb.Text);
         }
 
         public int get_overallAnalysis()
@@ -145,7 +145,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
 
         public string get_checkby()
         {
-            return checkby_textfield.Text.Equals(string.Empty) ? "N/A" : checkby_textfield.Text;
+            return sql.FilterQuery(checkby_textfield.Text.Equals(string.Empty) ? "N/A" : checkby_textfield.Text);
         }
         private string convert_monthText(DateTime month)
         {

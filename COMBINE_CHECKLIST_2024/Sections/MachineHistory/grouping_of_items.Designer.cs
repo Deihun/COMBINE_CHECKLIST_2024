@@ -46,15 +46,16 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.flowlayoutpanel.AutoScroll = true;
             this.flowlayoutpanel.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.flowlayoutpanel.Location = new System.Drawing.Point(-2, 46);
+            this.flowlayoutpanel.Location = new System.Drawing.Point(6, 46);
+            this.flowlayoutpanel.Margin = new System.Windows.Forms.Padding(0);
             this.flowlayoutpanel.Name = "flowlayoutpanel";
-            this.flowlayoutpanel.Size = new System.Drawing.Size(1278, 162);
+            this.flowlayoutpanel.Size = new System.Drawing.Size(1054, 162);
             this.flowlayoutpanel.TabIndex = 0;
             this.flowlayoutpanel.WrapContents = false;
             // 
             // deletegroup_btn
             // 
-            this.deletegroup_btn.Location = new System.Drawing.Point(1282, 12);
+            this.deletegroup_btn.Location = new System.Drawing.Point(982, 5);
             this.deletegroup_btn.Name = "deletegroup_btn";
             this.deletegroup_btn.Size = new System.Drawing.Size(75, 36);
             this.deletegroup_btn.TabIndex = 1;
@@ -113,7 +114,7 @@
             // changeable_date
             // 
             this.changeable_date.AutoSize = true;
-            this.changeable_date.Location = new System.Drawing.Point(1183, 24);
+            this.changeable_date.Location = new System.Drawing.Point(547, 5);
             this.changeable_date.Name = "changeable_date";
             this.changeable_date.Size = new System.Drawing.Size(48, 13);
             this.changeable_date.TabIndex = 0;
@@ -123,7 +124,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1363, 220);
+            this.ClientSize = new System.Drawing.Size(1066, 220);
             this.Controls.Add(this.changeable_date);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.monitored_tb);

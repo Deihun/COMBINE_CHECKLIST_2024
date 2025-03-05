@@ -8,7 +8,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Management;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace SQL_Connection_support
 {
@@ -340,49 +342,55 @@ namespace SQL_Connection_support
             }
         }
 
-        public int InsertDataAndGetId(string tableName, Dictionary<string, object> data)
+        public int InsertDataAndGetId(string tableName, Dictionary<string, object> data, string idColumn = "id")
         {
             try
             {
-                using (SqlConnection conn = new SqlConnection(_connection_server))
+                string values = string.Join(", ", data.Values.Select(v =>
+                    v is string || v is DateTime ? $"'{v}'" : v.ToString()));
+
+                string query = $"INSERT INTO {tableName} ({string.Join(", ", data.Keys)}) " +
+                               $"VALUES ({values}); " +
+                               $"SELECT {idColumn} FROM {tableName} WHERE {idColumn} = SCOPE_IDENTITY();";
+
+                DataTable dt = ExecuteQuery(query);
+                int id = Convert.ToInt32(dt.Rows[0][0]);
+                if (dt.Rows.Count > 0)
                 {
-                    conn.Open();
-
-                    string columns = string.Join(", ", data.Keys);
-                    string parameters = string.Join(", ", data.Keys.Select(k => "@" + k));
-                    string query = $"INSERT INTO {tableName} ({columns}) VALUES ({parameters}); SELECT SCOPE_IDENTITY();";
-
-                    if (_isDebugShow) // Debugging Enabled
-                    {
-                        Console.WriteLine($"Executing Query: {query}");
-                        foreach (var item in data)
-                        {
-                            Console.WriteLine($"Param {item.Key}: {item.Value}");
-                        }
-                    }
-
-                    using (SqlCommand cmd = new SqlCommand(query, conn))
-                    {
-                        foreach (var item in data)
-                        {
-                            cmd.Parameters.AddWithValue("@" + item.Key, item.Value ?? DBNull.Value);
-                        }
-
-                        object result = cmd.ExecuteScalar();
-                        int insertedId = (result != null && result != DBNull.Value) ? Convert.ToInt32(result) : 0;
-
-                        if (_isDebugShow) Console.WriteLine($"Inserted ID: {insertedId}");
-
-                        return insertedId;
-                    }
+                    return id; // Get the first row, first column
+                }
+                else
+                {
+                    Console.WriteLine("No data returned.");
+                    return -1; // Indicate failure
                 }
             }
             catch (Exception ex)
             {
-                if (_isDebugShow) Console.WriteLine($"SQL Error: {ex.Message}");
-                return -1; // Return -1 to indicate an error
+                Console.WriteLine($"SQL Error: {ex.Message}");
+                return -1; // Indicate failure
             }
         }
+
+        public string FilterQuery(string input)
+        {
+            if (string.IsNullOrEmpty(input))
+                return string.Empty;
+
+            // Escape single quotes by doubling them (' becomes '')
+            string filtered = input.Replace("'", "''");
+
+            // Remove dangerous SQL keywords (basic protection)
+            string[] blacklist = { "DROP", "DELETE", "INSERT", "UPDATE", "--", ";", "xp_cmdshell", "EXEC", "UNION", "ALTER" };
+
+            foreach (string word in blacklist)
+            {
+                filtered = Regex.Replace(filtered, @"\b" + word + @"\b", "", RegexOptions.IgnoreCase);
+            }
+
+            return filtered.Trim();
+        }
+
     }
 }
 

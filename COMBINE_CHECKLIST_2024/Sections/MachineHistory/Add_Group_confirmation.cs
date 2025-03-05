@@ -203,7 +203,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistory
                     to_dtpicker.Value = to_dtpicker.MinDate;
                 }
             }
-            catch(Exception ex)
+            catch
             {
 
             }
@@ -223,7 +223,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistory
                     to_dtpicker.Value = to_dtpicker.MinDate;
                 }else to_dtpicker.Value = from_dtpicker.Value; 
             }
-            catch (Exception ex)
+            catch 
             {
                 to_dtpicker.Value = from_dtpicker.Value;
             }
