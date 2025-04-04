@@ -6,6 +6,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 namespace SQL_Connection_support
 {
     public class SQL_Support
@@ -29,14 +30,18 @@ namespace SQL_Connection_support
         {
             try
             {
+
+                string sqlInstance = GetSQLServerInstance(); // Store once
+
                 if (!string.IsNullOrEmpty(user) && !string.IsNullOrEmpty(password))
                 {
-                    _connection_server = $"Server={GetSQLServerInstance()};Database={database};User Id={user};Password={password};";
+                    _connection_server = $"Server={sqlInstance};Database={database};User Id={user};Password={password};";
                 }
                 else
                 {
-                    _connection_server = $"Server={GetSQLServerInstance()};Database={database};Integrated Security=True;";
+                    _connection_server = $"Server={sqlInstance};Database={database};Integrated Security=True;";
                 }
+
             }
             catch (Exception e)
             {

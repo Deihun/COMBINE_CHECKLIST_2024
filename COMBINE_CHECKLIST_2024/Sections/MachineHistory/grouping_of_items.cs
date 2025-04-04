@@ -16,7 +16,7 @@ using System.Windows.Forms;
 
 namespace COMBINE_CHECKLIST_2024.Sections.MachineHistory
 {
-    public partial class grouping_of_items: Form
+    public partial class grouping_of_items : Form
     {
         private Datetotext date = new Datetotext();
         public DateTime _from_dt { get; set; }
@@ -39,7 +39,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistory
         private int max_expand_state = 0;
         private bool is_expanded = true;
 
-        public List <Form> group_of_logs = new List<Form>();
+        public List<Form> group_of_logs = new List<Form>();
         public FlowLayoutPanel items_in_flp;
         private SQL_Support sql = new SQL_Support("DESKTOP-HBKPAB1\\SQLEXPRESS", "GOODYEAR_MACHINE_HISTORY");
         public grouping_of_items(DateTime from_dt, DateTime to_dt, string monitor, string machine, string location)
@@ -53,7 +53,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistory
             this.location = location;
             this.items_in_flp = flowlayoutpanel;
 
-            
+
             monitored_tb.Text = monitor;
             machinename_tb.Text = machine;
             location_tb.Text = location;
@@ -116,7 +116,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistory
 
         public void compare_dates()
         {
-            List<DateTime> ranges = new List< DateTime>();
+            List<DateTime> ranges = new List<DateTime>();
             foreach (Item_Record item in items_in_flp.Controls)
             {
                 ranges.Add(item.my_targeted_date);
@@ -140,17 +140,16 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistory
             }
         }
 
-        
+
 
         private void deletegroup_btn_Click(object sender, EventArgs e)
         {
-            this.group_of_logs.Clear();
-            this.parent.deleteGroup(this);
             this.Dispose();
         }
 
         private void collapse_btn_Click(object sender, EventArgs e)
         {
+            if (items_in_flp.Controls.Count < 1) return;
             is_expanded = !is_expanded;
             change_expand_state();
         }
@@ -252,6 +251,20 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistory
                     }
                 }
             }
+        }
+
+        private void add_new_item_Click(object sender, EventArgs e)
+        {
+            
+            Select_A_Date select_A_Date = new Select_A_Date(add_a_record_item_with_setup_dt);
+            select_A_Date.ShowDialog();
+        }
+
+        private void add_a_record_item_with_setup_dt(DateTime dt)
+        {
+            Item_Record item_Record = new Item_Record();
+            item_Record.my_targeted_date = dt;
+            add_item(item_Record);
         }
     }
 }

@@ -95,6 +95,7 @@
             this.createDatabase.TabIndex = 4;
             this.createDatabase.Text = "CREATE DATABASE";
             this.createDatabase.UseVisualStyleBackColor = true;
+            this.createDatabase.Click += new System.EventHandler(this.createDatabase_Click);
             // 
             // InitialDiagnostic
             // 

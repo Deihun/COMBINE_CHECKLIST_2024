@@ -64,7 +64,8 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
             if ((Control.ModifierKeys & Keys.Control) == Keys.Control)
             {
                 this.trigger_button();
-                grouping_of_items parent = this.Parent.Parent.Parent as grouping_of_items;
+                grouping_of_items parent = this.Parent?.Parent?.Parent as grouping_of_items;
+                if (parent is null) return;
                 foreach (Control control in parent.items_in_flp.Controls)
                 {
                     if (control is Item_Record item)
@@ -222,233 +223,301 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
 
         private void defective_description_rtb_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Control && e.KeyCode == Keys.Q)
+            try
             {
-                grouping_of_items parent = this.Parent.Parent.Parent as grouping_of_items;
-                foreach(Control control in parent.items_in_flp.Controls)
+                if (e.Control && e.KeyCode == Keys.Q)
                 {
-                    if (control is Item_Record item)
+                    grouping_of_items parent = this.Parent?.Parent?.Parent as grouping_of_items;
+                    if (parent is null) return;
+                    foreach (Control control in parent.items_in_flp.Controls)
                     {
-                        item._defectivedescription_richtextbox.Text = this.defective_description_rtb.Text;
+                        if (control is Item_Record item)
+                        {
+                            item._defectivedescription_richtextbox.Text = this.defective_description_rtb.Text;
+                        }
+                    }
+                }
+                else if (e.Control && e.Shift && e.KeyCode == Keys.V)
+                {
+                    grouping_of_items parent = this.Parent?.Parent?.Parent as grouping_of_items;
+                    if (parent is null) return;
+                    foreach (Control control in parent.items_in_flp.Controls)
+                    {
+                        if (control is Item_Record item)
+                        {
+                            item._defectivedescription_richtextbox.Text = Clipboard.GetText();
+                        }
                     }
                 }
             }
-            else if (e.Control && e.Shift && e.KeyCode == Keys.V)
-            {
-                grouping_of_items parent = this.Parent.Parent.Parent as grouping_of_items;
-                foreach (Control control in parent.items_in_flp.Controls)
-                {
-                    if (control is Item_Record item)
-                    {
-                        item._defectivedescription_richtextbox.Text = Clipboard.GetText();
-                    }
-                }
-            }
+            catch{}
         }
 
 
 
         private void checkby_textfield_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Control && e.KeyCode == Keys.Q)
+            try
             {
-                grouping_of_items parent = this.Parent.Parent.Parent as grouping_of_items;
-                foreach (Control control in parent.items_in_flp.Controls)
+                if (e.Control && e.KeyCode == Keys.Q)
                 {
-                    if (control is Item_Record item)
+                    grouping_of_items parent = this.Parent?.Parent?.Parent as grouping_of_items;
+                    if (parent is null) return;
+                    foreach (Control control in parent.items_in_flp.Controls)
                     {
-                        item._checkby_textbox.Text = this._checkby_textbox.Text;
+                        if (control is Item_Record item)
+                        {
+                            item._checkby_textbox.Text = this._checkby_textbox.Text;
+                        }
+                    }
+                }
+                else if (e.Control && e.Shift && e.KeyCode == Keys.V)
+                {
+                    grouping_of_items parent = this.Parent?.Parent?.Parent as grouping_of_items;
+                    foreach (Control control in parent.items_in_flp.Controls)
+                    {
+                        if (control is Item_Record item)
+                        {
+                            item._checkby_textbox.Text = Clipboard.GetText();
+                        }
                     }
                 }
             }
-            else if (e.Control && e.Shift && e.KeyCode == Keys.V)
-            {
-                grouping_of_items parent = this.Parent.Parent.Parent as grouping_of_items;
-                foreach (Control control in parent.items_in_flp.Controls)
-                {
-                    if (control is Item_Record item)
-                    {
-                        item._checkby_textbox.Text = Clipboard.GetText();
-                    }
-                }
-            }
+            catch { }
         }
 
 
 
         private void defective_tb_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Control && e.KeyCode == Keys.Q)
+            try
             {
-                grouping_of_items parent = this.Parent.Parent.Parent as grouping_of_items;
-                foreach (Control control in parent.items_in_flp.Controls)
+                if (e.Control && e.KeyCode == Keys.Q)
                 {
-                    if (control is Item_Record item)
+                    grouping_of_items parent = this.Parent?.Parent?.Parent as grouping_of_items;
+                    if (parent is null) return;
+                    foreach (Control control in parent.items_in_flp.Controls)
                     {
-                        item._defectivepart_textbox.Text = this._defectivepart_textbox.Text;
+                        if (control is Item_Record item)
+                        {
+                            item._defectivepart_textbox.Text = this._defectivepart_textbox.Text;
+                        }
+                    }
+                }
+                else if (e.Control && e.Shift && e.KeyCode == Keys.V)
+                {
+                    grouping_of_items parent = this.Parent?.Parent?.Parent as grouping_of_items;
+                    foreach (Control control in parent.items_in_flp.Controls)
+                    {
+                        if (control is Item_Record item)
+                        {
+                            item._defectivepart_textbox.Text = Clipboard.GetText();
+                        }
                     }
                 }
             }
-            else if (e.Control && e.Shift && e.KeyCode == Keys.V)
-            {
-                grouping_of_items parent = this.Parent.Parent.Parent as grouping_of_items;
-                foreach (Control control in parent.items_in_flp.Controls)
-                {
-                    if (control is Item_Record item)
-                    {
-                        item._defectivepart_textbox.Text = Clipboard.GetText();
-                    }
-                }
-            }
+            catch { }
         }
 
         private void suggestion_rtb_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Control && e.KeyCode == Keys.Q)
+            try
             {
-                grouping_of_items parent = this.Parent.Parent.Parent as grouping_of_items;
-                foreach (Control control in parent.items_in_flp.Controls)
+                if (e.Control && e.KeyCode == Keys.Q)
                 {
-                    if (control is Item_Record item)
+                    grouping_of_items parent = this.Parent?.Parent?.Parent as grouping_of_items;
+                    if (parent is null) return;
+                    foreach (Control control in parent.items_in_flp.Controls)
                     {
-                        item._suggested_replacement_repair_richtextbox.Text = this._suggested_replacement_repair_richtextbox.Text;
+                        if (control is Item_Record item)
+                        {
+                            item._suggested_replacement_repair_richtextbox.Text = this._suggested_replacement_repair_richtextbox.Text;
+                        }
+                    }
+                }
+                else if (e.Control && e.Shift && e.KeyCode == Keys.V)
+                {
+                    grouping_of_items parent = this.Parent?.Parent?.Parent as grouping_of_items;
+                    foreach (Control control in parent.items_in_flp.Controls)
+                    {
+                        if (control is Item_Record item)
+                        {
+                            item._suggested_replacement_repair_richtextbox.Text = Clipboard.GetText();
+                        }
                     }
                 }
             }
-            else if (e.Control && e.Shift && e.KeyCode == Keys.V)
-            {
-                grouping_of_items parent = this.Parent.Parent.Parent as grouping_of_items;
-                foreach (Control control in parent.items_in_flp.Controls)
-                {
-                    if (control is Item_Record item)
-                    {
-                        item._suggested_replacement_repair_richtextbox.Text = Clipboard.GetText();
-                    }
-                }
-            }
+            catch { }
         }
 
         private void remarks_rtb_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Control && e.KeyCode == Keys.Q)
+            try
             {
-                grouping_of_items parent = this.Parent.Parent.Parent as grouping_of_items;
-                foreach (Control control in parent.items_in_flp.Controls)
+                if (e.Control && e.KeyCode == Keys.Q)
                 {
-                    if (control is Item_Record item)
+                    grouping_of_items parent = this.Parent?.Parent?.Parent as grouping_of_items;
+                    if (parent is null) return;
+                    foreach (Control control in parent.items_in_flp.Controls)
                     {
-                        item._remarks_or_analysis_richtextbox.Text = this._remarks_or_analysis_richtextbox.Text;
+                        if (control is Item_Record item)
+                        {
+                            item._remarks_or_analysis_richtextbox.Text = this._remarks_or_analysis_richtextbox.Text;
+                        }
+                    }
+                }
+                else if (e.Control && e.Shift && e.KeyCode == Keys.V)
+                {
+                    grouping_of_items parent = this.Parent?.Parent?.Parent as grouping_of_items;
+                    foreach (Control control in parent.items_in_flp.Controls)
+                    {
+                        if (control is Item_Record item)
+                        {
+                            item._remarks_or_analysis_richtextbox.Text = Clipboard.GetText();
+                        }
                     }
                 }
             }
-            else if (e.Control && e.Shift && e.KeyCode == Keys.V)
-            {
-                grouping_of_items parent = this.Parent.Parent.Parent as grouping_of_items;
-                foreach (Control control in parent.items_in_flp.Controls)
-                {
-                    if (control is Item_Record item)
-                    {
-                        item._remarks_or_analysis_richtextbox.Text = Clipboard.GetText();
-                    }
-                }
-            }
+            catch { }
         }
 
         private void isdefect_toggle_btn_MouseEnter(object sender, EventArgs e)
         {
+            try
+            {
             List<string> guide = new List<string>()
             {
                 "- Toggle Between Defective and Satisfactory", "CLICK+CTR\nApply changes of the Toggle Value to all other items"
             };
-            grouping_of_items parent = this.Parent.Parent.Parent as grouping_of_items;
+            grouping_of_items parent = this.Parent?.Parent?.Parent as grouping_of_items;
+            if (parent is null) return;
+            if (parent.main_parentcreate is null) return;
             Create main_parent = parent.main_parentcreate;
-            if (main_parent is null) return;
 
             main_parent.set_guide(guide);
+            }
+            catch { }
         }
 
         private void checkby_textfield_MouseEnter(object sender, EventArgs e)
         {
+            try
+            {
             List<string> guide = new List<string>()
             {
                 "- The Person who operates to check the machines", "Leave the field Empty if N/A",
                 "CTR+Q\nApply to all other items within the Group" , "CTR+SHIFT+V\n Apply paste from Clipboard to all items in the group"
             };
-            grouping_of_items parent = this.Parent.Parent.Parent as grouping_of_items;
-            Create main_parent = parent.main_parentcreate;
-            if (main_parent is null) return;
 
-            main_parent.set_guide(guide);
+            grouping_of_items parent = this.Parent?.Parent?.Parent as grouping_of_items;
+            Create main_parent = parent?.main_parentcreate;
+                if (parent is null) return;
+                if (parent.main_parentcreate is null || parent is null) return;
+                main_parent.set_guide(guide);
+            }
+            catch { }
+
         }
 
         private void defective_tb_MouseEnter(object sender, EventArgs e)
         {
+            try
+            {
             List<string> guide = new List<string>()
             {
                 "- The name of part of machine that is Defective","Leave the field Empty if N/A",
                 "CTR+Q\nApply to all other items within the Group", "CTR+SHIFT+V\n Apply paste from Clipboard to all items in the group"
             };
-            grouping_of_items parent = this.Parent.Parent.Parent as grouping_of_items;
+            grouping_of_items parent = this.Parent?.Parent?.Parent as grouping_of_items;
+                if (parent is null) return;
+                if (parent.main_parentcreate is null || parent is null) return;
             Create main_parent = parent.main_parentcreate;
-            if (main_parent is null) return;
 
             main_parent.set_guide(guide);
+            }catch{ }
         }
+
 
         private void defective_description_rtb_MouseEnter(object sender, EventArgs e)
         {
-            List<string> guide = new List<string>()
+            try
+            {
+           List<string> guide = new List<string>()
             {
                 "- Description of whether how or why it happened in that specific Defective Part","Leave the field Empty if N/A",
                 "CTR+Q\nApply to all other items within the Group", "CTR+SHIFT+V\n Apply paste from Clipboard to all items in the group"
             };
-            grouping_of_items parent = this.Parent.Parent.Parent as grouping_of_items;
+            grouping_of_items parent = this.Parent?.Parent?.Parent as grouping_of_items;
+                if (parent is null) return;
+                if (parent.main_parentcreate is null || parent is null) return;
             Create main_parent = parent.main_parentcreate;
-            if (main_parent is null) return;
+            
 
             main_parent.set_guide(guide);
+            }
+            catch { }
+ 
         }
 
         private void suggestion_rtb_MouseEnter(object sender, EventArgs e)
         {
+            try
+            {
             List<string> guide = new List<string>()
             {
                 "- Describes what are the suggested improvements in that particular machine part","Leave the field Empty if N/A",
                 "CTR+Q\nApply to all other items within the Group", "CTR+SHIFT+V\n Apply paste from Clipboard to all items in the group"
             };
-            grouping_of_items parent = this.Parent.Parent.Parent as grouping_of_items;
+            grouping_of_items parent = this.Parent?.Parent?.Parent as grouping_of_items;
+                if (parent is null) return;
+                if (parent.main_parentcreate is null || parent is null) return;
             Create main_parent = parent.main_parentcreate;
-            if (main_parent is null) return;
 
             main_parent.set_guide(guide);
+            }
+            catch { }
+
         }
 
         private void remarks_rtb_MouseEnter(object sender, EventArgs e)
         {
+            try
+            {
             List<string> guide = new List<string>()
             {
                 "- The overall evaluation or explanation","Leave the field Empty if N/A",
                 "CTR+Q\nApply to all other items within the Group", "CTR+SHIFT+V\n Apply paste from Clipboard to all items in the group"
             };
-            grouping_of_items parent = this.Parent.Parent.Parent as grouping_of_items;
+            grouping_of_items parent = this.Parent?.Parent?.Parent as grouping_of_items;
+                if (parent is null) return;
+                if (parent.main_parentcreate is null || parent is null) return;
             Create main_parent = parent.main_parentcreate;
-            if (main_parent is null) return;
+
 
             main_parent.set_guide(guide);
+
+            }
+            catch { }
         }
 
         private void panel1_MouseEnter(object sender, EventArgs e)
         {
+            try
+            {
             List<string> guide = new List<string>()
             {
                 "- Time Duration of when it happen",
                 "Choose between Time-Specified or Time-Interval"
             };
-            grouping_of_items parent = this.Parent.Parent.Parent as grouping_of_items;
+            grouping_of_items parent = this.Parent?.Parent?.Parent as grouping_of_items;
+                if (parent is null) return;
+                if (parent.main_parentcreate is null || parent is null) return;
             Create main_parent = parent.main_parentcreate;
-            if (main_parent is null) return;
 
             main_parent.set_guide(guide);
+            }
+            catch { }
+
         }
     }
 }

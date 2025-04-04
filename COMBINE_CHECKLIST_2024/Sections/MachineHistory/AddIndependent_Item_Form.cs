@@ -41,8 +41,8 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistory
                 $" '{item_record._remarks_or_analysis_richtextbox.Text}', " +
                 $" {item_record.get_overallAnalysis()}, " +
                 $" '{item_record._checkby_textbox.Text}', " +
-                $" '{dateTimePicker1:yyyy-MM-dd HH:mm:ss}', " +
-                $" '{item_record.my_target_time}', " +
+                $" '{dateTimePicker1.Value}', " +
+                $" '{item_record.my_target_time}' " +
                 $");";
             sql.ExecuteQuery(query);
             this.Dispose();

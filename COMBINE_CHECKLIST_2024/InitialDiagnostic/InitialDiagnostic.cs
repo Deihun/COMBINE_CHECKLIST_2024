@@ -9,6 +9,7 @@ using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -106,58 +107,20 @@ namespace COMBINE_CHECKLIST_2024.InitialDiagnostics
             // If the database is missing, attempt to create it
             if (!_CanConnectToDatabase)
             {
-                try
-                {
-                    createDatabase.Show();
-                    CreateDatabase(GetSQLServerInstance(), "GOODYEAR_MACHINE_HISTORY");
+                createDatabase.Show();
+                CreateDatabase(GetSQLServerInstance(), "GOODYEAR_MACHINE_HISTORY");
+                Thread.Sleep(3000);
+                //try { 
+                // Initialize SQL support and create tables
 
-                    // Initialize SQL support and create tables
-                    SQL_Support sql = new SQL_Support(GetSQLServerInstance(), "GOODYEAR_MACHINE_HISTORY");
-                    string query = @"
-                USE GOODYEAR_MACHINE_HISTORY;
-                CREATE TABLE EXECUTION_HISTORY (
-                    id int IDENTITY(1,1),
-                    date_commit DATETIME
-                );
-
-                CREATE TABLE HISTORY_ (
-                    HISTORY_ID int IDENTITY(1,1),
-                    ExecHist_ID int,
-                    Context VARCHAR(MAX),
-                    Date_Log DATETIME
-                );
-
-                CREATE TABLE GROUP_TABLE (
-                    GroupID int IDENTITY(1,1),
-                    From_Date DATETIME,
-                    To_Date DATETIME,
-                    Monitored_By VARCHAR(MAX),
-                    Machine_Name VARCHAR(MAX),
-                    Location VARCHAR(MAX),
-                    historylog_id int
-                );
-
-                CREATE TABLE LOG_MACHINETABLE (
-                    ID int IDENTITY(1,1),
-                    groupID int,
-                    defect_part VARCHAR(MAX),
-                    defec_desc VARCHAR(MAX),
-                    suggested_replacement_repair VARCHAR(MAX),
-                    remark_analysis VARCHAR(MAX),
-                    overall_status BIT,
-                    checked_by VARCHAR(MAX),
-                    datemark VARCHAR(MAX)
-                );";
-
-                    sql.ExecuteQuery(query);
 
                     exit.Text = "RESTART";
                     CanRestart = true;
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("❌ Database creation failed: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+                //}
+                //catch (Exception ex)
+                //{
+                //    MessageBox.Show("❌ Database creation failed: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                //}
                 return; 
             }
             this.Dispose();
@@ -171,9 +134,13 @@ namespace COMBINE_CHECKLIST_2024.InitialDiagnostics
 
         void CreateDatabase(string server, string dbName)
         {
-            string connectionString = $"Server={server};Integrated Security=True;";
+            string connectionString = $"Server={server};Database=master;Integrated Security=True;";
 
-            string query = $"CREATE DATABASE {dbName}";
+            string query = $"CREATE DATABASE {dbName};" +
+                           $"ALTER DATABASE GOODYEAR_MACHINE_HISTORY SET ONLINE;";
+                           //$"USE GOODYEAR_MACHINE_HISTORY;" +
+                           //$"CREATE USER [{GetSQLServerInstance()}] FOR LOGIN [{GetSQLServerInstance()}];" +
+                           //$"ALTER ROLE db_owner ADD MEMBER [{GetSQLServerInstance()}];";
 
             try
             {
@@ -184,12 +151,14 @@ namespace COMBINE_CHECKLIST_2024.InitialDiagnostics
                     {
                         cmd.ExecuteNonQuery();
                     }
+                    conn.Close();
                 }
                 Console.WriteLine($"✅ Database '{dbName}' created successfully!");
+                MessageBox.Show("test");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ Error: {ex.Message}");
+                MessageBox.Show($"❌ Error: {ex.Message}");
             }
         }
 
@@ -211,6 +180,47 @@ namespace COMBINE_CHECKLIST_2024.InitialDiagnostics
             }
 
             return $"{Environment.MachineName}\\{instanceName}";
+        }
+
+        private void createDatabase_Click(object sender, EventArgs e)
+        {
+            SQL_Support sql = new SQL_Support(GetSQLServerInstance(), "GOODYEAR_MACHINE_HISTORY");
+            string query = @" " +
+              " CREATE TABLE EXECUTION_HISTORY (" +
+                    " id int IDENTITY(1,1)," +
+                    " date_commit DATETIME " +
+                    "); " +
+                "CREATE TABLE HISTORY_(" +
+                "HISTORY_ID int IDENTITY(1,1), " +
+                "ExecHist_ID int, " +
+                "Context VARCHAR(MAX), " +
+                "Date_Log DATETIME " +
+            "); " +
+             "" +
+            "CREATE TABLE GROUP_TABLE ( " +
+               " GroupID int IDENTITY(1,1), " +
+               " From_Date DATETIME, " +
+               " To_Date DATETIME, " +
+               " Monitored_By VARCHAR(MAX), " +
+               " Machine_Name VARCHAR(MAX), " +
+               " Location VARCHAR(MAX), " +
+              "  historylog_id int " +
+           " ); " +
+           "  " +
+           " CREATE TABLE LOG_MACHINETABLE ( " +
+           "     ID int IDENTITY(1,1), " +
+           "     groupID int, " +
+           "     defect_part VARCHAR(MAX), " +
+           "     defec_desc VARCHAR(MAX), " +
+           "     suggested_replacement_repair VARCHAR(MAX), " +
+           "     remark_analysis VARCHAR(MAX), " +
+           "     overall_status BIT, " +
+           "     checked_by VARCHAR(MAX), " +
+           "     datemark date, " +
+           "     target_time VARCHAR(MAX) " +
+           " );";
+
+            sql.ExecuteQuery(query);
         }
     }
 }

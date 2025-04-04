@@ -43,8 +43,8 @@
             this.panel2 = new System.Windows.Forms.Panel();
             this.panel3 = new System.Windows.Forms.Panel();
             this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
-            this.collapse_btn = new System.Windows.Forms.Button();
             this.add_new_item = new System.Windows.Forms.Button();
+            this.collapse_btn = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -216,6 +216,19 @@
             this.flowLayoutPanel2.Size = new System.Drawing.Size(1066, 22);
             this.flowLayoutPanel2.TabIndex = 2;
             // 
+            // add_new_item
+            // 
+            this.add_new_item.BackColor = System.Drawing.Color.White;
+            this.add_new_item.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.add_new_item.Location = new System.Drawing.Point(882, 0);
+            this.add_new_item.Margin = new System.Windows.Forms.Padding(0);
+            this.add_new_item.Name = "add_new_item";
+            this.add_new_item.Size = new System.Drawing.Size(109, 22);
+            this.add_new_item.TabIndex = 3;
+            this.add_new_item.Text = "ADD NEW ITEM";
+            this.add_new_item.UseVisualStyleBackColor = false;
+            this.add_new_item.Click += new System.EventHandler(this.add_new_item_Click);
+            // 
             // collapse_btn
             // 
             this.collapse_btn.BackColor = System.Drawing.Color.White;
@@ -229,18 +242,6 @@
             this.collapse_btn.UseVisualStyleBackColor = false;
             this.collapse_btn.Click += new System.EventHandler(this.collapse_btn_Click);
             this.collapse_btn.MouseEnter += new System.EventHandler(this.collapse_btn_MouseEnter);
-            // 
-            // add_new_item
-            // 
-            this.add_new_item.BackColor = System.Drawing.Color.White;
-            this.add_new_item.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.add_new_item.Location = new System.Drawing.Point(882, 0);
-            this.add_new_item.Margin = new System.Windows.Forms.Padding(0);
-            this.add_new_item.Name = "add_new_item";
-            this.add_new_item.Size = new System.Drawing.Size(109, 22);
-            this.add_new_item.TabIndex = 3;
-            this.add_new_item.Text = "ADD NEW ITEM";
-            this.add_new_item.UseVisualStyleBackColor = false;
             // 
             // grouping_of_items
             // 

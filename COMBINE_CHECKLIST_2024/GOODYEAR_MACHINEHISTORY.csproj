@@ -66,7 +66,7 @@
     <GenerateManifests>true</GenerateManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <SignManifests>true</SignManifests>
+    <SignManifests>false</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
@@ -516,6 +516,12 @@
     <Compile Include="Sections\MachineHistory\Select_An_Item_To_Add_Form.Designer.cs">
       <DependentUpon>Select_An_Item_To_Add_Form.cs</DependentUpon>
     </Compile>
+    <Compile Include="Sections\MachineHistory\Select_A_Date.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Sections\MachineHistory\Select_A_Date.Designer.cs">
+      <DependentUpon>Select_A_Date.cs</DependentUpon>
+    </Compile>
     <Compile Include="Sections\MachineHistory\TimeInterval_Picker.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -583,6 +589,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Sections\MachineHistory\Select_An_Item_To_Add_Form.resx">
       <DependentUpon>Select_An_Item_To_Add_Form.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sections\MachineHistory\Select_A_Date.resx">
+      <DependentUpon>Select_A_Date.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sections\MachineHistory\TimeInterval_Picker.resx">
       <DependentUpon>TimeInterval_Picker.cs</DependentUpon>

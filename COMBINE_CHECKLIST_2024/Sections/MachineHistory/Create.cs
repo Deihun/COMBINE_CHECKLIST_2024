@@ -53,7 +53,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
 
         private void create_new_history_btn_Click(object sender, EventArgs e)
         {
-            if (groupOf_groupforms.Count < 1)
+            if (flowLayoutPanel1.Controls.Count < 1)
             {
                 MessageBox.Show("Cannot add empty data. Please click 'ADD' button to add items in a work panel.", "Warning");
             }
@@ -63,13 +63,9 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
                 create_new_history_btn.Hide();
                 addAsDateInterval_btn.Hide();
                 order_a_SelectAsync();
-                foreach (Form groups in groupOf_groupforms)
-                {
-                    if (groups is grouping_of_items g)
-                    {
-                        g.hideDelete();
-                    }
-                }
+                foreach (Control control in flowLayoutPanel1.Controls) if (control is grouping_of_items g) g.hideDelete();
+                flowLayoutPanel1.Controls.Clear();
+
                 MessageBox.Show($"Data {_last_identity} successfully added in the database!");
             }
         }
@@ -81,9 +77,9 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
             sql._isDebugShow = true;
             _last_identity = Convert.ToInt32(sql.ExecuteQuery(query).Rows[0][0]);
 
-            foreach (Form groups in groupOf_groupforms)
+            foreach (Control control in flowLayoutPanel1.Controls)
                 {
-                    if (groups is grouping_of_items groupForm) // Correct type
+                    if (control is grouping_of_items groupForm) // Correct type
                     {
                     query = $"INSERT INTO GROUP_TABLE (From_Date, historylog_id, To_Date, Monitored_By, Machine_Name, Location) " +
                                    $"VALUES ('{groupForm._from_dt:yyyy-MM-dd HH:mm:ss}', {_last_identity}, '{groupForm._to_dt.Date:yyyy-MM-dd HH:mm:ss}', '{groupForm.getMonitor()}', '{groupForm.getMachineName()}', '{groupForm.getLocation()}'); " +
@@ -93,9 +89,9 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
 
                     sql._isDebugShow = true;
 
-                    foreach (Form deepgroup in groupForm.group_of_logs)
+                    foreach (Control _control in groupForm.items_in_flp.Controls)
                     {
-                        if (deepgroup is Item_Record logGroup)
+                        if (_control is Item_Record logGroup)
                         {
                             string _query = $"INSERT INTO LOG_MACHINETABLE (defect_part, defec_desc, suggested_replacement_repair, remark_analysis, overall_status, checked_by, groupID, datemark, target_time) " +
                                            $" VALUES ('{logGroup.get_defectiveparts()}', '{logGroup.get_defectiveDescription()}', '{logGroup.get_suggestion()}', '{logGroup.get_remarks()}', " +
@@ -166,11 +162,8 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
             setAutoComplete(monitor_tb, monitoredBy);
             setAutoComplete(machine_tb, machinename);
 
-            for (int i = groupOf_groupforms.Count - 1; i >= 0; i--)
-            {
-                groupOf_groupforms[i].Dispose();
-                groupOf_groupforms.RemoveAt(i);
-            }
+            foreach (Control control in flowLayoutPanel1.Controls) control.Dispose();
+            flowLayoutPanel1.Controls.Clear();
             after_panel.Hide();
             SetGradientBackground("#D1FFC3", "#79AE86");
         }
@@ -223,11 +216,8 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
             create_new_history_btn.Show();
             addAsDateInterval_btn.Show();
 
-            for (int i = groupOf_groupforms.Count - 1; i >= 0; i--)
-            {
-                groupOf_groupforms[i].Dispose();
-                groupOf_groupforms.RemoveAt(i);
-            }
+            foreach (Control control in flowLayoutPanel1.Controls) control.Dispose();
+            flowLayoutPanel1.Controls.Clear();
         }
 
         private void set_suggestion(Dictionary<Tuple<Action<TextBox, string>,TextBox, string>, string> list)
@@ -393,7 +383,10 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
 
         private void button2_Click(object sender, EventArgs e)
         {
-
+            grouping_of_items grouping_Of_Items = new grouping_of_items(DateTime.Now, DateTime.Now, monitor_tb.Text, machine_tb.Text, location_tb.Text);
+            grouping_Of_Items.TopLevel = false;
+            flowLayoutPanel1.Controls.Add(grouping_Of_Items);
+            grouping_Of_Items.Show();
         }
 
         private void add_with_presets_btn_Click(object sender, EventArgs e)
