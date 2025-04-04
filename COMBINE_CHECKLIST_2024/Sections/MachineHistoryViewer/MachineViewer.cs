@@ -4,17 +4,14 @@ using COMBINE_CHECKLIST_2024.OpenFilePath;
 using SQL_Connection_support;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
+
 using System.Data;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.UI.WebControls;
+
 using System.Windows.Forms;
-using ScottPlot;
-using ScottPlot.Plottables;
-using COMBINE_CHECKLIST_2024.Addons;
+
 
 namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
 {
@@ -23,62 +20,151 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
         List<Form> ViewList = new List<Form>();
         private SQL_Support sql = new SQL_Support("DESKTOP-HBKPAB1\\SQLEXPRESS", "GOODYEAR_MACHINE_HISTORY");
         private gridview_adjustment g_adjust;
-        private buttonPerHistory buttonManagement;
         private int selectedID = -1;
+
+
+        private const int maximum_object_in_page = 20;
+        private int number_of_page;
+        private int selected_page = 1;
+        private List<FlowLayoutPanel> list_of_pages = new List<FlowLayoutPanel>();
+        private List<Button> list_of_item = new List<Button>();
+
         public MachineViewer()
         {
             InitializeComponent();
             
             g_adjust = new gridview_adjustment(sql, dataPerSection);
-            buttonManagement = new buttonPerHistory(this, button_container_flp);
             g_adjust.dataPerHistoryLog_flp = dataPerSection;
-            buttonManagement.showAllResults();
+
             button_container_flp.HorizontalScroll.Enabled = false;
             button_container_flp.HorizontalScroll.Visible = false;
             button_container_flp.HorizontalScroll.Maximum = 0;
             button_container_flp.AutoScrollMinSize = new Size(0, 1);
-
             chart1.Titles.Add("STATUS");
+            instantiate_all_object();
         }
 
-        
+        public void Add_new_Page()
+        {
+            FlowLayoutPanel flp = new FlowLayoutPanel();
+            flp.Padding = new Padding(0);
+            flp.Margin = new Padding(0);
+            flp.FlowDirection = FlowDirection.TopDown;
+            flp.WrapContents = false;
+            flp.Width = button_container_flp.Width;
+            flp.Height = button_container_flp.Height;
+            list_of_pages.Add(flp);
+            button_container_flp.Controls.Add(flp);
+            flp.Show();
+        }
 
-        public void addButton(int groupID)
+        public void instantiate_all_object()
         {
-            ButtonItem buttonItem = new ButtonItem(groupID,this);
-        }
-        public void delButton(Form delbtn)
-        {
-            ViewList.Remove(delbtn);
-            delbtn.Dispose();
-        }
-        public void resetButton()
-        {
-            foreach(Form reset in ViewList)
+
+            foreach (FlowLayoutPanel flp in list_of_pages) flp.Dispose();
+            list_of_pages.Clear();
+            Add_new_Page();
+            number_of_page = 1;
+            int number_of_objects_total = 0;
+            int number_of_object = 0;
+            foreach (DataRow row in get_server_with_filter_on().Rows)
             {
-                reset.Dispose();
+                add_new_record_as_button($"{row["date_commit"]} ({row["ID"]})", Convert.ToInt32(row["ID"]));
+                number_of_object++;
+                number_of_objects_total++;
+                if (number_of_object >= maximum_object_in_page)
+                {
+                    number_of_object = 0;
+                    number_of_page++;
+                    Add_new_Page();
+                }
             }
+            selected_page = change_page(1, 0);
+            TotalAmount_label.Text = $"TOTAL: {number_of_objects_total}";
         }
+
+        public int change_page(int page, int difference)
+        {
+            int _page = page + difference;
+            foreach (FlowLayoutPanel flp in list_of_pages) flp.Hide();
+            try
+            {
+                list_of_pages[_page - 1].Show();
+                page_label.Text = $"PAGE {_page}/{number_of_page}";
+                next_btn.Visible = _page < number_of_page;
+                back_btn.Visible = _page > 1;
+            }
+            catch
+            {
+                list_of_pages[0].Show();
+                page_label.Text = $"PAGE {page}/{number_of_page}";
+                next_btn.Visible = page < number_of_page;
+                back_btn.Visible = page > 1;
+                return page;
+            }
+            return _page;
+        }
+
+
+        private DataTable get_server_with_filter_on()
+        {
+            List<string> conditions = new List<string>();
+
+            string query = $@"
+        SELECT  DISTINCT
+            record.ID, 
+            _group.Machine_Name, 
+            _group.Monitored_By, 
+            _group.Location, 
+            record.date_commit
+        FROM EXECUTION_HISTORY record
+        LEFT JOIN GROUP_TABLE _group ON record.id = _group.historylog_id
+        LEFT JOIN LOG_MACHINETABLE item ON item.groupID = _group.GroupID
+    ";
+            if (date_cb.Checked)
+            {
+                conditions.Add($" DAY(record.date_commit) = {DateFilter_dt.Value.Day} AND MONTH(record.date_commit) = {DateFilter_dt.Value.Month} AND YEAR(record.date_commit) = {DateFilter_dt.Value.Day} ");
+            }
+             if (!string.IsNullOrEmpty(searchfilter_tb.Text))
+                    conditions.Add($" [_group].Machine_Name LIKE '%{searchfilter_tb.Text}%'");
+
+            if (conditions.Count > 0)
+                query += " WHERE " + string.Join(" AND ", conditions);
+
+            //MessageBox.Show(query);
+            return sql.ExecuteQuery(query);
+        }
+
+        private Button add_new_record_as_button(string name, int groupID)
+        {
+            Button button = new Button();
+            button.Width = button_container_flp.Width - 20;
+            button.Text = name;
+            button.Tag = groupID;
+            button.BackColor = Color.White;
+            list_of_item.Add(button);
+            list_of_pages[number_of_page - 1].Controls.Add(button);
+            button.Click += (sender, e) => { SetDataGridView(groupID); };
+            button.Show();
+            return button;
+        }
+
+
         public void SetDataGridView(int id)
         {
             g_adjust.show_dataPerSection(id);//
             printOption_panel.Show();
             selectedID = id;
-            chart1.Visible = false;
-
-            //
-            //dataGridView1.DataSource = MachineView.ExecuteQueryAsync(query);
         }
+
 
         private void MachineViewer_Load(object sender, EventArgs e)
         {
         }
 
-
-
         private void MachineViewer_VisibleChanged(object sender, EventArgs e)
         {
-            buttonManagement.showAllResults();
+            instantiate_all_object();
             printOption_panel.Hide();
             selectedID = -1;
             chart1.Series["S1"].Points.Clear();
@@ -105,44 +191,49 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
                 chart1.Series["S1"].Points.Last().LabelForeColor = System.Drawing.Color.Black;
                 chart1.Series["S1"].Points.Last().Font = new Font("Arial", 10, System.Drawing.FontStyle.Bold);
             }
-
-            
-
+            SetGradientBackground("#D1FFC3", "#79AE86");
         }
 
 
+        private void SetGradientBackground(string hexColor1, string hexColor2)
+        {
+            Color color1 = ColorTranslator.FromHtml(hexColor1);
+            Color color2 = ColorTranslator.FromHtml(hexColor2);
 
+            Bitmap bmp = new Bitmap(this.Width, this.Height);
+            using (Graphics g = Graphics.FromImage(bmp))
+            using (LinearGradientBrush brush = new LinearGradientBrush(
+                new Rectangle(0, 0, this.Width, this.Height),
+                color1,
+                color2,
+                LinearGradientMode.Vertical)) // Change direction if needed
+            {
+                g.FillRectangle(brush, 0, 0, this.Width, this.Height);
+            }
+            this.BackgroundImage = bmp;
+        }
 
 
 
         private void dataPerSection_Paint(object sender, PaintEventArgs e)
         {
-
         }
 
         private void searchfilter_tb_TextChanged(object sender, EventArgs e)
         {
-            g_adjust.show_dataPerSection(searchfilter_tb.Text, DateFilter_dt);
-            buttonManagement.showResultsWithFilter(searchfilter_tb.Text, DateFilter_dt);
-            printOption_panel.Hide();
-            chart1.Visible = false;
+            
         }
 
         private void date_cb_CheckedChanged(object sender, EventArgs e)
         {
             DateFilter_dt.Enabled = date_cb.Checked;
             g_adjust.show_dataPerSection(searchfilter_tb.Text, DateFilter_dt);
-            buttonManagement.showResultsWithFilter(searchfilter_tb.Text, DateFilter_dt);
-            printOption_panel.Hide();
-            chart1.Visible = false;
+
         }
 
         private void DateFilter_dt_ValueChanged(object sender, EventArgs e)
         {
-            g_adjust.show_dataPerSection(searchfilter_tb.Text, DateFilter_dt);
-            buttonManagement.showResultsWithFilter(searchfilter_tb.Text, DateFilter_dt);
-            printOption_panel.Hide();
-            chart1.Visible = false;
+
         }
 
         private void bulkPrint_btn_Click(object sender, EventArgs e)
@@ -162,7 +253,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
             }
             Dictionary<string, object> logHistory = new Dictionary<string, object>
                     {
-                        { "Context", $"A 'SaveFile' has been performed via View-Data in path '{filepath}', referencing data ID {selectedID.ToString()}" },
+                        { "Context", $"A 'SaveFile' has been performed via View-Data in path '{filepath}', referencing data ID {selectedID}" },
                         {"Date_Log", DateTime.Now }
                     };
             sql.InsertData("HISTORY_", logHistory);
@@ -176,7 +267,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
             a.Print();
             Dictionary<string, object> logHistory = new Dictionary<string, object>
                     {
-                        { "Context", $"A print has been performed via View-Data, referencing data ID {selectedID.ToString()}" },
+                        { "Context", $"A print has been performed via View-Data, referencing data ID {selectedID}" },
                         {"Date_Log", DateTime.Now }
                     };
             sql.InsertData("HISTORY_", logHistory);
@@ -186,6 +277,30 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
         private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
         {
 
+        }
+
+        private void back_btn_Click(object sender, EventArgs e)
+        {
+            selected_page = change_page(selected_page, -1);
+        }
+
+        private void next_btn_Click(object sender, EventArgs e)
+        {
+            selected_page = change_page(selected_page, 1);
+        }
+
+        private void confirm_btn_Click(object sender, EventArgs e)
+        {
+            printOption_panel.Hide();
+            instantiate_all_object();
+            g_adjust.show_dataPerSection(searchfilter_tb.Text, DateFilter_dt);
+        }
+
+        private void clear_btn_Click(object sender, EventArgs e)
+        {
+            searchfilter_tb.Text = "";
+            date_cb.Checked = false;
+            instantiate_all_object();
         }
     }
 
@@ -213,25 +328,6 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
             web.DocumentText =  generate.ConvertExcelToHtml(generate.GenerateExcelWorkbook(_id));
             web.Size = flowparent.Size;
             flowparent.Controls.Add(web);
-
-
-            //List<int> group_id_of_item = new List<int>();
-            //string query = $"SELECT * FROM GROUP_TABLE WHERE historylog_id = {_id}; ";
-            //DataTable data = sql.ExecuteQuery(query);
-            //foreach (DataRow id in data.Rows)
-            //{
-            //    group_id_of_item.Add(Convert.ToInt32(id["GroupID"]));
-            //}
-
-            //foreach (int id in group_id_of_item)
-            //{
-            //    query = $"SELECT defect_part, defec_desc, suggested_replacement_repair, remark_analysis, overall_status, checked_by, datemark  FROM LOG_MACHINETABLE WHERE groupID = {id};";
-            //    DataTable _data = sql.ExecuteQuery(query);
-            //    _new_data_section(_data);
-            //}
-            
-            //
-
         }
 
         public void show_dataPerSection(string filter, DateTimePicker date)
@@ -253,24 +349,17 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
                 int selectedMonth = date.Value.Month;
                 int selectedDay = date.Value.Day;
 
-                // Append additional filter for datemark
                 filterCondition += $" AND YEAR(L.datemark) = {selectedYear} " +
                                    $"AND MONTH(L.datemark) = {selectedMonth} " +
                                    $"AND DAY(L.datemark) = {selectedDay}";
             }
-
-            // Build the final query
             string query = $"SELECT L.defect_part, L.defec_desc, L.suggested_replacement_repair, L.remark_analysis, " +
                            $"L.overall_status, L.checked_by, L.datemark, " +
                            $"G.Machine_Name, G.Monitored_By, G.Location " +
                            $"FROM LOG_MACHINETABLE L " +
                            $"INNER JOIN GROUP_TABLE G ON L.groupID = G.GroupID " +
                            $"WHERE {filterCondition};";
-
-            // Execute query and get combined data
             DataTable _data = sql.ExecuteQuery(query);
-
-            // Call _new_data_section() once with the full data
             _new_data_section(_data);
         }
 
@@ -297,18 +386,12 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
             }
 
             _data.DataSource = data;
-            _data.Width = flowparent.Width - 10; // Fit into the FlowLayoutPanel
+            _data.Width = flowparent.Width - 10; 
             _data.Height = flowparent.Height;
-
-            // Set DataGridView to ensure columns fill available space
             _data.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             _data.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-
-            // Ensure no extra spacing
             _data.Margin = new Padding(0);
             _data.Padding = new Padding(0);
-
-            // Disable unnecessary horizontal scrolling
             _data.ScrollBars = System.Windows.Forms.ScrollBars.Vertical; // Only vertical scrolling
             _data.ReadOnly = true;
             flowparent.Controls.Add(_data);
@@ -328,88 +411,4 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
             pergroups.Clear();
         }
     }
-
-
-    public class buttonPerHistory
-    {
-        public List<ButtonItem> buttons = new List<ButtonItem>();
-        private SQL_Support sql = new SQL_Support("DESKTOP-HBKPAB1\\SQLEXPRESS", "GOODYEAR_MACHINE_HISTORY");
-        private FlowLayoutPanel button_container;
-        private MachineViewer parent;
-
-        public buttonPerHistory(MachineViewer parent, FlowLayoutPanel button_container)
-        {
-            this.parent = parent;
-            this.button_container = button_container;
-        }
-
-        public void _remove_all_buttons()
-        {
-            foreach (ButtonItem button in buttons){button.Dispose();}
-            buttons.Clear();
-        }
-
-        public void _add_button(int id_of_history_log, DateTime history)
-        {
-            ButtonItem historylog_btn = new ButtonItem(id_of_history_log, parent);
-            Datetotext convertDate = new Datetotext();
-            string set_rename = "(" + id_of_history_log.ToString() + ") " + convertDate.getMonthAsText(history) + history.Day + ", " + history.Year;
-            buttons.Add(historylog_btn);
-            historylog_btn.TopLevel = false;
-            historylog_btn.RenameBtn(set_rename);
-            button_container.Controls.Add(historylog_btn);
-            historylog_btn.Show();
-        }
-
-        public void showAllResults()
-        {
-            _remove_all_buttons();
-            sql._isDebugShow = true;
-            DataTable data = sql.ExecuteQuery("SELECT * FROM EXECUTION_HISTORY");
-            foreach (DataRow row in data.Rows)
-            {
-                int id = Convert.ToInt32(row["ID"]);
-                DateTime history = Convert.ToDateTime(row["date_commit"]);
-                _add_button(id, history);
-            }
-        }
-
-        public void showResultsWithFilter(string Filter, DateTimePicker dtp)
-        {
-                _remove_all_buttons();
-                string query = "SELECT DISTINCT " +
-                               "eh.id, eh.date_commit " +
-                               "FROM EXECUTION_HISTORY eh " +
-                               "JOIN GROUP_TABLE gt ON eh.id = gt.historylog_id " +
-                               "JOIN LOG_MACHINETABLE lm ON gt.GroupID = lm.groupID " +
-                               "WHERE gt.Monitored_By LIKE '%" + Filter + "%' " +
-                               "OR gt.Machine_Name LIKE '%" + Filter + "%' " +
-                               "OR lm.defect_part LIKE '%" + Filter + "%' " +
-                               "OR lm.defec_desc LIKE '%" + Filter + "%' " +
-                               "OR lm.suggested_replacement_repair LIKE '%" + Filter + "%' " +
-                               "OR lm.checked_by LIKE '%" + Filter + "%'";
-
-
-            if (dtp.Enabled)
-            {
-                DateTime selectedDate = dtp.Value;
-                query += " AND eh.date_commit >= '" + selectedDate.ToString("yyyy-MM-dd 00:00:00") + "' " +
-                         "AND eh.date_commit <= '" + selectedDate.ToString("yyyy-MM-dd 23:59:59") + "'";
-            }
-
-            DataTable data = sql.ExecuteQuery(query);
-                foreach (DataRow row in data.Rows)
-                {
-                    int id = Convert.ToInt32(row["id"]);
-                    DateTime history = Convert.ToDateTime(row["date_commit"]);
-                    _add_button(id, history);
-                }
-            
-        }
-
-
-    }
-
-
-
 }

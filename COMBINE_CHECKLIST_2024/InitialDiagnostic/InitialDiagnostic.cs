@@ -146,7 +146,7 @@ namespace COMBINE_CHECKLIST_2024.InitialDiagnostics
                     remark_analysis VARCHAR(MAX),
                     overall_status BIT,
                     checked_by VARCHAR(MAX),
-                    datemark DATETIME
+                    datemark VARCHAR(MAX)
                 );";
 
                     sql.ExecuteQuery(query);

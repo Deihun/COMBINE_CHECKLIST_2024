@@ -3,6 +3,7 @@ using COMBINE_CHECKLIST_2024.ExcelManagement;
 using COMBINE_CHECKLIST_2024.OpenFilePath;
 using DocumentFormat.OpenXml.Bibliography;
 using DocumentFormat.OpenXml.Drawing;
+using DocumentFormat.OpenXml.Drawing.Diagrams;
 using SQL_Connection_support;
 using System;
 using System.Collections.Generic;
@@ -16,23 +17,21 @@ using System.Windows.Forms;
 
 namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
 {
-    public partial class BulkPrintSelection: Form
+    public partial class BulkPrintSelection : Form
     {
         private SQL_Support sql = new SQL_Support("DESKTOP-HBKPAB1\\SQLEXPRESS", "GOODYEAR_MACHINE_HISTORY");
-        AllData ad;
+        private Datetotext filter = new Datetotext();
+        private Filter_Datas filter_data = new Filter_Datas();
+
+        public int number_of_object_per_page = 12;
+        public int number_of_page;
+        public int selected_page = 1;
+
+        private List<FlowLayoutPanel> list_of_pages = new List<FlowLayoutPanel>();
         public BulkPrintSelection()
         {
             InitializeComponent();
-            ad = new AllData(this, selection_container_fl);
-            ad._initializeData();
             dateTimePicker1.Enabled = false;
-            selection_container_fl.AutoScroll = true;
-            selection_container_fl.HorizontalScroll.Enabled = false;
-            selection_container_fl.HorizontalScroll.Visible = false;
-            selection_container_fl.HorizontalScroll.Maximum = 0;
-            selection_container_fl.VerticalScroll.Enabled = true;
-            selection_container_fl.VerticalScroll.Visible = true;
-            selection_container_fl.AutoScrollMinSize = new Size(0, 1);
 
             monitoredby_cb.Items.Add("");
             location_cb.Items.Add("");
@@ -61,12 +60,110 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
 
                 YearCB.Items.Add(r["year_commit"]);
             }
+            instantiate_all_object();
+        }
+        public void Add_new_Page()
+        {
+            FlowLayoutPanel flp = new FlowLayoutPanel();
+            flp.Padding = new Padding(0);
+            flp.Margin = new Padding(0);
+            flp.FlowDirection = FlowDirection.TopDown;
+            flp.WrapContents = false;
+            flp.Width = selection_container_fl.Width - 20;
+            flp.Height = selection_container_fl.Height - 20;
+            list_of_pages.Add(flp);
+            selection_container_fl.Controls.Add(flp);
+        }
+        public void instantiate_all_object()
+        {
+            filter_data.month = string.IsNullOrEmpty(year_cb.Text) ? "" : year_cb.Text;
+            filter_data.year = string.IsNullOrEmpty(YearCB.Text) ? "" : YearCB.Text;
+            filter_data.machine_name = string.IsNullOrEmpty(machineName_cb.Text) ? "" : machineName_cb.Text;
+            filter_data.monitored_by = string.IsNullOrEmpty(monitoredby_cb.Text) ? "" : monitoredby_cb.Text;
+            filter_data.location = string.IsNullOrEmpty(location_cb.Text) ? "" : location_cb.Text;
+            foreach (FlowLayoutPanel flp in list_of_pages) flp.Dispose();
+            list_of_pages.Clear();
+            Add_new_Page();
+            number_of_page = 1;
+            int number_of_object = 0;
+            foreach (DataRow row in get_server_with_filter_on().Rows)
+            {
+                create_check_box($"{row["date_commit"]} ({row["ID"]})", Convert.ToInt32(row["ID"]));
+                number_of_object++;
+                if (number_of_object >= number_of_object_per_page)
+                {
+                    number_of_object = 0;
+                    number_of_page++;
+                    Add_new_Page();
+                }
+            }
+            selected_page = change_page(1, 0);
+        }
+
+        public CheckBox create_check_box(string text, int tag)
+        {
+            CheckBox selection = new CheckBox();
+            selection.Text = text;
+            selection.Tag = tag;
+            selection.CheckStateChanged += (sender, e) => { checkTrigger(); };
+            list_of_pages[number_of_page - 1].Controls.Add(selection);
+            selection.Show();
+            return selection;
+        }
+
+
+        private DataTable get_server_with_filter_on()
+        {
+            List<string> conditions = new List<string>();
+
+            string query = $@"
+        SELECT  DISTINCT
+            record.ID, 
+            _group.Machine_Name, 
+            _group.Monitored_By, 
+            _group.Location, 
+            record.date_commit
+        FROM EXECUTION_HISTORY record
+        LEFT JOIN GROUP_TABLE _group ON record.id = _group.historylog_id
+        LEFT JOIN LOG_MACHINETABLE item ON item.groupID = _group.GroupID
+    ";
+            if (specificDate_rd.Checked)
+            {
+                conditions.Add($" DAY(record.date_commit) = {dateTimePicker1.Value.Day} AND MONTH(record.date_commit) = {dateTimePicker1.Value.Month} AND YEAR(record.date_commit) = {dateTimePicker1.Value.Day} ");
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(filter_data.machine_name))
+                    conditions.Add($" [_group].Machine_Name = '{filter_data.machine_name}'");
+                if (!string.IsNullOrEmpty(filter_data.monitored_by))
+                    conditions.Add($" [_group].Monitored_By = '{filter_data.monitored_by}'");
+                if (!string.IsNullOrEmpty(filter_data.location))
+                    conditions.Add($" [_group].Location = '{filter_data.location}'");
+                if (!string.IsNullOrEmpty(filter_data.month))
+                    conditions.Add($" MONTH(record.date_commit) = {filter.getMonth(filter_data.month)}");
+                if (!string.IsNullOrEmpty(filter_data.year))
+                    conditions.Add($" YEAR(record.date_commit) = {filter_data.year}");
+            }
+
+            if (conditions.Count > 0)
+                query += " WHERE " + string.Join(" AND ", conditions);
+
+            MessageBox.Show(query);
+            return sql.ExecuteQuery(query);
         }
 
         public void checkTrigger()
         {
+            List<int> group_id = new List<int>();
+            foreach (FlowLayoutPanel flp in list_of_pages)
+            {
+                foreach (CheckBox checkbox in flp.Controls)
+                {
+                    if (checkbox.Checked) group_id.Add(Convert.ToInt32(checkbox.Tag));
+                }
+            }
             HistoryExcelGeneration excel = new HistoryExcelGeneration();
-            web.DocumentText = excel.ConvertExcelToHtml(excel.GenerateBulkExcelWorkbook(ad.getCheckedID()));
+            web.DocumentText = excel.ConvertExcelToHtml(excel.GenerateBulkExcelWorkbook(group_id));
         }
         private void cancel_btn_Click(object sender, EventArgs e)
         {
@@ -82,9 +179,13 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
         {
             dateTimePicker1.Enabled = specificDate_rd.Checked;
             machineName_cb.Enabled = !specificDate_rd.Checked;
+            monitoredby_cb.Enabled = !specificDate_rd.Checked;
+            location_cb.Enabled = !specificDate_rd.Checked;
+            YearCB.Enabled = !specificDate_rd.Checked;
             year_cb.Enabled = !specificDate_rd.Checked;
             year_cb.Text = !specificDate_rd.Checked ? year_cb.Text : string.Empty;
             machineName_cb.Text = !specificDate_rd.Checked ? machineName_cb.Text : string.Empty;
+
         }
 
         private void Dropdownbox_rd_CheckedChanged(object sender, EventArgs e)
@@ -94,12 +195,12 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
 
         private void machineName_cb_SelectedIndexChanged(object sender, EventArgs e)
         {
-            ad.FilterData_nonSpecificDate(year_cb.Text, YearCB.Text, machineName_cb.Text, monitoredby_cb.Text, location_cb.Text);
+
         }
 
         private void year_cb_SelectedIndexChanged(object sender, EventArgs e)
         {
-            ad.FilterData_nonSpecificDate(year_cb.Text, YearCB.Text, machineName_cb.Text, monitoredby_cb.Text, location_cb.Text);
+
         }
 
         private void clearfilter_btn_Click(object sender, EventArgs e)
@@ -108,17 +209,17 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
             year_cb.Text = "";
             monitoredby_cb.Text = "";
             location_cb.Text = "";
+            year_cb.Text = "";
         }
 
         private void monitoredby_cb_SelectedIndexChanged(object sender, EventArgs e)
         {
-            ad.FilterData_nonSpecificDate(year_cb.Text, YearCB.Text, machineName_cb.Text, monitoredby_cb.Text, location_cb.Text);
         }
 
         private void print_btn_Click(object sender, EventArgs e)
         {
             HistoryExcelGeneration excel = new HistoryExcelGeneration();
-            WorkbookPrinter a = new WorkbookPrinter(excel.GenerateBulkExcelWorkbook(ad.getCheckedID()));
+            WorkbookPrinter a = new WorkbookPrinter(excel.GenerateBulkExcelWorkbook(get_selected_list_id()));
             a.Print();
             Dictionary<string, object> logHistory = new Dictionary<string, object>
                     {
@@ -127,7 +228,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
                     };
             sql.InsertData("HISTORY_", logHistory);
         }
-        
+
 
         private void createFile_btn_Click(object sender, EventArgs e)
         {
@@ -136,7 +237,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
             if (!(filepath == null || filepath == string.Empty))
             {
                 HistoryExcelGeneration excel = new HistoryExcelGeneration(filepath);
-                excel.ExportToExcel(excel.GenerateBulkExcelWorkbook(ad.getCheckedID()));
+                excel.ExportToExcel(excel.GenerateBulkExcelWorkbook(get_selected_list_id()));
             }
             Dictionary<string, object> logHistory = new Dictionary<string, object>
                     {
@@ -145,141 +246,87 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
                     };
             sql.InsertData("HISTORY_", logHistory);
         }
-            
-        
+        private List<int> get_selected_list_id()
+        {
+            List<int> ids = new List<int>();
+            foreach (FlowLayoutPanel flp in list_of_pages)
+            {
+                foreach (CheckBox checkbox in flp.Controls) if (checkbox.Checked) ids.Add(Convert.ToInt32(checkbox.Tag));
+            }
+            return ids;
+        }
+
 
         private void removeAllSelected_btn_Click(object sender, EventArgs e)
         {
-            ad.deselectAllData();
+            foreach (FlowLayoutPanel flp in list_of_pages)
+            {
+                foreach (CheckBox check in flp.Controls) check.Checked = false;
+            }
         }
 
         private void location_cb_SelectedIndexChanged(object sender, EventArgs e)
         {
-            ad.FilterData_nonSpecificDate(year_cb.Text, YearCB.Text, machineName_cb.Text, monitoredby_cb.Text, location_cb.Text);
         }
 
         private void YearCB_SelectedIndexChanged(object sender, EventArgs e)
         {
-            ad.FilterData_nonSpecificDate(year_cb.Text, YearCB.Text, machineName_cb.Text, monitoredby_cb.Text, location_cb.Text);
         }
 
         private void v_Click(object sender, EventArgs e)
         {
-            QuickSelection q = new QuickSelection(machineName_cb, monitoredby_cb, location_cb, year_cb, YearCB, ad.list);
+            QuickSelection q = new QuickSelection(machineName_cb, monitoredby_cb, location_cb, year_cb, YearCB,list_of_pages, this);
             q.ShowDialog();
         }
-    }
 
-    public class AllData
-    {
-        BulkPrintSelection parent;
-        private SQL_Support sql = new SQL_Support("DESKTOP-HBKPAB1\\SQLEXPRESS", "GOODYEAR_MACHINE_HISTORY");
-        private Datetotext convertdate = new Datetotext();
-        private FlowLayoutPanel container;
-        public List<SelectionItem> list = new List<SelectionItem>();
-        public AllData(BulkPrintSelection parent, FlowLayoutPanel container)
+        private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
         {
-            this.parent = parent;
-            this.container = container;
+
         }
 
-        public List<int> getCheckedID()
+        private void confirm_btn_Click(object sender, EventArgs e)
         {
-            List<int> _list = new List<int>();
-            foreach(SelectionItem s in list)
+            instantiate_all_object();
+        }
+
+        public int change_page(int page, int difference)
+        {
+            int _page = page + difference;
+            foreach (FlowLayoutPanel flp in list_of_pages) flp.Hide();
+            try
             {
-                if (s.getStoredBool()) _list.Add(s.storedID);
+                list_of_pages[_page - 1].Show();
+                Page_Label.Text = $"PAGE {_page}/{number_of_page}";
+                next_btn.Visible = _page < number_of_page;
+                back_btn.Visible = _page > 1;
             }
-            return _list;
-        }
-        public void _initializeData()
-        {
-            sql._isDebugShow = true;
-            DataTable data = sql.ExecuteQuery("SELECT DISTINCT eh.ID," +
-                "                        gt.Machine_Name," +
-                "                        gt.Monitored_By," +
-                "                        gt.Location," +
-                "                        eh.date_commit" +
-                "        FROM EXECUTION_HISTORY eh" +
-                "        INNER JOIN GROUP_TABLE gt ON eh.ID = gt.GroupID" +
-                "        WHERE gt.GroupID = (SELECT MIN(GroupID) FROM GROUP_TABLE WHERE GROUP_TABLE.GroupID = gt.GroupID)" 
-                );
-            foreach (DataRow row in data.Rows)
+            catch
             {
-                int id = Convert.ToInt32(row["ID"]);
-                string machineName = row["Machine_Name"].ToString();
-                string monitor = row["Monitored_By"].ToString();
-                string Location = row["Location"].ToString();
-                DateTime date = (DateTime)row["date_commit"];
-                _addNewData(id, date, machineName, monitor, Location);
+                list_of_pages[0].Show();
+                Page_Label.Text = $"PAGE {page}/{number_of_page}";
+                next_btn.Visible = page < number_of_page;
+                back_btn.Visible = page > 1;
+                return page;
             }
+            return _page;
         }
-        public void loadAllData()
+        private void back_btn_Click(object sender, EventArgs e)
         {
-            foreach (SelectionItem s in list)
-            {
-                s.Visible = true;
-            }
+            selected_page = change_page(selected_page, -1);
         }
 
-        public void loadAllData(DateTime filter)
+        private void next_btn_Click(object sender, EventArgs e)
         {
-            foreach (SelectionItem s in list)
-            {
-                s.Visible = filter == s.target_date;
-            }
-        }
-
-        public void hideAllData()
-        {
-            foreach (SelectionItem s in list)
-            {
-                s.Visible = false;
-            }
-        }
-
-        public void FilterData_nonSpecificDate(string month, string year, string MachineName, string Monitor, string location)
-        {
-            hideAllData();
-
-            foreach (SelectionItem s in list)
-            {
-                DateTime target_date = s.target_date;
-                int selectedMonth = convertdate.getMonth(month);
-                
-
-                
-                // Fix: Allow all months if `month` is empty
-                bool isMonthValid = (month == "" || selectedMonth == target_date.Month);
-                bool isYearValid = (year == "" || target_date.Year == Convert.ToInt32(year));
-                bool isMonitorValid = (Monitor == "" || Monitor.Equals(s.monitor));
-                bool isLocationValid = (location == "" || location.Equals(s.location));
-                bool isMachineValid = (MachineName == "" || MachineName.Equals(s.machinename));
-
-                if (isMonthValid && isYearValid && isMachineValid && isLocationValid && isMonitorValid)
-                {
-                    s.Visible = true;
-                }
-            }
-        }
-        public void _addNewData(int id, DateTime date, string machinename, string monitor, string location)
-        {
-            SelectionItem si = new SelectionItem(id, date, parent);
-            si.TopLevel = false;
-            container.Controls.Add(si);
-            list.Add(si);
-            si.machinename = machinename;
-            si.monitor = monitor;
-            si.location = location;
-            si.Show();
-        }
-
-        public void deselectAllData()
-        {
-            foreach (SelectionItem s in list)
-            {
-                s.hitCheckbox(false);
-            }
+            selected_page = change_page(selected_page, 1);
         }
     }
+}
+
+    public class Filter_Datas
+{
+    public string machine_name = "";
+    public string monitored_by = "";
+    public string location = "";
+    public string month = "";
+    public string year = "";
 }

@@ -1,24 +1,30 @@
-﻿using Microsoft.SqlServer.Management.Smo;
-using Microsoft.Win32;
+﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Management;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Windows.Forms;
-
 namespace SQL_Connection_support
 {
     public class SQL_Support
     {
         private readonly string _connection_server;
+        /// <summary>
+        /// If set to 'true', allows method to send a debug messages through Console.
+        /// </summary>
         public bool _isDebugShow { get; set; }
 
+
+        /// <summary>
+        /// SQLSupport class allows you to easily connect into your own Database. 
+        /// - SSMS is the only known compatible for this class
+        /// </summary>
+        /// <param name="server">a name of a server string which you can get on SSMS Server tag</param>
+        /// <param name="database">a string name of your Database</param>
+        /// <param name="user">If has no User Hierarchy, leave it null</param>
+        /// <param name="password">If has no User Hierarchy and password, leave it null</param>
         public SQL_Support(string server, string database, string user = null, string password = null)
         {
             try
@@ -38,11 +44,15 @@ namespace SQL_Connection_support
             }
         }
 
+
+        /// <summary>
+        /// Return a server Instance of SQLEXPRESS
+        /// </summary>
+        /// <returns></returns>
         string GetSQLServerInstance()
         {
-            string instanceName = "SQLEXPRESS"; // Default instance name
+            string instanceName = "SQLEXPRESS"; 
             string registryPath = @"SOFTWARE\Microsoft\Microsoft SQL Server";
-
             using (RegistryKey key = Registry.LocalMachine.OpenSubKey(registryPath))
             {
                 if (key != null)
@@ -50,11 +60,10 @@ namespace SQL_Connection_support
                     object installedInstances = key.GetValue("InstalledInstances");
                     if (installedInstances is string[] instances && instances.Length > 0)
                     {
-                        instanceName = instances[0]; // Get first installed instance
+                        instanceName = instances[0]; 
                     }
                 }
             }
-
             return $"{Environment.MachineName}\\{instanceName}";
         }
 
@@ -82,6 +91,11 @@ namespace SQL_Connection_support
         }
 
 
+        /// <summary>
+        /// Execute a command Query
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns>Returns a DataTable</returns>
         public DataTable ExecuteQuery(string query)
         {
             if (_isDebugShow) Console.WriteLine($"Executing Query: {query}");
@@ -102,6 +116,7 @@ namespace SQL_Connection_support
             Console.WriteLine($"DEBUG// Rows Retrieved: {dt.Rows.Count}");
             return dt;
         }
+
 
 
         /// <summary>
@@ -128,6 +143,7 @@ namespace SQL_Connection_support
             }
         }
 
+
         /// <summary>
         /// Performs bulk insertion of a DataTable into a specified SQL table asynchronously.
         /// </summary>
@@ -144,6 +160,7 @@ namespace SQL_Connection_support
                 }
             }
         }
+
 
         /// <summary>
         /// Executes multiple queries within a single transaction asynchronously.
@@ -177,6 +194,7 @@ namespace SQL_Connection_support
             }
         }
 
+
         /// <summary>
         /// Tests the database connection with multiple retry attempts.
         /// </summary>
@@ -204,6 +222,7 @@ namespace SQL_Connection_support
             return false;
         }
 
+
         /// <summary>
         /// Executes a SQL query asynchronously and logs the query.
         /// </summary>
@@ -222,10 +241,6 @@ namespace SQL_Connection_support
             }
         }
 
-        private async Task LogQueryAsync(string query)
-        {
-            throw new NotImplementedException();
-        }
 
         /// <summary>
         /// Executes a SQL query safely with parameters asynchronously.
@@ -245,15 +260,8 @@ namespace SQL_Connection_support
         }
 
 
-        //private async Task LogQueryAsync(string query)
-        //{
-        //    string logFile = "query_log.txt";
-        //    string logEntry = $"{DateTime.Now}: {query}\n";
-        //    await File.AppendAllTextAsync(logFile, logEntry);
-        //}
-
         /// <summary>
-        /// Inserts data into a specified SQL table safely using parameters.
+        /// Inserts data into a specified SQL table safely using parameters with Async Keyword that uses await keyword.
         /// </summary>
         public async Task<bool> InsertDataAsync(string tableName, Dictionary<string, object> data)
         {
@@ -267,7 +275,7 @@ namespace SQL_Connection_support
                     string parameters = string.Join(", ", data.Keys.Select(k => "@" + k));
                     string query = $"INSERT INTO {tableName} ({columns}) VALUES ({parameters})";
 
-                    if (_isDebugShow) // Debugging Enabled
+                    if (_isDebugShow) 
                     {
                         Console.WriteLine($"Executing Query: {query}");
                         foreach (var item in data)
@@ -299,6 +307,12 @@ namespace SQL_Connection_support
         }
 
 
+        /// <summary>
+        /// Inserts data into a specified SQL table safely using parameters.
+        /// </summary>
+        /// <param name="tableName"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public bool InsertData(string tableName, Dictionary<string, object> data)
         {
             try
@@ -319,18 +333,14 @@ namespace SQL_Connection_support
                             Console.WriteLine($"Param {item.Key}: {item.Value}");
                         }
                     }
-
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
                         foreach (var item in data)
                         {
                             cmd.Parameters.AddWithValue("@" + item.Key, item.Value ?? DBNull.Value);
                         }
-
                         int rowsAffected = cmd.ExecuteNonQuery();
-
                         if (_isDebugShow) Console.WriteLine($"Rows Affected: {rowsAffected}");
-
                         return rowsAffected > 0;
                     }
                 }
@@ -342,6 +352,14 @@ namespace SQL_Connection_support
             }
         }
 
+
+        /// <summary>
+        /// Insert data through uses of Dictionary enum and returns the last increment id
+        /// </summary>
+        /// <param name="tableName"></param>
+        /// <param name="data"></param>
+        /// <param name="idColumn"></param>
+        /// <returns></returns>
         public int InsertDataAndGetId(string tableName, Dictionary<string, object> data, string idColumn = "id")
         {
             try
@@ -372,6 +390,13 @@ namespace SQL_Connection_support
             }
         }
 
+
+        /// <summary>
+        /// Removes any harmful keyword or character that will be inserted in Database.
+        /// - Uses on user input.
+        /// </summary>
+        /// <param name="input">User original input</param>
+        /// <returns>Filtered user input as string</returns>
         public string FilterQuery(string input)
         {
             if (string.IsNullOrEmpty(input))
@@ -391,6 +416,11 @@ namespace SQL_Connection_support
             return filtered.Trim();
         }
 
+
+        private async Task LogQueryAsync(string query)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,75 +30,9 @@ namespace COMBINE_CHECKLIST_2024.Sections.EditData
         public EditDataForm(int originalFormWidth, int originalFormHeight)
         {
             InitializeComponent();
-
-            this.AutoScaleMode = AutoScaleMode.Dpi;  // Scale based on screen DPI
-            this.AutoScaleDimensions = new SizeF(96F, 96F);  // 96 DPI is default
-            //AdjustPanels();
-            
             this.originalFormWidth = originalFormWidth;
             this.originalFormHeight = originalFormHeight;
         }
-        private void AdjustPanels()
-        {
-            int screenWidth = Screen.PrimaryScreen.Bounds.Width;
-            int screenHeight = Screen.PrimaryScreen.Bounds.Height;
-
-            // Scale based on a 1920x1080 reference resolution
-            float scaleX = screenWidth / 1920f;
-            float scaleY = screenHeight / 1080f;
-
-            // Adjust Dashboard FlowLayoutPanel
-            selectioncontainer_panel.Width = (int)(260 * scaleX);  // Example: Scale width dynamically
-            selectioncontainer_panel.Height = this.ClientSize.Height; // Make it full height of form
-
-            // Adjust Work Panel
-            flowLayoutPanel1.Width = (this.ClientSize.Width - 10) - selectioncontainer_panel.Width;
-            flowLayoutPanel1.Location = new Point(selectioncontainer_panel.Width, 30);
-        }
-
-        //adjust sizes
-        private Dictionary<Control, Rectangle> originalSizes = new Dictionary<Control, Rectangle>();
-
-        private void StoreOriginalSizes()
-        {
-            originalFormWidth = this.Width;
-            originalFormHeight = this.Height;
-
-            foreach (Control control in this.Controls)
-            {
-                originalSizes[control] = new Rectangle(control.Location, control.Size);
-            }
-        }
-
-        private void ScaleControls()
-        {
-            float scaleX = this.Width / originalFormWidth;
-            float scaleY = this.Height / originalFormHeight;
-
-            foreach (var kvp in originalSizes)
-            {
-                Control control = kvp.Key;
-                Rectangle original = kvp.Value;
-
-                if (control.Parent is FlowLayoutPanel)
-                {
-                    // Keep FlowLayoutPanel's automatic positioning
-                    control.Width = (int)(original.Width * scaleX);
-                    control.Height = (int)(original.Height * scaleY);
-                }
-                else
-                {
-                    // Scale both size & position for standalone elements
-                    int newX = (int)(original.X * scaleX);
-                    int newY = (int)(original.Y * scaleY);
-                    int newWidth = (int)(original.Width * scaleX);
-                    int newHeight = (int)(original.Height * scaleY);
-
-                    control.SetBounds(newX, newY, newWidth, newHeight);
-                }
-            }
-        }
-
 
         private void setData(int id)
         {
@@ -150,7 +85,6 @@ namespace COMBINE_CHECKLIST_2024.Sections.EditData
                 foreach (DataRow _row in itemDataTable.Rows)
                 {
                     Item_Record item = new Item_Record();
-                    DateTime datemark = (DateTime)_row["datemark"];
                     int _item_id = Convert.ToInt32(_row["ID"]);
                     string defectPart = _row["defect_part"].ToString();
                     string defectDesc = _row["defec_desc"].ToString();
@@ -159,7 +93,8 @@ namespace COMBINE_CHECKLIST_2024.Sections.EditData
                     bool OS = (bool)_row["overall_status"];
                     string cheBy = _row["checked_by"].ToString();
                     item.ID_Edit = _item_id;
-                    item.setDate(datemark);
+                    item.my_targeted_date = Convert.ToDateTime(_row["datemark"]);
+                    item.my_target_time = _row["target_time"].ToString();
                     item.setVarCharData(defectPart,defectDesc,srr,ra,cheBy);
                     item.setIsDefect(OS);
                     groups.add_item(item);
@@ -226,6 +161,24 @@ namespace COMBINE_CHECKLIST_2024.Sections.EditData
         private void EditDataForm_VisibleChanged(object sender, EventArgs e)
         {
             showButtonSelection();
+            SetGradientBackground("#D1FFC3", "#79AE86");
+        }
+        private void SetGradientBackground(string hexColor1, string hexColor2)
+        {
+            Color color1 = ColorTranslator.FromHtml(hexColor1);
+            Color color2 = ColorTranslator.FromHtml(hexColor2);
+
+            Bitmap bmp = new Bitmap(this.Width, this.Height);
+            using (Graphics g = Graphics.FromImage(bmp))
+            using (LinearGradientBrush brush = new LinearGradientBrush(
+                new Rectangle(0, 0, this.Width, this.Height),
+                color1,
+                color2,
+                LinearGradientMode.Vertical)) // Change direction if needed
+            {
+                g.FillRectangle(brush, 0, 0, this.Width, this.Height);
+            }
+            this.BackgroundImage = bmp;
         }
 
         private void showButtonSelection()
@@ -327,8 +280,6 @@ namespace COMBINE_CHECKLIST_2024.Sections.EditData
 
         private void EditDataForm_Resize(object sender, EventArgs e)
         {
-            StoreOriginalSizes();
-            ScaleControls();
         }
     }
 }

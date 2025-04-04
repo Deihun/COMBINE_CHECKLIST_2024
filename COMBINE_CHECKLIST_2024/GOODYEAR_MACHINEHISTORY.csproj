@@ -480,6 +480,12 @@
     <Compile Include="Sections\MachineHistoryViewer\SelectionItem.Designer.cs">
       <DependentUpon>SelectionItem.cs</DependentUpon>
     </Compile>
+    <Compile Include="Sections\MachineHistory\AddIndependent_Item_Form.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Sections\MachineHistory\AddIndependent_Item_Form.Designer.cs">
+      <DependentUpon>AddIndependent_Item_Form.cs</DependentUpon>
+    </Compile>
     <Compile Include="Sections\MachineHistory\Add_Group_confirmation.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -503,6 +509,18 @@
     </Compile>
     <Compile Include="Sections\MachineHistory\Item_Record.Designer.cs">
       <DependentUpon>Item_Record.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sections\MachineHistory\Select_An_Item_To_Add_Form.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Sections\MachineHistory\Select_An_Item_To_Add_Form.Designer.cs">
+      <DependentUpon>Select_An_Item_To_Add_Form.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Sections\MachineHistory\TimeInterval_Picker.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Sections\MachineHistory\TimeInterval_Picker.Designer.cs">
+      <DependentUpon>TimeInterval_Picker.cs</DependentUpon>
     </Compile>
     <Compile Include="Sections\Settings\Settings.cs">
       <SubType>Form</SubType>
@@ -548,6 +566,9 @@
     <EmbeddedResource Include="Sections\MachineHistoryViewer\SelectionItem.resx">
       <DependentUpon>SelectionItem.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Sections\MachineHistory\AddIndependent_Item_Form.resx">
+      <DependentUpon>AddIndependent_Item_Form.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Sections\MachineHistory\Add_Group_confirmation.resx">
       <DependentUpon>Add_Group_confirmation.cs</DependentUpon>
     </EmbeddedResource>
@@ -559,6 +580,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Sections\MachineHistory\Item_Record.resx">
       <DependentUpon>Item_Record.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sections\MachineHistory\Select_An_Item_To_Add_Form.resx">
+      <DependentUpon>Select_An_Item_To_Add_Form.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sections\MachineHistory\TimeInterval_Picker.resx">
+      <DependentUpon>TimeInterval_Picker.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sections\Settings\Settings.resx">
       <DependentUpon>Settings.cs</DependentUpon>

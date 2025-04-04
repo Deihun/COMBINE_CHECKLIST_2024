@@ -43,11 +43,13 @@
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.work_panel = new System.Windows.Forms.Panel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.currugator_expanded_panel.SuspendLayout();
             this.dashboard_flowlayout.SuspendLayout();
             this.system_panel.SuspendLayout();
             this.work_panel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // currugator_expanded_panel
@@ -132,12 +134,13 @@
             this.dashboard_flowlayout.BackColor = System.Drawing.Color.SeaGreen;
             this.dashboard_flowlayout.Controls.Add(this.currugator_expanded_panel);
             this.dashboard_flowlayout.Controls.Add(this.system_panel);
-            this.dashboard_flowlayout.Dock = System.Windows.Forms.DockStyle.Left;
+            this.dashboard_flowlayout.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dashboard_flowlayout.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.dashboard_flowlayout.ForeColor = System.Drawing.SystemColors.ControlText;
             this.dashboard_flowlayout.Location = new System.Drawing.Point(0, 0);
+            this.dashboard_flowlayout.Margin = new System.Windows.Forms.Padding(0);
             this.dashboard_flowlayout.Name = "dashboard_flowlayout";
-            this.dashboard_flowlayout.Size = new System.Drawing.Size(209, 861);
+            this.dashboard_flowlayout.Size = new System.Drawing.Size(225, 1041);
             this.dashboard_flowlayout.TabIndex = 3;
             // 
             // system_panel
@@ -222,9 +225,9 @@
             this.workpanel_panel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.workpanel_panel.BackColor = System.Drawing.Color.PaleGreen;
             this.workpanel_panel.Dock = System.Windows.Forms.DockStyle.Right;
-            this.workpanel_panel.Location = new System.Drawing.Point(207, 0);
+            this.workpanel_panel.Location = new System.Drawing.Point(1904, 0);
             this.workpanel_panel.Name = "workpanel_panel";
-            this.workpanel_panel.Size = new System.Drawing.Size(0, 861);
+            this.workpanel_panel.Size = new System.Drawing.Size(0, 1041);
             this.workpanel_panel.TabIndex = 4;
             this.workpanel_panel.Paint += new System.Windows.Forms.PaintEventHandler(this.workpanel_panel_Paint);
             // 
@@ -241,10 +244,11 @@
             // 
             this.work_panel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.work_panel.Controls.Add(this.pictureBox1);
-            this.work_panel.Dock = System.Windows.Forms.DockStyle.Right;
-            this.work_panel.Location = new System.Drawing.Point(207, 0);
+            this.work_panel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.work_panel.Location = new System.Drawing.Point(225, 0);
+            this.work_panel.Margin = new System.Windows.Forms.Padding(0);
             this.work_panel.Name = "work_panel";
-            this.work_panel.Size = new System.Drawing.Size(1377, 861);
+            this.work_panel.Size = new System.Drawing.Size(1679, 1041);
             this.work_panel.TabIndex = 5;
             // 
             // pictureBox1
@@ -257,19 +261,34 @@
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.ColumnCount = 2;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 225F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.Controls.Add(this.dashboard_flowlayout, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.work_panel, 1, 0);
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 1;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1904, 1041);
+            this.tableLayoutPanel1.TabIndex = 6;
+            // 
             // Main_Dashboard
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.PaleGreen;
-            this.ClientSize = new System.Drawing.Size(1584, 861);
-            this.Controls.Add(this.dashboard_flowlayout);
+            this.ClientSize = new System.Drawing.Size(1904, 1041);
             this.Controls.Add(this.workpanel_panel);
             this.Controls.Add(this.flowLayoutPanel1);
-            this.Controls.Add(this.work_panel);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.Controls.Add(this.tableLayoutPanel1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "Main_Dashboard";
             this.Text = "Manager";
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Main_Dashboard_FormClosed);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.currugator_expanded_panel.ResumeLayout(false);
@@ -277,6 +296,7 @@
             this.system_panel.ResumeLayout(false);
             this.work_panel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.tableLayoutPanel1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -298,6 +318,7 @@
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
         private System.Windows.Forms.Panel work_panel;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
     }
 }
 

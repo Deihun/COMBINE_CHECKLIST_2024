@@ -1,4 +1,6 @@
 ﻿using COMBINE_CHECKLIST_2024.DateToText;
+using COMBINE_CHECKLIST_2024.Sections.MachineHistory;
+using GrapeCity.DataVisualization.Chart;
 using SQL_Connection_support;
 using System;
 using System.Collections.Generic;
@@ -9,46 +11,88 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace COMBINE_CHECKLIST_2024.Sections.Currugator
 {
     public partial class Item_Record: Form
     {
         private Form myParent;
+
+
+        public TextBox _checkby_textbox;
+        public TextBox _defectivepart_textbox;
+        public RichTextBox _defectivedescription_richtextbox;
+        public RichTextBox _suggested_replacement_repair_richtextbox;
+        public RichTextBox _remarks_or_analysis_richtextbox;
+
+        public string my_target_time;
         public DateTime my_targeted_date;
         public bool isDefect = true;
-        public int ID_Edit;
+        public int ID_Edit = -1;
+
         private SQL_Support sql = new SQL_Support("DESKTOP-HBKPAB1\\SQLEXPRESS", "GOODYEAR_MACHINE_HISTORY");
+
+
         public Item_Record(Form myParent)
         {
             InitializeComponent();
+            Bind_All_PublicControls();
             this.myParent = myParent;
-            _changeColor();
+
         }
+
 
         public Item_Record()
         {
             InitializeComponent();
-            
+            Bind_All_PublicControls();
         }
 
+        private void Bind_All_PublicControls()
+        {
+        _checkby_textbox = this.checkby_textfield;
+        _defectivepart_textbox = this.defective_tb;
+        _defectivedescription_richtextbox = this.defective_description_rtb;
+        _suggested_replacement_repair_richtextbox = this.suggestion_rtb;
+        _remarks_or_analysis_richtextbox = this.remarks_rtb;
+        }
+
+
         private void isdefect_toggle_btn_Click(object sender, EventArgs e)
+        {
+            if ((Control.ModifierKeys & Keys.Control) == Keys.Control)
+            {
+                this.trigger_button();
+                grouping_of_items parent = this.Parent.Parent.Parent as grouping_of_items;
+                foreach (Control control in parent.items_in_flp.Controls)
+                {
+                    if (control is Item_Record item)
+                    {
+                        item.trigger_button(this.isDefect);
+                    }
+                }
+
+            }
+            else
+            {
+                trigger_button();
+            }
+        }
+        public void trigger_button()
         {
             isDefect = !isDefect;
             isdefect_toggle_btn.BackColor = isDefect ? Color.Khaki : Color.Azure;
             isdefect_toggle_btn.Text = isDefect ? "DEFECTIVE" : "SATISFACTORY";
         }
 
-        public void setDate(DateTime date)
+        public void trigger_button(bool _isDefect)
         {
-            Datetotext convert = new Datetotext();
-            my_targeted_date = date;
-            changeablemonth_label.Text = (convert_monthText(date) + " - " + date.Day);
-            hour_textbox.Text = convert.getHour_12HoursPreset(date);
-            min_tb.Text = date.Minute.ToString();
-            isAM = date.Hour < 12;
-            _changeColor();
+            isDefect = _isDefect;
+            isdefect_toggle_btn.BackColor = isDefect ? Color.Khaki : Color.Azure;
+            isdefect_toggle_btn.Text = isDefect ? "DEFECTIVE" : "SATISFACTORY";
         }
+
         public void setVarCharData(string defectPart, string defectDesc, string suggestedReplacementRepair, string remarkAnalysis, string checkby)
         {
             this.defective_tb.Text = defectPart;
@@ -80,28 +124,57 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
             return sql.FilterQuery(suggestion_rtb.Text.Equals(string.Empty) ? "N/A" : suggestion_rtb.Text);
         }
 
-        public void set_time()
-        {
-            Datetotext convert = new Datetotext();
-            hour_textbox.Text = convert.getHour_12HoursPreset(DateTime.Now);
-            min_tb.Text = convert.getMinutes(DateTime.Now);
-        }
-
         public void setAutoComplete()
         {
             AutoCompleteStringCollection checkedByCollection = new AutoCompleteStringCollection();
             AutoCompleteStringCollection defectiveParts = new AutoCompleteStringCollection();
-
+            List<string> defect_desc_suggestion = new List<string>();
+            List<string> srr_suggestion = new List<string>();
+            List<string> remarks_suggestion = new List<string>();
 
             DataTable LogMachineTable_DataTable = sql.ExecuteQuery("SELECT * FROM LOG_MACHINETABLE;");
+            foreach (DataRow row in sql.ExecuteQuery("SELECT DISTINCT defec_desc, frequency\r\nFROM (\r\n    SELECT TOP 3 defec_desc, COUNT(*) AS frequency\r\n    FROM LOG_MACHINETABLE\r\n    WHERE defec_desc IS NOT NULL AND defec_desc <> ''\r\n    GROUP BY defec_desc\r\n    ORDER BY frequency DESC\r\n) AS freq_data\r\n\r\nUNION\r\n\r\nSELECT defec_desc, NULL AS frequency\r\nFROM (\r\n    SELECT item.defec_desc\r\n    FROM LOG_MACHINETABLE item\r\n    JOIN GROUP_TABLE _group ON _group.GroupID = item.groupID\r\n\tJOIN EXECUTION_HISTORY record ON record.id = _group.historylog_id\r\n    WHERE item.defec_desc IS NOT NULL AND item.defec_desc <> ''\r\n    ORDER BY record.date_commit DESC\r\n    OFFSET 0 ROWS FETCH FIRST 1 ROWS ONLY\r\n) AS recent_data;\r\n").Rows) defect_desc_suggestion.Add(row["defec_desc"].ToString());
+            foreach (DataRow row in sql.ExecuteQuery("SELECT DISTINCT suggested_replacement_repair, frequency\r\nFROM (\r\n    SELECT TOP 3 suggested_replacement_repair, COUNT(*) AS frequency\r\n    FROM LOG_MACHINETABLE\r\n    WHERE suggested_replacement_repair IS NOT NULL AND suggested_replacement_repair <> ''\r\n    GROUP BY suggested_replacement_repair\r\n    ORDER BY frequency DESC\r\n) AS freq_data\r\n\r\nUNION\r\n\r\nSELECT suggested_replacement_repair, NULL AS frequency\r\nFROM (\r\n    SELECT item.suggested_replacement_repair\r\n    FROM LOG_MACHINETABLE item\r\n    JOIN GROUP_TABLE _group ON _group.GroupID = item.groupID\r\n\tJOIN EXECUTION_HISTORY record ON record.id = _group.historylog_id\r\n    WHERE item.suggested_replacement_repair IS NOT NULL AND item.suggested_replacement_repair <> ''\r\n    ORDER BY record.date_commit DESC\r\n    OFFSET 0 ROWS FETCH FIRST 1 ROWS ONLY\r\n) AS recent_data;\r\n").Rows) srr_suggestion.Add(row["suggested_replacement_repair"].ToString());
+            foreach (DataRow row in sql.ExecuteQuery("SELECT DISTINCT remark_analysis, frequency\r\nFROM (\r\n    SELECT TOP 3 remark_analysis, COUNT(*) AS frequency\r\n    FROM LOG_MACHINETABLE\r\n    WHERE remark_analysis IS NOT NULL AND remark_analysis <> ''\r\n    GROUP BY remark_analysis\r\n    ORDER BY frequency DESC\r\n) AS freq_data\r\n\r\nUNION\r\n\r\nSELECT remark_analysis, NULL AS frequency\r\nFROM (\r\n    SELECT item.remark_analysis\r\n    FROM LOG_MACHINETABLE item\r\n    JOIN GROUP_TABLE _group ON _group.GroupID = item.groupID\r\n\tJOIN EXECUTION_HISTORY record ON record.id = _group.historylog_id\r\n    WHERE item.remark_analysis IS NOT NULL AND item.remark_analysis <> ''\r\n    ORDER BY record.date_commit DESC\r\n    OFFSET 0 ROWS FETCH FIRST 1 ROWS ONLY\r\n) AS recent_data;\r\n").Rows) remarks_suggestion.Add(row["remark_analysis"].ToString());
 
             foreach (DataRow row in LogMachineTable_DataTable.Rows)
             {
                 checkedByCollection.Add(row["checked_by"].ToString());
                 defectiveParts.Add(row["defect_part"].ToString());
+                
             }
+            defect_desc_suggestion = defect_desc_suggestion.Distinct().ToList();
+            srr_suggestion = srr_suggestion.Distinct().ToList();
+            remarks_suggestion = remarks_suggestion.Distinct().ToList();
+
+            defect_desc_suggestion.Remove("N/A");
+            srr_suggestion.Remove("N/A");
+            remarks_suggestion.Remove("N/A");
+
             setAutoComplete(checkby_textfield, checkedByCollection);
             setAutoComplete(defective_tb, defectiveParts);
+
+            ContextMenuStrip contextmenustrip_defectdesc = new ContextMenuStrip();
+            ContextMenuStrip contextmenustrip_ssr = new ContextMenuStrip();
+            ContextMenuStrip contextmenustrip_remarks = new ContextMenuStrip();
+
+            foreach (string a in defect_desc_suggestion) contextmenustrip_defectdesc.Items.Add(a, null, (sender, e) => change_richtextbox_text(defective_description_rtb, a));
+            foreach (string a in srr_suggestion) contextmenustrip_ssr.Items.Add(a, null, (sender, e) => change_richtextbox_text(suggestion_rtb, a));
+            foreach (string a in remarks_suggestion) contextmenustrip_remarks.Items.Add(a, null, (sender, e) => change_richtextbox_text(remarks_rtb, a));
+
+            defective_description_rtb.ContextMenuStrip = contextmenustrip_defectdesc;
+            suggestion_rtb.ContextMenuStrip = contextmenustrip_ssr;
+            remarks_rtb.ContextMenuStrip = contextmenustrip_remarks;
+
+        }
+        private void change_richtextbox_text(RichTextBox rtb, string text)
+        {
+            rtb.Text = text;
+        }
+
+        public void set_defective_description(string text)
+        {
+            defective_description_rtb.Text = text;
         }
 
         private void setAutoComplete(TextBox textbox, AutoCompleteStringCollection acsc)
@@ -111,28 +184,6 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
             textbox.AutoCompleteCustomSource = acsc;
         }
 
-
-
-        public DateTime getTargetDate()
-        {
-            
-            string rawhourstring = hour_textbox.Text; //CAUSING ERROR/ THIS IS CAUSE DUO TO DELETION, solve the deletion of group first.
-            //MessageBox.Show("**DEBUGG //" + rawhourstring);
-            int hour = Convert.ToInt32(rawhourstring);
-            if (!isAM && hour != 12)  // Convert PM hours (except 12 PM)
-                hour += 12;
-            if (isAM && hour == 12)    // Convert 12 AM to 0
-                hour = 0;
-
-            DateTime newDayTime = new DateTime(
-                my_targeted_date.Year,
-                my_targeted_date.Month,
-                my_targeted_date.Day,
-                hour,
-                Convert.ToInt32(min_tb.Text),
-                0);
-            return newDayTime;
-        }
         public string get_remarks()
         {
             return sql.FilterQuery(remarks_rtb.Text.Equals(string.Empty) ? "N/A" : remarks_rtb.Text);
@@ -147,182 +198,257 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
         {
             return sql.FilterQuery(checkby_textfield.Text.Equals(string.Empty) ? "N/A" : checkby_textfield.Text);
         }
-        private string convert_monthText(DateTime month)
-        {
-            string _month = "";
 
-            switch (month.Month)
+
+        private void changeTime_btn_Click(object sender, EventArgs e)
+        {
+            if (ID_Edit == -1)
             {
-                case 1:
-                    _month = "January";
-                break;
-                case 2:
-                    _month = "February";
-                    break;
-                case 3:
-                    _month = "March";
-                    break;
-                case 4:
-                    _month = "April";
-                    break;
-                case 5:
-                    _month = "May";
-                    break;
-                case 6:
-                    _month = "June";
-                    break;
-                case 7:
-                    _month = "July";
-                    break;
-                case 8:
-                    _month = "August";
-                    break;
-                case 9:
-                    _month = "September";
-                    break;
-                case 10:
-                    _month = "October";
-                    break;
-                case 11:
-                    _month = "November";
-                    break;
-                case 12:
-                    _month = "December";
-                    break;
+                TimeInterval_Picker tip = new TimeInterval_Picker(set_target_time);
+                tip.ShowDialog();
             }
-
-            return _month;
-        }
-
-        private void Item_Record_Load(object sender, EventArgs e)
-        {
-
-        }
-
-        private void defective_tb_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void richTextBox1_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void defective_description_rtb_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void defectivedesc_label_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void defective_tb_TextChanged_1(object sender, EventArgs e)
-        {
-
-        }
-
-        private void defectivepart_label_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void _showHour_Properly()
-        {
-            setDate(my_targeted_date);
-            hour_textbox.Text = my_targeted_date.Hour.ToString();
-            min_tb.Text = my_targeted_date.Minute.ToString();
-        }
-
-        private void hourUp_btn_Click(object sender, EventArgs e)
-        {
-            my_targeted_date.AddHours(1);
-            _showHour_Properly();
-        }
-
-        private void hourDown_btn_Click(object sender, EventArgs e)
-        {
-            my_targeted_date.AddHours(-1);
-            _showHour_Properly();
-        }
-
-        private void minUp_btn_Click(object sender, EventArgs e)
-        {
-            my_targeted_date.AddMinutes(1);
-            _showHour_Properly();
-        }
-
-        private void minDown_btn_Click(object sender, EventArgs e)
-        {
-            my_targeted_date.AddMinutes(-1);
-            _showHour_Properly();
-        }
-
-        private void hour_tb_TextChanged(object sender, EventArgs e)
-        {
-            if (!int.TryParse(hour_textbox.Text, out int hour))
+            else
             {
-                hour_textbox.Text = "";
-                return;
-            }
-
-            // Restrict the value to 12
-            if (hour > 12)
-            {
-                hour_textbox.Text = "12";
-                hour_textbox.SelectionStart = hour_textbox.Text.Length; // Move cursor to the end
+                TimeInterval_Picker tip = new TimeInterval_Picker(set_target_time, my_target_time);
+                tip.ShowDialog();
             }
         }
 
-        private void label1_Click(object sender, EventArgs e)
+        public void set_target_time(string text)
         {
-
+            this.my_target_time = text;
+            this.time_preview_tb.Text = text;
         }
 
-        private void checkby_textfield_TextChanged(object sender, EventArgs e)
+        private void defective_description_rtb_KeyDown(object sender, KeyEventArgs e)
         {
-
-        }
-
-        private void min_tb_TextChanged(object sender, EventArgs e)
-        {
-            if (!int.TryParse(min_tb.Text, out int minutes))
+            if (e.Control && e.KeyCode == Keys.Q)
             {
-                min_tb.Text = "";
-                return;
+                grouping_of_items parent = this.Parent.Parent.Parent as grouping_of_items;
+                foreach(Control control in parent.items_in_flp.Controls)
+                {
+                    if (control is Item_Record item)
+                    {
+                        item._defectivedescription_richtextbox.Text = this.defective_description_rtb.Text;
+                    }
+                }
             }
-
-            // Restrict the value to 59
-            if (minutes > 59)
+            else if (e.Control && e.Shift && e.KeyCode == Keys.V)
             {
-                min_tb.Text = "59";
-                min_tb.SelectionStart = min_tb.Text.Length; // Move cursor to the end
+                grouping_of_items parent = this.Parent.Parent.Parent as grouping_of_items;
+                foreach (Control control in parent.items_in_flp.Controls)
+                {
+                    if (control is Item_Record item)
+                    {
+                        item._defectivedescription_richtextbox.Text = Clipboard.GetText();
+                    }
+                }
             }
         }
 
 
 
-        private bool isAM = false;
-        private void _changeColor()
+        private void checkby_textfield_KeyDown(object sender, KeyEventArgs e)
         {
-            am_btn.BackColor = isAM ? Color.White : Color.DarkGray;
-            am_btn.ForeColor = isAM ? Color.Black : Color.DimGray;
-            pm_btn.BackColor = !isAM ? Color.White : Color.DarkGray;
-            pm_btn.ForeColor = !isAM ? Color.Black : Color.DimGray;
+            if (e.Control && e.KeyCode == Keys.Q)
+            {
+                grouping_of_items parent = this.Parent.Parent.Parent as grouping_of_items;
+                foreach (Control control in parent.items_in_flp.Controls)
+                {
+                    if (control is Item_Record item)
+                    {
+                        item._checkby_textbox.Text = this._checkby_textbox.Text;
+                    }
+                }
+            }
+            else if (e.Control && e.Shift && e.KeyCode == Keys.V)
+            {
+                grouping_of_items parent = this.Parent.Parent.Parent as grouping_of_items;
+                foreach (Control control in parent.items_in_flp.Controls)
+                {
+                    if (control is Item_Record item)
+                    {
+                        item._checkby_textbox.Text = Clipboard.GetText();
+                    }
+                }
+            }
         }
 
-        private void am_btn_Click(object sender, EventArgs e)
+
+
+        private void defective_tb_KeyDown(object sender, KeyEventArgs e)
         {
-            isAM = true;
-            _changeColor();
+            if (e.Control && e.KeyCode == Keys.Q)
+            {
+                grouping_of_items parent = this.Parent.Parent.Parent as grouping_of_items;
+                foreach (Control control in parent.items_in_flp.Controls)
+                {
+                    if (control is Item_Record item)
+                    {
+                        item._defectivepart_textbox.Text = this._defectivepart_textbox.Text;
+                    }
+                }
+            }
+            else if (e.Control && e.Shift && e.KeyCode == Keys.V)
+            {
+                grouping_of_items parent = this.Parent.Parent.Parent as grouping_of_items;
+                foreach (Control control in parent.items_in_flp.Controls)
+                {
+                    if (control is Item_Record item)
+                    {
+                        item._defectivepart_textbox.Text = Clipboard.GetText();
+                    }
+                }
+            }
         }
 
-        private void pm_btn_Click(object sender, EventArgs e)
+        private void suggestion_rtb_KeyDown(object sender, KeyEventArgs e)
         {
-            isAM = false;
-            _changeColor();
+            if (e.Control && e.KeyCode == Keys.Q)
+            {
+                grouping_of_items parent = this.Parent.Parent.Parent as grouping_of_items;
+                foreach (Control control in parent.items_in_flp.Controls)
+                {
+                    if (control is Item_Record item)
+                    {
+                        item._suggested_replacement_repair_richtextbox.Text = this._suggested_replacement_repair_richtextbox.Text;
+                    }
+                }
+            }
+            else if (e.Control && e.Shift && e.KeyCode == Keys.V)
+            {
+                grouping_of_items parent = this.Parent.Parent.Parent as grouping_of_items;
+                foreach (Control control in parent.items_in_flp.Controls)
+                {
+                    if (control is Item_Record item)
+                    {
+                        item._suggested_replacement_repair_richtextbox.Text = Clipboard.GetText();
+                    }
+                }
+            }
+        }
+
+        private void remarks_rtb_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.Q)
+            {
+                grouping_of_items parent = this.Parent.Parent.Parent as grouping_of_items;
+                foreach (Control control in parent.items_in_flp.Controls)
+                {
+                    if (control is Item_Record item)
+                    {
+                        item._remarks_or_analysis_richtextbox.Text = this._remarks_or_analysis_richtextbox.Text;
+                    }
+                }
+            }
+            else if (e.Control && e.Shift && e.KeyCode == Keys.V)
+            {
+                grouping_of_items parent = this.Parent.Parent.Parent as grouping_of_items;
+                foreach (Control control in parent.items_in_flp.Controls)
+                {
+                    if (control is Item_Record item)
+                    {
+                        item._remarks_or_analysis_richtextbox.Text = Clipboard.GetText();
+                    }
+                }
+            }
+        }
+
+        private void isdefect_toggle_btn_MouseEnter(object sender, EventArgs e)
+        {
+            List<string> guide = new List<string>()
+            {
+                "- Toggle Between Defective and Satisfactory", "CLICK+CTR\nApply changes of the Toggle Value to all other items"
+            };
+            grouping_of_items parent = this.Parent.Parent.Parent as grouping_of_items;
+            Create main_parent = parent.main_parentcreate;
+            if (main_parent is null) return;
+
+            main_parent.set_guide(guide);
+        }
+
+        private void checkby_textfield_MouseEnter(object sender, EventArgs e)
+        {
+            List<string> guide = new List<string>()
+            {
+                "- The Person who operates to check the machines", "Leave the field Empty if N/A",
+                "CTR+Q\nApply to all other items within the Group" , "CTR+SHIFT+V\n Apply paste from Clipboard to all items in the group"
+            };
+            grouping_of_items parent = this.Parent.Parent.Parent as grouping_of_items;
+            Create main_parent = parent.main_parentcreate;
+            if (main_parent is null) return;
+
+            main_parent.set_guide(guide);
+        }
+
+        private void defective_tb_MouseEnter(object sender, EventArgs e)
+        {
+            List<string> guide = new List<string>()
+            {
+                "- The name of part of machine that is Defective","Leave the field Empty if N/A",
+                "CTR+Q\nApply to all other items within the Group", "CTR+SHIFT+V\n Apply paste from Clipboard to all items in the group"
+            };
+            grouping_of_items parent = this.Parent.Parent.Parent as grouping_of_items;
+            Create main_parent = parent.main_parentcreate;
+            if (main_parent is null) return;
+
+            main_parent.set_guide(guide);
+        }
+
+        private void defective_description_rtb_MouseEnter(object sender, EventArgs e)
+        {
+            List<string> guide = new List<string>()
+            {
+                "- Description of whether how or why it happened in that specific Defective Part","Leave the field Empty if N/A",
+                "CTR+Q\nApply to all other items within the Group", "CTR+SHIFT+V\n Apply paste from Clipboard to all items in the group"
+            };
+            grouping_of_items parent = this.Parent.Parent.Parent as grouping_of_items;
+            Create main_parent = parent.main_parentcreate;
+            if (main_parent is null) return;
+
+            main_parent.set_guide(guide);
+        }
+
+        private void suggestion_rtb_MouseEnter(object sender, EventArgs e)
+        {
+            List<string> guide = new List<string>()
+            {
+                "- Describes what are the suggested improvements in that particular machine part","Leave the field Empty if N/A",
+                "CTR+Q\nApply to all other items within the Group", "CTR+SHIFT+V\n Apply paste from Clipboard to all items in the group"
+            };
+            grouping_of_items parent = this.Parent.Parent.Parent as grouping_of_items;
+            Create main_parent = parent.main_parentcreate;
+            if (main_parent is null) return;
+
+            main_parent.set_guide(guide);
+        }
+
+        private void remarks_rtb_MouseEnter(object sender, EventArgs e)
+        {
+            List<string> guide = new List<string>()
+            {
+                "- The overall evaluation or explanation","Leave the field Empty if N/A",
+                "CTR+Q\nApply to all other items within the Group", "CTR+SHIFT+V\n Apply paste from Clipboard to all items in the group"
+            };
+            grouping_of_items parent = this.Parent.Parent.Parent as grouping_of_items;
+            Create main_parent = parent.main_parentcreate;
+            if (main_parent is null) return;
+
+            main_parent.set_guide(guide);
+        }
+
+        private void panel1_MouseEnter(object sender, EventArgs e)
+        {
+            List<string> guide = new List<string>()
+            {
+                "- Time Duration of when it happen",
+                "Choose between Time-Specified or Time-Interval"
+            };
+            grouping_of_items parent = this.Parent.Parent.Parent as grouping_of_items;
+            Create main_parent = parent.main_parentcreate;
+            if (main_parent is null) return;
+
+            main_parent.set_guide(guide);
         }
     }
 }

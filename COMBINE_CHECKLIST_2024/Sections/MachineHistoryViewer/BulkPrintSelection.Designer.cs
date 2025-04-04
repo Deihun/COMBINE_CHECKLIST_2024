@@ -48,15 +48,22 @@
             this.location_cb = new System.Windows.Forms.ComboBox();
             this.removeAllSelected_btn = new System.Windows.Forms.Button();
             this.YearCB = new System.Windows.Forms.ComboBox();
+            this.confirm_btn = new System.Windows.Forms.Button();
+            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            this.back_btn = new System.Windows.Forms.Button();
+            this.next_btn = new System.Windows.Forms.Button();
+            this.Page_Label = new System.Windows.Forms.Label();
+            this.pageSetupDialog1 = new System.Windows.Forms.PageSetupDialog();
+            this.flowLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // selection_container_fl
             // 
             this.selection_container_fl.AutoScroll = true;
             this.selection_container_fl.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.selection_container_fl.Location = new System.Drawing.Point(12, 194);
+            this.selection_container_fl.Location = new System.Drawing.Point(12, 203);
             this.selection_container_fl.Name = "selection_container_fl";
-            this.selection_container_fl.Size = new System.Drawing.Size(217, 481);
+            this.selection_container_fl.Size = new System.Drawing.Size(217, 443);
             this.selection_container_fl.TabIndex = 0;
             this.selection_container_fl.WrapContents = false;
             // 
@@ -104,6 +111,7 @@
             this.dateTimePicker1.Name = "dateTimePicker1";
             this.dateTimePicker1.Size = new System.Drawing.Size(200, 20);
             this.dateTimePicker1.TabIndex = 7;
+            this.dateTimePicker1.ValueChanged += new System.EventHandler(this.dateTimePicker1_ValueChanged);
             // 
             // specificDate_rd
             // 
@@ -217,7 +225,7 @@
             // 
             // clearfilter_btn
             // 
-            this.clearfilter_btn.Location = new System.Drawing.Point(10, 166);
+            this.clearfilter_btn.Location = new System.Drawing.Point(122, 169);
             this.clearfilter_btn.Name = "clearfilter_btn";
             this.clearfilter_btn.Size = new System.Drawing.Size(107, 28);
             this.clearfilter_btn.TabIndex = 14;
@@ -324,11 +332,64 @@
             this.YearCB.TabIndex = 20;
             this.YearCB.SelectedIndexChanged += new System.EventHandler(this.YearCB_SelectedIndexChanged);
             // 
+            // confirm_btn
+            // 
+            this.confirm_btn.Location = new System.Drawing.Point(12, 169);
+            this.confirm_btn.Name = "confirm_btn";
+            this.confirm_btn.Size = new System.Drawing.Size(107, 28);
+            this.confirm_btn.TabIndex = 21;
+            this.confirm_btn.Text = "CONFIRM";
+            this.confirm_btn.UseVisualStyleBackColor = true;
+            this.confirm_btn.Click += new System.EventHandler(this.confirm_btn_Click);
+            // 
+            // flowLayoutPanel1
+            // 
+            this.flowLayoutPanel1.Controls.Add(this.back_btn);
+            this.flowLayoutPanel1.Controls.Add(this.next_btn);
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(12, 648);
+            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(132, 28);
+            this.flowLayoutPanel1.TabIndex = 22;
+            // 
+            // back_btn
+            // 
+            this.back_btn.Location = new System.Drawing.Point(0, 0);
+            this.back_btn.Margin = new System.Windows.Forms.Padding(0);
+            this.back_btn.Name = "back_btn";
+            this.back_btn.Size = new System.Drawing.Size(65, 24);
+            this.back_btn.TabIndex = 5;
+            this.back_btn.Text = "BACK";
+            this.back_btn.UseVisualStyleBackColor = true;
+            this.back_btn.Click += new System.EventHandler(this.back_btn_Click);
+            // 
+            // next_btn
+            // 
+            this.next_btn.Location = new System.Drawing.Point(65, 0);
+            this.next_btn.Margin = new System.Windows.Forms.Padding(0);
+            this.next_btn.Name = "next_btn";
+            this.next_btn.Size = new System.Drawing.Size(65, 24);
+            this.next_btn.TabIndex = 4;
+            this.next_btn.Text = "NEXT";
+            this.next_btn.UseVisualStyleBackColor = true;
+            this.next_btn.Click += new System.EventHandler(this.next_btn_Click);
+            // 
+            // Page_Label
+            // 
+            this.Page_Label.AutoSize = true;
+            this.Page_Label.Location = new System.Drawing.Point(151, 656);
+            this.Page_Label.Name = "Page_Label";
+            this.Page_Label.Size = new System.Drawing.Size(40, 13);
+            this.Page_Label.TabIndex = 23;
+            this.Page_Label.Text = "##/##";
+            // 
             // BulkPrintSelection
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1278, 678);
+            this.Controls.Add(this.Page_Label);
+            this.Controls.Add(this.flowLayoutPanel1);
+            this.Controls.Add(this.confirm_btn);
             this.Controls.Add(this.YearCB);
             this.Controls.Add(this.removeAllSelected_btn);
             this.Controls.Add(this.clearfilter_btn);
@@ -352,6 +413,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "BulkPrintSelection";
             this.Text = "BulkPrintSelection";
+            this.flowLayoutPanel1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -379,5 +441,11 @@
         private System.Windows.Forms.ComboBox location_cb;
         private System.Windows.Forms.Button removeAllSelected_btn;
         private System.Windows.Forms.ComboBox YearCB;
+        private System.Windows.Forms.Button confirm_btn;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
+        private System.Windows.Forms.Button back_btn;
+        private System.Windows.Forms.Button next_btn;
+        private System.Windows.Forms.Label Page_Label;
+        private System.Windows.Forms.PageSetupDialog pageSetupDialog1;
     }
 }

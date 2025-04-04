@@ -58,6 +58,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistory
             creation_parent.addNewGroups(group);
             group.TopLevel = false;
             parent.Controls.Add(group);
+            group.main_parentcreate = creation_parent;
             group.Show();
             group.parent = creation_parent;
 
@@ -72,7 +73,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistory
             foreach (DateTime range in dateRange)
             {
                 Item_Record item = new Item_Record(group);
-                item.setDate(range);
+                item.my_targeted_date = range;
                 item.setAutoComplete();
                 group.add_item(item);
             }

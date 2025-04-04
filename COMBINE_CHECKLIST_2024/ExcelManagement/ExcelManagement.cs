@@ -80,7 +80,7 @@ namespace COMBINE_CHECKLIST_2024.ExcelManagement
                 {
                     SQL_Support con = new SQL_Support("DESKTOP-HBKPAB1\\SQLEXPRESS", "GOODYEAR_MACHINE_HISTORY");
                     DataTable historyitemLog = new DataTable();
-                    historyitemLog = con.ExecuteQuery($"SELECT defect_part, defec_desc, suggested_replacement_repair, remark_analysis, overall_status, checked_by, datemark  FROM LOG_MACHINETABLE WHERE groupID = {selectedID};").Copy();
+                    historyitemLog = con.ExecuteQuery($"SELECT defect_part, defec_desc, suggested_replacement_repair, remark_analysis, overall_status, checked_by, datemark, target_time  FROM LOG_MACHINETABLE WHERE groupID = {selectedID};").Copy();
                     debugString += $"\nDEBUG// foreach ID=[{selectedID}] ROW-COUNT[{historyitemLog.Rows.Count}]- [\n";
                     _grouptable_list.Add(historyitemLog);
                     foreach (DataRow ItemArray in historyitemLog.Rows)
@@ -123,7 +123,7 @@ namespace COMBINE_CHECKLIST_2024.ExcelManagement
                     {
                         SQL_Support con = new SQL_Support("DESKTOP-HBKPAB1\\SQLEXPRESS", "GOODYEAR_MACHINE_HISTORY");
                         DataTable historyitemLog = new DataTable();
-                        historyitemLog = con.ExecuteQuery($"SELECT defect_part, defec_desc, suggested_replacement_repair, remark_analysis, overall_status, checked_by, datemark  FROM LOG_MACHINETABLE WHERE groupID = {selectedID};").Copy();
+                        historyitemLog = con.ExecuteQuery($"SELECT defect_part, defec_desc, suggested_replacement_repair, remark_analysis, overall_status, checked_by, datemark, target_time  FROM LOG_MACHINETABLE WHERE groupID = {selectedID};").Copy();
                         debugString += $"\nDEBUG// foreach ID=[{selectedID}] ROW-COUNT[{historyitemLog.Rows.Count}]- [\n";
                         _grouptable_list.Add(historyitemLog);
                         foreach (DataRow ItemArray in historyitemLog.Rows)
@@ -164,7 +164,7 @@ namespace COMBINE_CHECKLIST_2024.ExcelManagement
                 {
                     SQL_Support con = new SQL_Support("DESKTOP-HBKPAB1\\SQLEXPRESS", "GOODYEAR_MACHINE_HISTORY");
                     DataTable historyitemLog = new DataTable();
-                    historyitemLog = con.ExecuteQuery($"SELECT defect_part, defec_desc, suggested_replacement_repair, remark_analysis, overall_status, checked_by, datemark  FROM LOG_MACHINETABLE WHERE groupID = {selectedID};").Copy();
+                    historyitemLog = con.ExecuteQuery($"SELECT defect_part, defec_desc, suggested_replacement_repair, remark_analysis, overall_status, checked_by, datemark, target_time  FROM LOG_MACHINETABLE WHERE groupID = {selectedID};").Copy();
                     debugString += $"\nDEBUG// foreach ID=[{selectedID}] ROW-COUNT[{historyitemLog.Rows.Count}]- [\n";
                     _grouptable_list.Add(historyitemLog);
                     foreach (DataRow ItemArray in historyitemLog.Rows)
@@ -207,7 +207,7 @@ namespace COMBINE_CHECKLIST_2024.ExcelManagement
                     {
                         SQL_Support con = new SQL_Support("DESKTOP-HBKPAB1\\SQLEXPRESS", "GOODYEAR_MACHINE_HISTORY");
                         DataTable historyitemLog = new DataTable();
-                        historyitemLog = con.ExecuteQuery($"SELECT defect_part, defec_desc, suggested_replacement_repair, remark_analysis, overall_status, checked_by, datemark  FROM LOG_MACHINETABLE WHERE groupID = {selectedID};").Copy();
+                        historyitemLog = con.ExecuteQuery($"SELECT defect_part, defec_desc, suggested_replacement_repair, remark_analysis, overall_status, checked_by, datemark, target_time  FROM LOG_MACHINETABLE WHERE groupID = {selectedID};").Copy();
                         debugString += $"\nDEBUG// foreach ID=[{selectedID}] ROW-COUNT[{historyitemLog.Rows.Count}]- [\n";
                         _grouptable_list.Add(historyitemLog);
                         foreach (DataRow ItemArray in historyitemLog.Rows)
@@ -370,6 +370,7 @@ namespace COMBINE_CHECKLIST_2024.ExcelManagement
                         Datetotext convert = new Datetotext();
                         bool status = (bool)dataCell["overall_status"];
                         DateTime _date = (DateTime)dataCell["datemark"];
+                        string target_time = dataCell["target_time"].ToString();
                         string date_string = _date.Day.ToString() + "-" + convert.getMonthAsShortText(_date);
 
 
@@ -554,6 +555,7 @@ namespace COMBINE_CHECKLIST_2024.ExcelManagement
                             Datetotext convert = new Datetotext();
                             bool status = (bool)dataCell["overall_status"];
                             DateTime _date = (DateTime)dataCell["datemark"];
+                            string target_time = dataCell["target_time"].ToString();
                             string date_string = _date.Day.ToString() + "-" + convert.getMonthAsShortText(_date);
 
                             List<object> NumChar = new List<object>
@@ -582,7 +584,7 @@ namespace COMBINE_CHECKLIST_2024.ExcelManagement
 
                             SetCellData(worksheet, currentRow, 1, date_string, 10, false, XLColor.Black, null);
                             SetCellData(worksheet, currentRow, 2, status ? "Defective" : "Satisfactory", 10, false, XLColor.Black, null, XLAlignmentHorizontalValues.Center, XLAlignmentVerticalValues.Center);
-                            SetCellData(worksheet, currentRow, 3, convert.getTime12HoursPreset(_date), 10, false, XLColor.Black, null, XLAlignmentHorizontalValues.Center, XLAlignmentVerticalValues.Center);
+                            SetCellData(worksheet, currentRow, 3, target_time, 10, false, XLColor.Black, null, XLAlignmentHorizontalValues.Center, XLAlignmentVerticalValues.Center);
                             SetCellData(worksheet, currentRow, 4, dataCell["defect_part"].ToString(), 8, false, XLColor.Black, null, XLAlignmentHorizontalValues.Center, XLAlignmentVerticalValues.Center);
                             SetCellData(worksheet, currentRow, 5, dataCell["defec_desc"].ToString(), 8, false, XLColor.Black, null, XLAlignmentHorizontalValues.Center, XLAlignmentVerticalValues.Center);
                             SetCellData(worksheet, currentRow, 6, dataCell["checked_by"].ToString(), 10, false, XLColor.Black, null, XLAlignmentHorizontalValues.Center, XLAlignmentVerticalValues.Center);
