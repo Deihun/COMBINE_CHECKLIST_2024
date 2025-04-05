@@ -17,9 +17,13 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistory
         private System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
         private SQL_Support sql = new SQL_Support("DESKTOP-HBKPAB1\\SQLEXPRESS", "GOODYEAR_MACHINE_HISTORY");
         private int selected_id_for_preview = -1;
-        public Select_An_Item_To_Add_Form()
+        private Action<List<int>> method;
+        private List<int> already_taken_id;
+        public Select_An_Item_To_Add_Form(Action<List<int>> method, List<int> already_taken_id)
         {
             InitializeComponent();
+            this.method = method;
+            this.already_taken_id = already_taken_id;
             timer = new System.Windows.Forms.Timer();
             timer.Interval = 50; 
             timer.Tick += (sender, e) =>
@@ -43,8 +47,10 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistory
             data_flp.Controls.Clear();
             foreach (DataRow row in sql.ExecuteQuery("SELECT * FROM LOG_MACHINETABLE WHERE groupID IS NULL;").Rows)
             {
+                if (already_taken_id.Contains(Convert.ToInt32(row["ID"]))) continue;
                 CheckBox check = new CheckBox();
                 check.Text = row["datemark"].ToString();
+                check.Tag = Convert.ToInt32(row["ID"]);
                 data_flp.Controls.Add(check);
                 check.Show();
                 check.MouseEnter += (sender, e) => { start_updating(Convert.ToInt32(row["ID"])); };
@@ -61,10 +67,47 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistory
         {
             try
             {
+                foreach (Control control in contex_flp.Controls) control.Dispose();
+                contex_flp.Controls.Clear();
                 DataRow row = sql.ExecuteQuery($"SELECT * FROM LOG_MACHINETABLE WHERE ID = {selected_id_for_preview}").Rows[0];
-                content_label.Text = $"Defective Parts: {row["defect_part"]}";
+                string status = Convert.ToBoolean(row["overall_status"]) ? "OK" : "DEFECTIVE";
+                create_description($"DATE: {Convert.ToDateTime(row["datemark"]):dd/MM/yyyy}");
+                create_description($"Time: {row["target_time"]}");
+                create_description($"DEFECTIVE PARTS: {row["defect_part"]}");
+                create_description($"DEFECTIVE DESCRIPTION: {row["defec_desc"]}");
+                create_description($"SUGGEST/REPLACEMENT/REPAIR: {row["suggested_replacement_repair"]}");
+                create_description($"REMARKS/ANALYSIS: {row["remark_analysis"]}");
+                //content_label.Text =    $"DATE: {row["datemark"]}\n" +
+                //                        $"Defective Parts: {row["defect_part"]}\n" +
+                //                        $"Defective Description: {row["defec_desc"]}\n" +
+                //                        $"Overall Status: {()}";
             }
             catch (Exception e) { MessageBox.Show("catching " + e.Message); }
         }
+        private Label create_description(string text)
+        {
+            Label label = new Label();
+            label.ForeColor = Color.DimGray;
+            label.AutoSize = true;
+            label.Text = text;
+            contex_flp.Controls.Add(label);
+            label.Show();
+            return label;
+        }
+
+        private void confirm_btn_Click(object sender, EventArgs e)
+        {
+            method.Invoke(get_all_checked_ID());
+            this.Dispose();
+        }
+
+        private List<int> get_all_checked_ID()
+        {
+            List<int> ids = new List<int>();
+            foreach (Control control in data_flp.Controls) if (control is CheckBox check) if (check.Checked) ids.Add(Convert.ToInt32(check.Tag));
+            return ids;
+        }
+
+
     }
 }

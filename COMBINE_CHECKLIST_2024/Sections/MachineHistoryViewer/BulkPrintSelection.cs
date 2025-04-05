@@ -148,7 +148,6 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
             if (conditions.Count > 0)
                 query += " WHERE " + string.Join(" AND ", conditions);
 
-            MessageBox.Show(query);
             return sql.ExecuteQuery(query);
         }
 
@@ -210,6 +209,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
             monitoredby_cb.Text = "";
             location_cb.Text = "";
             year_cb.Text = "";
+            instantiate_all_object();
         }
 
         private void monitoredby_cb_SelectedIndexChanged(object sender, EventArgs e)

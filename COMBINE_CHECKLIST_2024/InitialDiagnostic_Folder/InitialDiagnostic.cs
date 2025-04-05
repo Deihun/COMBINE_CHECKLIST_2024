@@ -1,4 +1,6 @@
-﻿using Microsoft.SqlServer.Management.Smo;
+﻿using COMBINE_CHECKLIST_2024.InitialDiagnostic;
+using COMBINE_CHECKLIST_2024.SQLFolder;
+using Microsoft.SqlServer.Management.Smo;
 using Microsoft.Win32;
 using SQL_Connection_support;
 using System;
@@ -16,15 +18,13 @@ using System.Windows.Forms;
 
 namespace COMBINE_CHECKLIST_2024.InitialDiagnostics
 {
-    public partial class InitialDiagnostic: Form
+    public partial class initialDiagnostic: Form
     {
         bool CanRestart = false;
-        public InitialDiagnostic()
+        public initialDiagnostic()
         {
             InitializeComponent();
             createDatabase.Hide();
-
-
         }
 
         bool IsLocalDBInstalled()
@@ -85,45 +85,26 @@ namespace COMBINE_CHECKLIST_2024.InitialDiagnostics
             else Application.Restart();
         }
 
+
+
         private void InitialDiagnostic_Load(object sender, EventArgs e)
         {
-            bool _isLocalDBinstalled = IsLocalDBInstalled();
-            bool _IsExcelInstalled = IsExcelInstalled();
-            bool _CanConnectToDatabase = CanConnectToDatabase(GetSQLServerInstance(), "GOODYEAR_MACHINE_HISTORY");
-
-            // Show error labels if requirements are missing
-            label1.Visible = !_isLocalDBinstalled;  // SQL LocalDB missing
-            label2.Visible = !_IsExcelInstalled;    // Excel missing
-            label3.Visible = !_CanConnectToDatabase; // Database missing
-
-            // Block user from proceeding if any requirement is missing
-            if (!_isLocalDBinstalled || !_IsExcelInstalled)
+            var stored_string = new savecacheHandler();
+            string _server = stored_string.ConnectionString;
+            if (!IsExcelInstalled())
             {
-                MessageBox.Show("❌ Missing requirements! Ensure LocalDB and Excel are installed before proceeding.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                exit.Text = "Exit";  // Prevent restart
-                return;
+                MicrosoftExcel_Warning microsoftExcel_Warning = new MicrosoftExcel_Warning();
+                stored_flp.Controls.Add(microsoftExcel_Warning);
+                microsoftExcel_Warning.Show();
             }
-
-            // If the database is missing, attempt to create it
-            if (!_CanConnectToDatabase)
+            if (_server == "none")
             {
-                createDatabase.Show();
-                CreateDatabase(GetSQLServerInstance(), "GOODYEAR_MACHINE_HISTORY");
-                Thread.Sleep(3000);
-                //try { 
-                // Initialize SQL support and create tables
-
-
-                    exit.Text = "RESTART";
-                    CanRestart = true;
-                //}
-                //catch (Exception ex)
-                //{
-                //    MessageBox.Show("❌ Database creation failed: " + ex.Message, "Database Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                //}
-                return; 
+                server_instance_management sim = new server_instance_management();
+                sim.TopLevel = false;
+                stored_flp.Controls.Add(sim);
+                sim.Show();
             }
-            this.Dispose();
+            if (stored_flp.Controls.Count < 1) this.Dispose();
         }
 
         private void InitialDiagnostic_FormClosed(object sender, FormClosedEventArgs e)
@@ -138,10 +119,6 @@ namespace COMBINE_CHECKLIST_2024.InitialDiagnostics
 
             string query = $"CREATE DATABASE {dbName};" +
                            $"ALTER DATABASE GOODYEAR_MACHINE_HISTORY SET ONLINE;";
-                           //$"USE GOODYEAR_MACHINE_HISTORY;" +
-                           //$"CREATE USER [{GetSQLServerInstance()}] FOR LOGIN [{GetSQLServerInstance()}];" +
-                           //$"ALTER ROLE db_owner ADD MEMBER [{GetSQLServerInstance()}];";
-
             try
             {
                 using (SqlConnection conn = new SqlConnection(connectionString))

@@ -82,6 +82,7 @@
             this.addAsDateInterval_btn.Text = "ADD AS DATE INTERVAL";
             this.addAsDateInterval_btn.UseVisualStyleBackColor = true;
             this.addAsDateInterval_btn.Click += new System.EventHandler(this.additem_btn_Click);
+            this.addAsDateInterval_btn.MouseEnter += new System.EventHandler(this.addAsDateInterval_btn_MouseEnter);
             // 
             // create_new_history_btn
             // 
@@ -227,6 +228,7 @@
             this.button2.Text = "ADD WITH EMPTY ITEM";
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.button2.MouseEnter += new System.EventHandler(this.button2_MouseEnter);
             // 
             // add_with_presets_btn
             // 
@@ -237,6 +239,7 @@
             this.add_with_presets_btn.Text = "ADD WITH PRESETS";
             this.add_with_presets_btn.UseVisualStyleBackColor = true;
             this.add_with_presets_btn.Click += new System.EventHandler(this.add_with_presets_btn_Click);
+            this.add_with_presets_btn.MouseEnter += new System.EventHandler(this.add_with_presets_btn_MouseEnter);
             // 
             // label4
             // 

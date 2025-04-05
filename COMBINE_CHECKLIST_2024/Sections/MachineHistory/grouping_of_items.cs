@@ -98,6 +98,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistory
         public void hideDelete()
         {
             deletegroup_btn.Hide();
+            add_new_item.Hide();
         }
 
         public void add_item(Form item)
@@ -255,7 +256,6 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistory
 
         private void add_new_item_Click(object sender, EventArgs e)
         {
-            
             Select_A_Date select_A_Date = new Select_A_Date(add_a_record_item_with_setup_dt);
             select_A_Date.ShowDialog();
         }
@@ -263,6 +263,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistory
         private void add_a_record_item_with_setup_dt(DateTime dt)
         {
             Item_Record item_Record = new Item_Record();
+            item_Record.setAutoComplete();
             item_Record.my_targeted_date = dt;
             add_item(item_Record);
         }

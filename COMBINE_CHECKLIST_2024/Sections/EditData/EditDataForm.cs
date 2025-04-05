@@ -19,12 +19,16 @@ namespace COMBINE_CHECKLIST_2024.Sections.EditData
     public partial class EditDataForm: Form
     {
         private SQL_Support sql = new SQL_Support("DESKTOP-HBKPAB1\\SQLEXPRESS", "GOODYEAR_MACHINE_HISTORY");
-        private List<grouping_of_items> groupList = new List<grouping_of_items>();
-        private List<Button> buttonList = new List<Button>();
+        private List<FlowLayoutPanel> list_of_pages = new List<FlowLayoutPanel>();
         private int intData = 1;
 
+
+        private const int maximum_object_in_page = 20;
         private int originalFormWidth;
         private int originalFormHeight;
+        private int number_of_page;
+        private int selected_page = 1;
+        private List<Button> list_of_item = new List<Button>();
 
         Datetotext _Convert = new Datetotext();
         public EditDataForm(int originalFormWidth, int originalFormHeight)
@@ -36,7 +40,6 @@ namespace COMBINE_CHECKLIST_2024.Sections.EditData
 
         private void setData(int id)
         {
-            //INCOMPLETE - LIMIT DATA THROUGH SQL GETTING ALL HISTORY COUNT 
             label1.Text = $"ID: {id}";
             reupdateEditArea(id);
         }
@@ -48,8 +51,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.EditData
 
         private void next_btn_Click(object sender, EventArgs e)
         {
-            intData++;
-            setData(intData);
+
         }
 
         private void previous_btn_Click(object sender, EventArgs e)
@@ -57,10 +59,116 @@ namespace COMBINE_CHECKLIST_2024.Sections.EditData
             intData--;
             setData(intData);
         }
-        
-        private void reupdateEditArea(int id/* MainID*/)
+
+        public void instantiate_all_object()
         {
-            removeAllGroups();
+            foreach (FlowLayoutPanel flp in list_of_pages) flp.Dispose();
+            list_of_pages.Clear();
+            Add_new_Page();
+            number_of_page = 1;
+            int number_of_objects_total = 0;
+            int number_of_object = 0;
+            foreach (DataRow row in get_server_with_filter_on().Rows)
+            {
+                add_new_record_as_button($"{row["date_commit"]} ({row["ID"]})", Convert.ToInt32(row["ID"]));
+                number_of_object++;
+                number_of_objects_total++;
+                if (number_of_object > maximum_object_in_page)
+                {
+                    number_of_object = 0;
+                    number_of_page++;
+                    Add_new_Page();
+                }
+            }
+            selected_page = change_page(1, 0);
+            TotalAmount_label.Text = $"TOTAL: {number_of_objects_total}";
+        }
+
+        public void Add_new_Page()
+        {
+            FlowLayoutPanel flp = new FlowLayoutPanel();
+            flp.Padding = new Padding(0);
+            flp.Margin = new Padding(0);
+            flp.FlowDirection = FlowDirection.TopDown;
+            flp.WrapContents = false;
+            flp.Width = flowLayoutPanel2.Width;
+            flp.Height = flowLayoutPanel2.Height;
+            list_of_pages.Add(flp);
+            flowLayoutPanel2.Controls.Add(flp);
+            flp.Show();
+        }
+
+
+
+        public int change_page(int page, int difference)
+        {
+            int _page = page + difference;
+            foreach (FlowLayoutPanel flp in list_of_pages) flp.Hide();
+            try
+            {
+                list_of_pages[_page - 1].Show();
+                page_label.Text = $"PAGE {_page}/{number_of_page}";
+                next_btn.Visible = _page < number_of_page;
+                back_btn.Visible = _page > 1;
+            }
+            catch
+            {
+                list_of_pages[0].Show();
+                page_label.Text = $"PAGE {page}/{number_of_page}";
+                next_btn.Visible = page < number_of_page;
+                back_btn.Visible = page > 1;
+                return page;
+            }
+            return _page;
+        }
+        private Button add_new_record_as_button(string name, int groupID)
+        {
+            Button button = new Button();
+            button.Width = flowLayoutPanel2.Width - 20;
+            button.Text = name;
+            button.Tag = groupID;
+            button.BackColor = Color.White;
+            list_of_item.Add(button);
+            list_of_pages[number_of_page - 1].Controls.Add(button);
+            button.Click += (sender, e) => { reupdateEditArea(groupID); };
+            button.Show();
+            return button;
+        }
+
+        private DataTable get_server_with_filter_on()
+        {
+            List<string> conditions = new List<string>();
+
+            string query = $@"
+        SELECT  DISTINCT
+            record.ID, 
+            _group.Machine_Name, 
+            _group.Monitored_By, 
+            _group.Location, 
+            record.date_commit
+        FROM EXECUTION_HISTORY record
+        LEFT JOIN GROUP_TABLE _group ON record.id = _group.historylog_id
+        LEFT JOIN LOG_MACHINETABLE item ON item.groupID = _group.GroupID
+    ";
+            if (enableDateTime_cb.Checked)
+            {
+                conditions.Add($" DAY(record.date_commit) = {dateTimePicker1.Value.Day} AND MONTH(record.date_commit) = {dateTimePicker1.Value.Month} AND YEAR(record.date_commit) = {dateTimePicker1.Value.Day} ");
+            }
+            if (!string.IsNullOrEmpty(search_tb.Text))
+                conditions.Add($" [_group].Machine_Name LIKE '%{search_tb.Text}%'");
+
+            if (conditions.Count > 0)
+                query += " WHERE " + string.Join(" AND ", conditions);
+
+            return sql.ExecuteQuery(query);
+        }
+
+
+        private void reupdateEditArea(int id)
+        {
+            foreach (Control control in flowLayoutPanel1.Controls) control.Dispose();
+            flowLayoutPanel1.Controls.Clear();
+            label1.Text = $"ID: {id}";
             DataTable listOfGroups = sql.ExecuteQuery($"SELECT * FROM GROUP_TABLE WHERE historylog_id = {id};");
             foreach (DataRow row in listOfGroups.Rows)
             { //Generate Group Forms
@@ -73,13 +181,11 @@ namespace COMBINE_CHECKLIST_2024.Sections.EditData
                 grouping_of_items groups = new grouping_of_items(From, To, monitor,machine,location);
                 groups.ID_Edit = groupID;
                 groups.TopLevel = false;
-                groups.Width = flowLayoutPanel1.ClientSize.Width / 2; // Example: half of the panel width
-                groups.Height = flowLayoutPanel1.ClientSize.Height / 2; // Example: half of the panel height
-
+                groups.Width = flowLayoutPanel1.ClientSize.Width / 2; 
+                groups.Height = flowLayoutPanel1.ClientSize.Height / 2; 
                 flowLayoutPanel1.Controls.Add(groups);
                 groups.hideDelete();
                 groups.Show();
-                groupList.Add(groups);
 
                 DataTable itemDataTable = sql.ExecuteQuery($"SELECT * FROM LOG_MACHINETABLE WHERE groupID = {groupID};");
                 foreach (DataRow _row in itemDataTable.Rows)
@@ -103,28 +209,10 @@ namespace COMBINE_CHECKLIST_2024.Sections.EditData
             // RENDER WORKBENCH 
         }
 
-        private void removeAllGroups()
-        {
-            for (int i = groupList.Count - 1; i >= 0; i--) 
-            {
-                groupList[i].Dispose();
-                groupList.RemoveAt(i);
-            }
-        }
-
-        private void removeAllButtons()
-        {
-            for (int i = buttonList.Count - 1; i >= 0; i--)
-            {
-                buttonList[i].Dispose();
-                buttonList.RemoveAt(i);
-            }
-        }
-
         private void applychange_btn_Click(object sender, EventArgs e)
         {
             string query = "";
-            foreach (grouping_of_items groups in groupList)
+            foreach (grouping_of_items groups in flowLayoutPanel1.Controls)
             {
                query = $"UPDATE GROUP_TABLE SET Monitored_By = '{groups.getMonitor()}'," +
                     $"Machine_Name = '{groups.getMachineName()}', Location = '{groups.getLocation()}'" +
@@ -160,7 +248,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.EditData
 
         private void EditDataForm_VisibleChanged(object sender, EventArgs e)
         {
-            showButtonSelection();
+            instantiate_all_object();
             SetGradientBackground("#D1FFC3", "#79AE86");
         }
         private void SetGradientBackground(string hexColor1, string hexColor2)
@@ -181,82 +269,6 @@ namespace COMBINE_CHECKLIST_2024.Sections.EditData
             this.BackgroundImage = bmp;
         }
 
-        private void showButtonSelection()
-        {
-            DataTable buttonDatas = sql.ExecuteQuery("SELECT * FROM EXECUTION_HISTORY;");
-            removeAllButtons();
-            foreach (DataRow rows in buttonDatas.Rows)
-            {
-                Button button = new Button();
-                DateTime selectedDate = (DateTime)rows["date_commit"];
-
-                button.Text = _Convert.getMonthAsText(selectedDate) + selectedDate.Day + $", {selectedDate.Year} ({rows["id"]})";
-                button.Width = flowLayoutPanel2.Width - 5;
-                button.BackColor = Color.White;
-                int buttonId = Convert.ToInt32(rows["id"]); // Store ID in a local variable
-                buttonList.Add(button);
-                button.Click += (s, ev) => ButtonClicked(s, buttonId); // Use local variable
-
-                flowLayoutPanel2.Controls.Add(button); // Add button to the form
-            }
-        }
-        private void showButtonSelection(string Filter, DateTimePicker dtp)
-        {
-            string query = "SELECT DISTINCT " +
-               "eh.id, " +
-               "eh.date_commit " +
-               "FROM EXECUTION_HISTORY eh " +
-               "JOIN GROUP_TABLE gt ON eh.id = gt.historylog_id " +
-               "JOIN LOG_MACHINETABLE lm ON gt.GroupID = lm.groupID " +
-               "WHERE (gt.Monitored_By LIKE '%" + Filter + "%' " +
-               "OR gt.Machine_Name LIKE '%" + Filter + "%' " +
-               "OR lm.defect_part LIKE '%" + Filter + "%' " +
-               "OR lm.defec_desc LIKE '%" + Filter + "%' " +
-               "OR lm.suggested_replacement_repair LIKE '%" + Filter + "%' " +
-               "OR lm.checked_by LIKE '%" + Filter + "%')";
-
-            if (dtp.Enabled)
-            {
-                DateTime selectedDate = dtp.Value;
-                query += " AND eh.date_commit >= '" + selectedDate.ToString("yyyy-MM-dd 00:00:00") + "' " +
-                         "AND eh.date_commit <= '" + selectedDate.ToString("yyyy-MM-dd 23:59:59") + "'";
-            }
-
-            // Execute query
-            DataTable buttonDatas = sql.ExecuteQuery(query);
-
-
-
-            removeAllButtons();
-
-            foreach (DataRow row in buttonDatas.Rows)
-            {
-                Button button = new Button
-                {
-                    Width = flowLayoutPanel2.Width - 5,
-                    BackColor = Color.White
-                };
-
-                DateTime selectedDate = (DateTime)row["date_commit"];
-                int buttonId = Convert.ToInt32(row["ID"]); // Correctly referencing LOG_MACHINETABLE ID
-
-                button.Text = $"{_Convert.getMonthAsText(selectedDate)} {selectedDate.Day}, {selectedDate.Year} ({buttonId})";
-
-                button.Click += (s, ev) => ButtonClicked(s, buttonId); // Ensure correct ID is used
-
-                buttonList.Add(button);
-                flowLayoutPanel2.Controls.Add(button);
-            }
-        }
-
-
-
-
-        private void ButtonClicked(object sender, int e)
-        {
-            this.intData = e;
-            setData(intData);
-        }
 
         private void EditDataForm_Load(object sender, EventArgs e)
         {
@@ -265,12 +277,10 @@ namespace COMBINE_CHECKLIST_2024.Sections.EditData
 
         private void search_tb_TextChanged(object sender, EventArgs e)
         {
-            showButtonSelection(search_tb.Text, dateTimePicker1);
         }
 
         private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
         {
-            showButtonSelection(search_tb.Text, dateTimePicker1);
         }
 
         private void enableDateTime_cb_CheckedChanged(object sender, EventArgs e)
@@ -280,6 +290,28 @@ namespace COMBINE_CHECKLIST_2024.Sections.EditData
 
         private void EditDataForm_Resize(object sender, EventArgs e)
         {
+        }
+
+        private void confirm_btn_Click(object sender, EventArgs e)
+        {
+            instantiate_all_object();
+        }
+
+        private void clear_btn_Click(object sender, EventArgs e)
+        {
+            search_tb.Text = "";
+            enableDateTime_cb.Checked = false;
+            instantiate_all_object();
+        }
+
+        private void next_btn_Click_1(object sender, EventArgs e)
+        {
+            selected_page = change_page(selected_page, 1);
+        }
+
+        private void back_btn_Click(object sender, EventArgs e)
+        {
+            selected_page = change_page(selected_page, -1);
         }
     }
 }

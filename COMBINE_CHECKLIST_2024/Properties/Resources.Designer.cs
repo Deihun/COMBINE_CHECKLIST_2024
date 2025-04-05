@@ -79,5 +79,15 @@ namespace COMBINE_CHECKLIST_2024.Properties {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Microsoft_Excel_Emblem {
+            get {
+                object obj = ResourceManager.GetObject("Microsoft-Excel-Emblem", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }

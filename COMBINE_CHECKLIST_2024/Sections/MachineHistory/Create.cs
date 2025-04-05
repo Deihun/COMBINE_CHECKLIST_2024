@@ -61,10 +61,11 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
             {
                 after_panel.Show();
                 create_new_history_btn.Hide();
+                button2.Hide();
+                add_with_presets_btn.Hide();
                 addAsDateInterval_btn.Hide();
                 order_a_SelectAsync();
                 foreach (Control control in flowLayoutPanel1.Controls) if (control is grouping_of_items g) g.hideDelete();
-                flowLayoutPanel1.Controls.Clear();
 
                 MessageBox.Show($"Data {_last_identity} successfully added in the database!");
             }
@@ -84,7 +85,6 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
                     query = $"INSERT INTO GROUP_TABLE (From_Date, historylog_id, To_Date, Monitored_By, Machine_Name, Location) " +
                                    $"VALUES ('{groupForm._from_dt:yyyy-MM-dd HH:mm:ss}', {_last_identity}, '{groupForm._to_dt.Date:yyyy-MM-dd HH:mm:ss}', '{groupForm.getMonitor()}', '{groupForm.getMachineName()}', '{groupForm.getLocation()}'); " +
                                    "SELECT SCOPE_IDENTITY();";
-                    MessageBox.Show($"{query}");
                     int groupID = Convert.ToInt32(sql.ExecuteQuery(query).Rows[0][0]);
 
                     sql._isDebugShow = true;
@@ -93,11 +93,22 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
                     {
                         if (_control is Item_Record logGroup)
                         {
-                            string _query = $"INSERT INTO LOG_MACHINETABLE (defect_part, defec_desc, suggested_replacement_repair, remark_analysis, overall_status, checked_by, groupID, datemark, target_time) " +
-                                           $" VALUES ('{logGroup.get_defectiveparts()}', '{logGroup.get_defectiveDescription()}', '{logGroup.get_suggestion()}', '{logGroup.get_remarks()}', " +
-                                           $" {logGroup.get_overallAnalysis()}, '{logGroup.get_checkby()}', {groupID}, '{logGroup.my_targeted_date.Date:yyyy - MM - dd HH: mm: ss}', '{logGroup.my_target_time}');";
-
-                            sql.ExecuteQuery(_query);
+                            string _query = "";
+                            if (logGroup.ID_inQueue == -1)
+                            {
+                                _query = $"INSERT INTO LOG_MACHINETABLE (defect_part, defec_desc, suggested_replacement_repair, remark_analysis, overall_status, checked_by, groupID, datemark, target_time) " +
+                                   $" VALUES ('{logGroup.get_defectiveparts()}', '{logGroup.get_defectiveDescription()}', '{logGroup.get_suggestion()}', '{logGroup.get_remarks()}', " +
+                                   $" {logGroup.get_overallAnalysis()}, '{logGroup.get_checkby()}', {groupID}, '{logGroup.my_targeted_date.Date:yyyy - MM - dd HH: mm: ss}', '{logGroup.my_target_time}');";
+                            }
+                            else
+                            {
+                                _query = $"UPDATE LOG_MACHINETABLE SET " +
+                                    $"defect_part = '{logGroup.get_defectiveparts()}',  defec_desc = '{logGroup.get_defectiveDescription()}',  suggested_replacement_repair = '{logGroup.get_suggestion()}', " +
+                                    $"remark_analysis = '{logGroup.get_remarks()}',  overall_status = {logGroup.get_overallAnalysis()},  checked_by = '{logGroup.get_checkby()}',  groupID = {groupID}, " +
+                                    $"datemark =  '{logGroup.my_targeted_date.Date:yyyy - MM - dd HH: mm: ss}',  target_time = '{logGroup.my_target_time}' " +
+                                    $"WHERE ID = {logGroup.ID_inQueue};";
+                            }
+                                sql.ExecuteQuery(_query);
                         }
                     }
                     after_panel.Show();
@@ -111,8 +122,6 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
                     create_new_history_btn.SendToBack();
                 }
             }
-            //HistoryExcelGeneration export = new HistoryExcelGeneration(filepath);
-            //export.generate_an_excel(_last_id_identity);
         }
 
         private void Create_Load(object sender, EventArgs e)
@@ -132,7 +141,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
                 new Rectangle(0, 0, this.Width, this.Height),
                 color1,
                 color2,
-                LinearGradientMode.Vertical)) // Change direction if needed
+                LinearGradientMode.Vertical)) 
             {
                 g.FillRectangle(brush, 0, 0, this.Width, this.Height);
             }
@@ -144,6 +153,8 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
             after_panel.Hide();
             create_new_history_btn.Show();
             addAsDateInterval_btn.Show();
+            button2.Show();
+            add_with_presets_btn.Show();
             create_new_history_btn.BringToFront();
             AutoCompleteStringCollection location = new AutoCompleteStringCollection();
             AutoCompleteStringCollection monitoredBy = new AutoCompleteStringCollection();
@@ -215,6 +226,8 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
             after_panel.Hide();
             create_new_history_btn.Show();
             addAsDateInterval_btn.Show();
+            button2.Show();
+            add_with_presets_btn.Show();
 
             foreach (Control control in flowLayoutPanel1.Controls) control.Dispose();
             flowLayoutPanel1.Controls.Clear();
@@ -272,6 +285,12 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
                 try { list.Add(tupleKey, row["Monitored_By"].ToString()); } catch { }
             }
             set_suggestion(list);
+
+            List<string> guide = new List<string>()
+            {
+                "- It is you"
+            };
+            set_guide(guide);
         }
 
         private void set_text_from_suggestion(TextBox textbox, string text)
@@ -314,6 +333,11 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
                 try { list.Add(tupleKey, row["Machine_Name"].ToString()); } catch { }
             }
             set_suggestion(list);
+            List<string> guide = new List<string>()
+            {
+                "- It is the name of targeted Machine that is being under maintenance"
+            };
+            set_guide(guide);
         }
 
         private void top_panel_MouseEnter(object sender, EventArgs e)
@@ -328,8 +352,6 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
 
         private void location_tb_MouseEnter(object sender, EventArgs e)
         {
-
-
             string query = @"SELECT DISTINCT Location, frequency
                             FROM (
                                 SELECT TOP 3 Location, COUNT(*) AS frequency
@@ -362,6 +384,11 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
                 try { list.Add(tupleKey, row["Location"].ToString()); } catch { }
             }
             set_suggestion(list);
+            List<string> guide = new List<string>()
+            {
+                "- It is where the Machine Located at. ex. PLANT 1"
+            };
+            set_guide(guide);
         }
 
         public void set_guide(List<string> list_of_tutorials)
@@ -384,6 +411,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
         private void button2_Click(object sender, EventArgs e)
         {
             grouping_of_items grouping_Of_Items = new grouping_of_items(DateTime.Now, DateTime.Now, monitor_tb.Text, machine_tb.Text, location_tb.Text);
+            grouping_Of_Items.main_parentcreate = this;
             grouping_Of_Items.TopLevel = false;
             flowLayoutPanel1.Controls.Add(grouping_Of_Items);
             grouping_Of_Items.Show();
@@ -391,8 +419,63 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
 
         private void add_with_presets_btn_Click(object sender, EventArgs e)
         {
-            Select_An_Item_To_Add_Form select_An_Item_To_Add_Form = new Select_An_Item_To_Add_Form();
+            List<int> already_taken_id = new List<int>();
+            foreach (grouping_of_items group in flowLayoutPanel1.Controls) foreach (Item_Record item in group.items_in_flp.Controls) if (item.ID_inQueue != -1) already_taken_id.Add(item.ID_inQueue);
+            Select_An_Item_To_Add_Form select_An_Item_To_Add_Form = new Select_An_Item_To_Add_Form(add_with_preset_id, already_taken_id);
             select_An_Item_To_Add_Form.ShowDialog();
+        }
+        private void add_with_preset_id(List<int> preset_id)
+        {
+            if (preset_id.Count < 1) return;
+            grouping_of_items group = new grouping_of_items(DateTime.Now, DateTime.Now, monitor_tb.Text, machine_tb.Text, location_tb.Text);
+            group.main_parentcreate = this;
+            group.TopLevel = false;
+            flowLayoutPanel1.Controls.Add(group);
+            group.Show();
+            foreach (int id in preset_id)
+            {
+                DataRow datas = sql.ExecuteQuery($"SELECT * FROM LOG_MACHINETABLE WHERE ID = {id};").Rows[0];
+                Item_Record item = new Item_Record();
+                item.ID_inQueue = id;
+                item.setAutoComplete();
+                item._checkby_textbox.Text = datas["checked_by"].ToString();
+                item._defectivedescription_richtextbox.Text = datas["defec_desc"].ToString();
+                item._defectivepart_textbox.Text = datas["defect_part"].ToString();
+                item._remarks_or_analysis_richtextbox.Text = datas["remark_analysis"].ToString();
+                item._suggested_replacement_repair_richtextbox.Text = datas["suggested_replacement_repair"].ToString();
+                item.my_targeted_date = Convert.ToDateTime(datas["datemark"]);
+                item.my_target_time = datas["target_time"].ToString();
+                item.setIsDefect(Convert.ToBoolean(datas["overall_status"]));
+                group.add_item(item);
+            }
+
+        }
+
+        private void button2_MouseEnter(object sender, EventArgs e)
+        {
+            List<string> guide = new List<string>()
+            {
+                "- Add an empty group where you can manually add each item", "Useful for creating a maintenance for none-consecutive days."
+            };
+            set_guide(guide);
+        }
+
+        private void add_with_presets_btn_MouseEnter(object sender, EventArgs e)
+        {
+            List<string> guide = new List<string>()
+            {
+                "- Add a group base on pre-save Items", "Useful for creating maintenance entries in advance and save them for future use"
+            };
+            set_guide(guide);
+        }
+
+        private void addAsDateInterval_btn_MouseEnter(object sender, EventArgs e)
+        {
+            List<string> guide = new List<string>()
+            {
+                "- Add a group with Item adjusted base on selected Date", "Useful for creating maintenance schedules across consecutive days."
+            };
+            set_guide(guide);
         }
     }
 }

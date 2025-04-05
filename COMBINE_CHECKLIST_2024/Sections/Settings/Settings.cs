@@ -1,9 +1,11 @@
-﻿using SQL_Connection_support;
+﻿using COMBINE_CHECKLIST_2024.SQLFolder;
+using SQL_Connection_support;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,7 +21,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.Settings
             InitializeComponent();
         }
 
-        private void resetConfirm_btn_Click(object sender, EventArgs e)
+        private void resetConfirm_btn_Click()
         {
             sql.ExecuteQuery("TRUNCATE TABLE EXECUTION_HISTORY; " +
                 "TRUNCATE TABLE GROUP_TABLE; " +
@@ -35,30 +37,103 @@ namespace COMBINE_CHECKLIST_2024.Sections.Settings
 
         private void resetDatabase_Click(object sender, EventArgs e)
         {
-            
-            resetConfirm_btn.Enabled = true;
-            timerResetDatabase.Start();
+            Warning_WithDelayConfirmation warning_WithDelayConfirmation = new Warning_WithDelayConfirmation("This action will result of data erasure and dataloss which cannot be undone. Are sure do you want to proceed?", "WARNING", resetConfirm_btn_Click);
+            warning_WithDelayConfirmation.ShowDialog();
         }
 
-        private void timerResetDatabase_Tick(object sender, EventArgs e)
-        {
-            resetConfirm_btn.Enabled = false;
-        }
 
-        private void resetHistorytimer_Tick(object sender, EventArgs e)
-        {
-            historyresetconfirm_btn.Enabled = false;
-        }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            historyresetconfirm_btn.Enabled = true;
-            resetHistorytimer.Start();
+            Warning_WithDelayConfirmation warning_WithDelayConfirmation = new Warning_WithDelayConfirmation("This action will result of data erasure and dataloss which cannot be undone. Are sure do you want to proceed?", "WARNING", historyresetconfirm_btn_Click);
+            warning_WithDelayConfirmation.ShowDialog();
         }
 
-        private void historyresetconfirm_btn_Click(object sender, EventArgs e)
+        private void historyresetconfirm_btn_Click()
         {
             sql.ExecuteQuery("TRUNCATE TABLE HISTORY_;");
+        }
+
+        private void Setting_VisibleChanged(object sender, EventArgs e)
+        {
+            SetGradientBackground("#D1FFC3", "#79AE86");
+        }
+
+        private void SetGradientBackground(string hexColor1, string hexColor2)
+        {
+            Color color1 = ColorTranslator.FromHtml(hexColor1);
+            Color color2 = ColorTranslator.FromHtml(hexColor2);
+
+            Bitmap bmp = new Bitmap(this.Width, this.Height);
+            using (Graphics g = Graphics.FromImage(bmp))
+            using (LinearGradientBrush brush = new LinearGradientBrush(
+                new Rectangle(0, 0, this.Width, this.Height),
+                color1,
+                color2,
+                LinearGradientMode.Vertical)) // Change direction if needed
+            {
+                g.FillRectangle(brush, 0, 0, this.Width, this.Height);
+            }
+            this.BackgroundImage = bmp;
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            sql.BackupDatabase();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            Warning_WithDelayConfirmation warning_WithDelayConfirmation = new Warning_WithDelayConfirmation("This action will result of data erasure and dataloss which cannot be undone. Are sure do you want to proceed?", "WARNING", load_a_backup);
+            warning_WithDelayConfirmation.ShowDialog();
+        }
+
+        private void load_a_backup()
+        {
+            sql.RestoreToExistingDatabase();
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            var savecache = new savecacheHandler();
+            savecache.EditConnection("none");
+            Application.Restart();
+        }
+
+        private void standard_btn_Click(object sender, EventArgs e)
+        {
+            var savecache = new savecacheHandler();
+            savecache.EditCacheTheme("standard");
+        }
+
+        private void lavender_btn_Click(object sender, EventArgs e)
+        {
+            var savecache = new savecacheHandler();
+            savecache.EditCacheTheme("lavender");
+        }
+
+        private void sky_btn_Click(object sender, EventArgs e)
+        {
+            var savecache = new savecacheHandler();
+            savecache.EditCacheTheme("sky");
+        }
+
+        private void warm_btn_Click(object sender, EventArgs e)
+        {
+            var savecache = new savecacheHandler();
+            savecache.EditCacheTheme("warm");
+        }
+
+        private void gray_btn_Click(object sender, EventArgs e)
+        {
+            var savecache = new savecacheHandler();
+            savecache.EditCacheTheme("gray");
+        }
+
+        private void darkmode_btn_Click(object sender, EventArgs e)
+        {
+            var savecache = new savecacheHandler();
+            savecache.EditCacheTheme("darkmode");
         }
     }
 }

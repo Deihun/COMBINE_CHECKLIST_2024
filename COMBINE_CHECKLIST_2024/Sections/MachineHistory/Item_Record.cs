@@ -26,10 +26,11 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
         public RichTextBox _suggested_replacement_repair_richtextbox;
         public RichTextBox _remarks_or_analysis_richtextbox;
 
-        public string my_target_time;
+        public string my_target_time = "12:12AM";
         public DateTime my_targeted_date;
         public bool isDefect = true;
         public int ID_Edit = -1;
+        public int ID_inQueue = -1;
 
         private SQL_Support sql = new SQL_Support("DESKTOP-HBKPAB1\\SQLEXPRESS", "GOODYEAR_MACHINE_HISTORY");
 
@@ -225,10 +226,10 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
         {
             try
             {
+                grouping_of_items parent = this.Parent?.Parent?.Parent as grouping_of_items;
+                if (parent is null) return;
                 if (e.Control && e.KeyCode == Keys.Q)
                 {
-                    grouping_of_items parent = this.Parent?.Parent?.Parent as grouping_of_items;
-                    if (parent is null) return;
                     foreach (Control control in parent.items_in_flp.Controls)
                     {
                         if (control is Item_Record item)
@@ -239,8 +240,6 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
                 }
                 else if (e.Control && e.Shift && e.KeyCode == Keys.V)
                 {
-                    grouping_of_items parent = this.Parent?.Parent?.Parent as grouping_of_items;
-                    if (parent is null) return;
                     foreach (Control control in parent.items_in_flp.Controls)
                     {
                         if (control is Item_Record item)
@@ -259,10 +258,11 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
         {
             try
             {
+                grouping_of_items parent = this.Parent?.Parent?.Parent as grouping_of_items;
+                if (parent is null) return;
                 if (e.Control && e.KeyCode == Keys.Q)
                 {
-                    grouping_of_items parent = this.Parent?.Parent?.Parent as grouping_of_items;
-                    if (parent is null) return;
+
                     foreach (Control control in parent.items_in_flp.Controls)
                     {
                         if (control is Item_Record item)
@@ -273,7 +273,6 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
                 }
                 else if (e.Control && e.Shift && e.KeyCode == Keys.V)
                 {
-                    grouping_of_items parent = this.Parent?.Parent?.Parent as grouping_of_items;
                     foreach (Control control in parent.items_in_flp.Controls)
                     {
                         if (control is Item_Record item)
@@ -292,10 +291,11 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
         {
             try
             {
+                grouping_of_items parent = this.Parent?.Parent?.Parent as grouping_of_items;
+                if (parent is null) return;
                 if (e.Control && e.KeyCode == Keys.Q)
                 {
-                    grouping_of_items parent = this.Parent?.Parent?.Parent as grouping_of_items;
-                    if (parent is null) return;
+
                     foreach (Control control in parent.items_in_flp.Controls)
                     {
                         if (control is Item_Record item)
@@ -306,7 +306,6 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
                 }
                 else if (e.Control && e.Shift && e.KeyCode == Keys.V)
                 {
-                    grouping_of_items parent = this.Parent?.Parent?.Parent as grouping_of_items;
                     foreach (Control control in parent.items_in_flp.Controls)
                     {
                         if (control is Item_Record item)
@@ -323,10 +322,11 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
         {
             try
             {
+                grouping_of_items parent = this.Parent?.Parent?.Parent as grouping_of_items;
+                if (parent is null) return;
                 if (e.Control && e.KeyCode == Keys.Q)
                 {
-                    grouping_of_items parent = this.Parent?.Parent?.Parent as grouping_of_items;
-                    if (parent is null) return;
+
                     foreach (Control control in parent.items_in_flp.Controls)
                     {
                         if (control is Item_Record item)
@@ -337,7 +337,6 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
                 }
                 else if (e.Control && e.Shift && e.KeyCode == Keys.V)
                 {
-                    grouping_of_items parent = this.Parent?.Parent?.Parent as grouping_of_items;
                     foreach (Control control in parent.items_in_flp.Controls)
                     {
                         if (control is Item_Record item)
@@ -354,10 +353,11 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
         {
             try
             {
+                grouping_of_items parent = this.Parent?.Parent?.Parent as grouping_of_items;
+                if (parent is null) return;
                 if (e.Control && e.KeyCode == Keys.Q)
                 {
-                    grouping_of_items parent = this.Parent?.Parent?.Parent as grouping_of_items;
-                    if (parent is null) return;
+
                     foreach (Control control in parent.items_in_flp.Controls)
                     {
                         if (control is Item_Record item)
@@ -368,7 +368,6 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
                 }
                 else if (e.Control && e.Shift && e.KeyCode == Keys.V)
                 {
-                    grouping_of_items parent = this.Parent?.Parent?.Parent as grouping_of_items;
                     foreach (Control control in parent.items_in_flp.Controls)
                     {
                         if (control is Item_Record item)
@@ -445,7 +444,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
            List<string> guide = new List<string>()
             {
                 "- Description of whether how or why it happened in that specific Defective Part","Leave the field Empty if N/A",
-                "CTR+Q\nApply to all other items within the Group", "CTR+SHIFT+V\n Apply paste from Clipboard to all items in the group"
+                "CTR+Q\nApply to all other items within the Group", "CTR+SHIFT+V\n Apply paste from Clipboard to all items in the group", "RIGHTCLICK\nShow a suggestion of an already existing data"
             };
             grouping_of_items parent = this.Parent?.Parent?.Parent as grouping_of_items;
                 if (parent is null) return;
@@ -466,7 +465,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
             List<string> guide = new List<string>()
             {
                 "- Describes what are the suggested improvements in that particular machine part","Leave the field Empty if N/A",
-                "CTR+Q\nApply to all other items within the Group", "CTR+SHIFT+V\n Apply paste from Clipboard to all items in the group"
+                "CTR+Q\nApply to all other items within the Group", "CTR+SHIFT+V\n Apply paste from Clipboard to all items in the group", "RIGHTCLICK\nShow a suggestion of an already existing data"
             };
             grouping_of_items parent = this.Parent?.Parent?.Parent as grouping_of_items;
                 if (parent is null) return;
@@ -486,7 +485,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
             List<string> guide = new List<string>()
             {
                 "- The overall evaluation or explanation","Leave the field Empty if N/A",
-                "CTR+Q\nApply to all other items within the Group", "CTR+SHIFT+V\n Apply paste from Clipboard to all items in the group"
+                "CTR+Q\nApply to all other items within the Group", "CTR+SHIFT+V\n Apply paste from Clipboard to all items in the group", "RIGHTCLICK\nShow a suggestion of an already existing data"
             };
             grouping_of_items parent = this.Parent?.Parent?.Parent as grouping_of_items;
                 if (parent is null) return;
@@ -511,7 +510,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
             };
             grouping_of_items parent = this.Parent?.Parent?.Parent as grouping_of_items;
                 if (parent is null) return;
-                if (parent.main_parentcreate is null || parent is null) return;
+                if (parent.main_parentcreate is null) return;
             Create main_parent = parent.main_parentcreate;
 
             main_parent.set_guide(guide);

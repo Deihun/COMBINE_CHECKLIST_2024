@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -49,6 +50,81 @@ namespace SQL_Connection_support
             }
         }
 
+        public void RestoreToExistingDatabase()
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Title = "Select Backup File";
+            openFileDialog.Filter = "SQL Backup Files (*.bak)|*.bak|All Files (*.*)|*.*";
+
+            if (openFileDialog.ShowDialog() != DialogResult.OK)
+                return;
+
+            string backupPath = openFileDialog.FileName;
+            string databaseName = "GOODYEAR_MACHINE_HISTORY";
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(this._connection_server))
+                {
+                    connection.Open();
+                    string killConnections = $@"
+                ALTER DATABASE [{databaseName}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;";
+                    using (SqlCommand killCmd = new SqlCommand(killConnections, connection))
+                    {
+                        killCmd.ExecuteNonQuery();
+                    }
+                    string restoreQuery = $@"
+                RESTORE DATABASE [{databaseName}] FROM DISK = '{backupPath}'
+                WITH REPLACE, RECOVERY;";
+                    using (SqlCommand restoreCmd = new SqlCommand(restoreQuery, connection))
+                    {
+                        restoreCmd.ExecuteNonQuery();
+                    }
+                    string setMultiUser = $@"
+                ALTER DATABASE [{databaseName}] SET MULTI_USER;";
+                    using (SqlCommand multiUserCmd = new SqlCommand(setMultiUser, connection))
+                    {
+                        multiUserCmd.ExecuteNonQuery();
+                    }
+                    MessageBox.Show($"Database '{databaseName}' restored successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.Message, "Restore Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        public void BackupDatabase()
+        {
+            string backupDirectory = @"C:\SQL_Backups\";
+            if (!Directory.Exists(backupDirectory))
+            {
+                Directory.CreateDirectory(backupDirectory);
+            }
+
+            string databaseName = "GOODYEAR_MACHINE_HISTORY";
+            string backupFileName = $"{databaseName}_Backup_{DateTime.Now:yyyyMMdd_HHmmss}.bak";
+            string backupPath = Path.Combine(backupDirectory, backupFileName);
+            string backupQuery = $"BACKUP DATABASE [{databaseName}] TO DISK = '{backupPath}' " +
+                                 "WITH FORMAT, INIT, NAME = @BackupName, SKIP, NOREWIND, NOUNLOAD, STATS = 10";
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(this._connection_server))
+                {
+                    connection.Open();
+                    using (SqlCommand command = new SqlCommand(backupQuery, connection))
+                    {
+                        command.Parameters.AddWithValue("@BackupName", $"{databaseName} Full Backup");
+                        command.ExecuteNonQuery();
+                        MessageBox.Show($"Database backup completed successfully.\nSaved at: {backupPath}", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.Message, "Backup Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
 
         /// <summary>
         /// Return a server Instance of SQLEXPRESS

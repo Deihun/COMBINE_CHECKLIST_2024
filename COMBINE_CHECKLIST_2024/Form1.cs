@@ -34,7 +34,7 @@ namespace COMBINE_CHECKLIST_2024
         public Main_Dashboard()
         {
             InitializeComponent();
-            InitialDiagnostic ini = new InitialDiagnostic();
+            initialDiagnostic ini = new initialDiagnostic();
             ini.ShowDialog();
 
 
@@ -62,6 +62,8 @@ namespace COMBINE_CHECKLIST_2024
 
             dashboard.all_dashboard_Panel = new Panel[] { currugator_expanded_panel, system_panel };
             dashboard.all_SectionTabs = new Form[] { checklist, viewMachineHistory, edit, settings, history };
+
+            dashboard.change_workpanelsection(edit, viewer);
         }
 
 
@@ -90,7 +92,6 @@ namespace COMBINE_CHECKLIST_2024
         private void btn_currugator_machine_history_Click(object sender, EventArgs e)
         {
             dashboard.change_workpanelsection(viewMachineHistory, viewer);
-            Console.WriteLine("MACHINE HISTORY");
         }
 
         private void edititem_currugator_btn_Click(object sender, EventArgs e)

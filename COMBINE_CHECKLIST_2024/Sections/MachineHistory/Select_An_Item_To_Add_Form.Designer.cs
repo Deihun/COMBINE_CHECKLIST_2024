@@ -32,8 +32,10 @@
             this.confirm_btn = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
             this.add_new_item_btn = new System.Windows.Forms.Button();
-            this.content_label = new System.Windows.Forms.Label();
+            this.contex_flp = new System.Windows.Forms.FlowLayoutPanel();
+            this.label1 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
+            this.contex_flp.SuspendLayout();
             this.SuspendLayout();
             // 
             // data_flp
@@ -57,10 +59,11 @@
             this.confirm_btn.TabIndex = 1;
             this.confirm_btn.Text = "CONFIRM";
             this.confirm_btn.UseVisualStyleBackColor = true;
+            this.confirm_btn.Click += new System.EventHandler(this.confirm_btn_Click);
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.content_label);
+            this.panel1.Controls.Add(this.contex_flp);
             this.panel1.Controls.Add(this.add_new_item_btn);
             this.panel1.Location = new System.Drawing.Point(357, 4);
             this.panel1.Name = "panel1";
@@ -77,14 +80,25 @@
             this.add_new_item_btn.UseVisualStyleBackColor = true;
             this.add_new_item_btn.Click += new System.EventHandler(this.add_new_item_btn_Click);
             // 
-            // content_label
+            // contex_flp
             // 
-            this.content_label.AutoSize = true;
-            this.content_label.Location = new System.Drawing.Point(3, 39);
-            this.content_label.Name = "content_label";
-            this.content_label.Size = new System.Drawing.Size(59, 13);
-            this.content_label.TabIndex = 4;
-            this.content_label.Text = "CONTENT";
+            this.contex_flp.AutoScroll = true;
+            this.contex_flp.Controls.Add(this.label1);
+            this.contex_flp.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this.contex_flp.Location = new System.Drawing.Point(20, 42);
+            this.contex_flp.Name = "contex_flp";
+            this.contex_flp.Size = new System.Drawing.Size(309, 495);
+            this.contex_flp.TabIndex = 4;
+            this.contex_flp.WrapContents = false;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(3, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(95, 13);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "SELECT AN ITEM";
             // 
             // Select_An_Item_To_Add_Form
             // 
@@ -97,7 +111,8 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "Select_An_Item_To_Add_Form";
             this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
+            this.contex_flp.ResumeLayout(false);
+            this.contex_flp.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -108,6 +123,7 @@
         private System.Windows.Forms.Button confirm_btn;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button add_new_item_btn;
-        private System.Windows.Forms.Label content_label;
+        private System.Windows.Forms.FlowLayoutPanel contex_flp;
+        private System.Windows.Forms.Label label1;
     }
 }

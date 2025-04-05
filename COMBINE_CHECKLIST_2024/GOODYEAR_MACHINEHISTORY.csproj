@@ -27,7 +27,7 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <AutorunEnabled>true</AutorunEnabled>
-    <ApplicationRevision>21</ApplicationRevision>
+    <ApplicationRevision>22</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
@@ -420,6 +420,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Addons\addons\Adjustment.cs" />
+    <Compile Include="Addons\theme_management.cs" />
     <Compile Include="DateToText\DateToText.cs" />
     <Compile Include="ExcelManagement\ExcelManagement.cs" />
     <Compile Include="ExcelManagement\TestForPDF.cs" />
@@ -429,11 +430,23 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="InitialDiagnostic\InitialDiagnostic.cs">
+    <Compile Include="InitialDiagnostic_Folder\InitialDiagnostic.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="InitialDiagnostic\InitialDiagnostic.Designer.cs">
+    <Compile Include="InitialDiagnostic_Folder\InitialDiagnostic.Designer.cs">
       <DependentUpon>InitialDiagnostic.cs</DependentUpon>
+    </Compile>
+    <Compile Include="InitialDiagnostic_Folder\MicrosoftExcel_Warning.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="InitialDiagnostic_Folder\MicrosoftExcel_Warning.Designer.cs">
+      <DependentUpon>MicrosoftExcel_Warning.cs</DependentUpon>
+    </Compile>
+    <Compile Include="InitialDiagnostic_Folder\server_instance_management.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="InitialDiagnostic_Folder\server_instance_management.Designer.cs">
+      <DependentUpon>server_instance_management.cs</DependentUpon>
     </Compile>
     <Compile Include="OpenFilePath\FolderPathManagement.cs" />
     <Compile Include="Program.cs" />
@@ -534,12 +547,25 @@
     <Compile Include="Sections\Settings\Settings.Designer.cs">
       <DependentUpon>Settings.cs</DependentUpon>
     </Compile>
+    <Compile Include="Sections\Settings\Warning_WithDelayConfirmation.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Sections\Settings\Warning_WithDelayConfirmation.Designer.cs">
+      <DependentUpon>Warning_WithDelayConfirmation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SQLFolder\savecacheHandler.cs" />
     <Compile Include="SQLFolder\SQL_Connection_support.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="InitialDiagnostic\InitialDiagnostic.resx">
+    <EmbeddedResource Include="InitialDiagnostic_Folder\InitialDiagnostic.resx">
       <DependentUpon>InitialDiagnostic.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InitialDiagnostic_Folder\MicrosoftExcel_Warning.resx">
+      <DependentUpon>MicrosoftExcel_Warning.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InitialDiagnostic_Folder\server_instance_management.resx">
+      <DependentUpon>server_instance_management.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -599,6 +625,9 @@
     <EmbeddedResource Include="Sections\Settings\Settings.resx">
       <DependentUpon>Settings.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Sections\Settings\Warning_WithDelayConfirmation.resx">
+      <DependentUpon>Warning_WithDelayConfirmation.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="COMBINE_CHECKLIST_2024_TemporaryKey.pfx" />
     <None Include="packages.config" />
     <None Include="Properties\app.manifest" />
@@ -632,6 +661,7 @@
     <Content Include="Addons\addons\LOGO.png" />
     <Content Include="Addons\header.png" />
     <Content Include="Addons\LOGO.png" />
+    <None Include="Resources\Microsoft-Excel-Emblem.png" />
     <None Include="Resources\Image1.png" />
     <None Include="Resources\LOGO_FORPRINT.png" />
   </ItemGroup>
