@@ -19,7 +19,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
 {
     public partial class BulkPrintSelection : Form
     {
-        private SQL_Support sql = new SQL_Support("DESKTOP-HBKPAB1\\SQLEXPRESS", "GOODYEAR_MACHINE_HISTORY");
+        private SQL_Support sql;
         private Datetotext filter = new Datetotext();
         private Filter_Datas filter_data = new Filter_Datas();
 
@@ -28,9 +28,10 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
         public int selected_page = 1;
 
         private List<FlowLayoutPanel> list_of_pages = new List<FlowLayoutPanel>();
-        public BulkPrintSelection()
+        public BulkPrintSelection(SQL_Support sql)
         {
             InitializeComponent();
+            this.sql = sql;
             dateTimePicker1.Enabled = false;
 
             monitoredby_cb.Items.Add("");
@@ -275,7 +276,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
 
         private void v_Click(object sender, EventArgs e)
         {
-            QuickSelection q = new QuickSelection(machineName_cb, monitoredby_cb, location_cb, year_cb, YearCB,list_of_pages, this);
+            QuickSelection q = new QuickSelection(machineName_cb, monitoredby_cb, location_cb, year_cb, YearCB,list_of_pages, this, sql);
             q.ShowDialog();
         }
 

@@ -41,10 +41,11 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistory
 
         public List<Form> group_of_logs = new List<Form>();
         public FlowLayoutPanel items_in_flp;
-        private SQL_Support sql = new SQL_Support("DESKTOP-HBKPAB1\\SQLEXPRESS", "GOODYEAR_MACHINE_HISTORY");
-        public grouping_of_items(DateTime from_dt, DateTime to_dt, string monitor, string machine, string location)
+        private SQL_Support sql;
+        public grouping_of_items(DateTime from_dt, DateTime to_dt, string monitor, string machine, string location, SQL_Support sql)
         {
             InitializeComponent();
+            this.sql = sql;
             _from_dt = from_dt;
             _to_dt = to_dt;
             changeable_date.Text = date.getMonthAsShortText(from_dt) + " " + from_dt.Day + " - " + date.getMonthAsShortText(to_dt) + " " + to_dt.Day;
@@ -262,7 +263,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistory
 
         private void add_a_record_item_with_setup_dt(DateTime dt)
         {
-            Item_Record item_Record = new Item_Record();
+            Item_Record item_Record = new Item_Record(sql);
             item_Record.setAutoComplete();
             item_Record.my_targeted_date = dt;
             add_item(item_Record);

@@ -18,12 +18,13 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
 {
     public partial class QuickSelection: Form
     {
-        private SQL_Support sql = new SQL_Support("DESKTOP-HBKPAB1\\SQLEXPRESS", "GOODYEAR_MACHINE_HISTORY");
+        private SQL_Support sql;
         private BulkPrintSelection parent;
         private List<FlowLayoutPanel> list_of_pages;
-        public QuickSelection(ComboBox Machine, ComboBox Monitor, ComboBox Location, ComboBox Month, ComboBox Years, List<FlowLayoutPanel> flp, BulkPrintSelection bulkPrintSelection)
+        public QuickSelection(ComboBox Machine, ComboBox Monitor, ComboBox Location, ComboBox Month, ComboBox Years, List<FlowLayoutPanel> flp, BulkPrintSelection bulkPrintSelection, SQL_Support sql)
         {
             InitializeComponent();
+            this.sql = sql;
             setComboBoxItem(Machine, this.machine_cb);
             setComboBoxItem(Location, this.location_cb);
             setComboBoxItem(Monitor, this.monitor_cb);

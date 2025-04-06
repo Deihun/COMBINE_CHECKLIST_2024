@@ -15,13 +15,14 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistory
     public partial class Select_An_Item_To_Add_Form: Form
     {
         private System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
-        private SQL_Support sql = new SQL_Support("DESKTOP-HBKPAB1\\SQLEXPRESS", "GOODYEAR_MACHINE_HISTORY");
+        private SQL_Support sql;
         private int selected_id_for_preview = -1;
         private Action<List<int>> method;
         private List<int> already_taken_id;
-        public Select_An_Item_To_Add_Form(Action<List<int>> method, List<int> already_taken_id)
+        public Select_An_Item_To_Add_Form(Action<List<int>> method, List<int> already_taken_id, SQL_Support sql)
         {
             InitializeComponent();
+            this.sql = sql;
             this.method = method;
             this.already_taken_id = already_taken_id;
             timer = new System.Windows.Forms.Timer();
@@ -36,7 +37,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistory
 
         private void add_new_item_btn_Click(object sender, EventArgs e)
         {
-            AddIndependent_Item_Form addIndependent_Item_Form = new AddIndependent_Item_Form();
+            AddIndependent_Item_Form addIndependent_Item_Form = new AddIndependent_Item_Form(sql);
             addIndependent_Item_Form.ShowDialog();
             update_all_objects();
 

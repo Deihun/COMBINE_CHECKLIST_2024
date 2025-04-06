@@ -254,6 +254,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "Item_Record";
             this.Text = "Item_Record";
+            this.Load += new System.EventHandler(this.Item_Record_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.ResumeLayout(false);

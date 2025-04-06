@@ -1,4 +1,5 @@
-﻿using COMBINE_CHECKLIST_2024.SQLFolder;
+﻿using COMBINE_CHECKLIST_2024.Addons;
+using COMBINE_CHECKLIST_2024.SQLFolder;
 using SQL_Connection_support;
 using System;
 using System.Collections.Generic;
@@ -15,10 +16,12 @@ namespace COMBINE_CHECKLIST_2024.Sections.Settings
 {
     public partial class Setting: Form
     {
-        private SQL_Support sql = new SQL_Support("DESKTOP-HBKPAB1\\SQLEXPRESS", "GOODYEAR_MACHINE_HISTORY");
-        public Setting()
+        private SQL_Support sql;
+        private savecacheHandler savecache = new savecacheHandler();
+        public Setting(SQL_Support sql)
         {
             InitializeComponent();
+            this.sql = sql;
         }
 
         private void resetConfirm_btn_Click()
@@ -56,26 +59,23 @@ namespace COMBINE_CHECKLIST_2024.Sections.Settings
 
         private void Setting_VisibleChanged(object sender, EventArgs e)
         {
-            SetGradientBackground("#D1FFC3", "#79AE86");
-        }
-
-        private void SetGradientBackground(string hexColor1, string hexColor2)
-        {
-            Color color1 = ColorTranslator.FromHtml(hexColor1);
-            Color color2 = ColorTranslator.FromHtml(hexColor2);
-
-            Bitmap bmp = new Bitmap(this.Width, this.Height);
-            using (Graphics g = Graphics.FromImage(bmp))
-            using (LinearGradientBrush brush = new LinearGradientBrush(
-                new Rectangle(0, 0, this.Width, this.Height),
-                color1,
-                color2,
-                LinearGradientMode.Vertical)) // Change direction if needed
+            var theme = new theme_management();
+            theme.SetGradientBackground(this);
+            foreach (GroupBox groupbox in main_flp.Controls)
             {
-                g.FillRectangle(brush, 0, 0, this.Width, this.Height);
+                groupbox.ForeColor = theme.get_font_color2();
+                foreach (Control control in groupbox.Controls) 
+                {
+                    if (control is GroupBox groupbox2)
+                    {
+                    groupbox2.ForeColor = theme.get_font_color2();
+                    foreach (Control control2 in groupbox2.Controls) if (control2 is Label label) label.ForeColor = theme.get_font_color2();
+                    }
+                }
             }
-            this.BackgroundImage = bmp;
+            chosencolor_label.Text = savecache.Theme.ToUpper();
         }
+
 
         private void button2_Click(object sender, EventArgs e)
         {
@@ -95,45 +95,52 @@ namespace COMBINE_CHECKLIST_2024.Sections.Settings
 
         private void button4_Click(object sender, EventArgs e)
         {
-            var savecache = new savecacheHandler();
             savecache.EditConnection("none");
             Application.Restart();
         }
 
         private void standard_btn_Click(object sender, EventArgs e)
         {
-            var savecache = new savecacheHandler();
-            savecache.EditCacheTheme("standard");
+            chosencolor_label.Text = "STANDARD";
         }
 
         private void lavender_btn_Click(object sender, EventArgs e)
         {
-            var savecache = new savecacheHandler();
-            savecache.EditCacheTheme("lavender");
+            chosencolor_label.Text = "LAVENDER";
+
         }
 
         private void sky_btn_Click(object sender, EventArgs e)
         {
-            var savecache = new savecacheHandler();
-            savecache.EditCacheTheme("sky");
+            chosencolor_label.Text = "SKY";
         }
 
         private void warm_btn_Click(object sender, EventArgs e)
         {
-            var savecache = new savecacheHandler();
-            savecache.EditCacheTheme("warm");
+            chosencolor_label.Text = "SPICY";
         }
 
         private void gray_btn_Click(object sender, EventArgs e)
         {
-            var savecache = new savecacheHandler();
-            savecache.EditCacheTheme("gray");
+            chosencolor_label.Text = "GRAY";
         }
 
         private void darkmode_btn_Click(object sender, EventArgs e)
         {
-            var savecache = new savecacheHandler();
-            savecache.EditCacheTheme("darkmode");
+            chosencolor_label.Text = "DARKMODE";
+        }
+
+        private void applychanges_btn_Click(object sender, EventArgs e)
+        {
+            savecache.EditCacheTheme(chosencolor_label.Text.ToLower()); 
+            Application.Restart();
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            savecache.EditUser("");
+            savecache.EditPassword("");
+            Application.Restart();
         }
     }
 }

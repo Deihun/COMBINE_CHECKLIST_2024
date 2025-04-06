@@ -1,4 +1,5 @@
-﻿using COMBINE_CHECKLIST_2024.DateToText;
+﻿using COMBINE_CHECKLIST_2024.Addons;
+using COMBINE_CHECKLIST_2024.DateToText;
 using COMBINE_CHECKLIST_2024.Sections.Currugator;
 using COMBINE_CHECKLIST_2024.Sections.MachineHistory;
 using SQL_Connection_support;
@@ -18,24 +19,20 @@ namespace COMBINE_CHECKLIST_2024.Sections.EditData
 {
     public partial class EditDataForm: Form
     {
-        private SQL_Support sql = new SQL_Support("DESKTOP-HBKPAB1\\SQLEXPRESS", "GOODYEAR_MACHINE_HISTORY");
+        private SQL_Support sql;
         private List<FlowLayoutPanel> list_of_pages = new List<FlowLayoutPanel>();
         private int intData = 1;
 
 
         private const int maximum_object_in_page = 20;
-        private int originalFormWidth;
-        private int originalFormHeight;
         private int number_of_page;
         private int selected_page = 1;
         private List<Button> list_of_item = new List<Button>();
 
-        Datetotext _Convert = new Datetotext();
-        public EditDataForm(int originalFormWidth, int originalFormHeight)
+        public EditDataForm(SQL_Support sql)
         {
             InitializeComponent();
-            this.originalFormWidth = originalFormWidth;
-            this.originalFormHeight = originalFormHeight;
+            this.sql = sql;
         }
 
         private void setData(int id)
@@ -178,7 +175,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.EditData
                 string location = row["Location"].ToString();
                 DateTime From = (DateTime)row["From_Date"];
                 DateTime To = (DateTime)row["To_Date"];
-                grouping_of_items groups = new grouping_of_items(From, To, monitor,machine,location);
+                grouping_of_items groups = new grouping_of_items(From, To, monitor,machine,location, sql);
                 groups.ID_Edit = groupID;
                 groups.TopLevel = false;
                 groups.Width = flowLayoutPanel1.ClientSize.Width / 2; 
@@ -190,7 +187,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.EditData
                 DataTable itemDataTable = sql.ExecuteQuery($"SELECT * FROM LOG_MACHINETABLE WHERE groupID = {groupID};");
                 foreach (DataRow _row in itemDataTable.Rows)
                 {
-                    Item_Record item = new Item_Record();
+                    Item_Record item = new Item_Record(sql);
                     int _item_id = Convert.ToInt32(_row["ID"]);
                     string defectPart = _row["defect_part"].ToString();
                     string defectDesc = _row["defec_desc"].ToString();
@@ -249,25 +246,18 @@ namespace COMBINE_CHECKLIST_2024.Sections.EditData
         private void EditDataForm_VisibleChanged(object sender, EventArgs e)
         {
             instantiate_all_object();
-            SetGradientBackground("#D1FFC3", "#79AE86");
+            var theme = new theme_management();
+            theme.SetGradientBackground(this);
+            panel1.BackColor = theme.get_color_bottom_bar();
+            selectioncontainer_panel.BackColor = theme.get_color_bottom_bar();
+            flowLayoutPanel2.BackColor = theme.get_color_buttonPerItem();
+            Page_panel.BackColor = theme.get_color_top_board();
+            label1.ForeColor = theme.get_font_color();
+            label2.ForeColor = theme.get_font_color();
+            page_label.ForeColor = theme.get_font_color();
+            TotalAmount_label.ForeColor = theme.get_font_color();
         }
-        private void SetGradientBackground(string hexColor1, string hexColor2)
-        {
-            Color color1 = ColorTranslator.FromHtml(hexColor1);
-            Color color2 = ColorTranslator.FromHtml(hexColor2);
 
-            Bitmap bmp = new Bitmap(this.Width, this.Height);
-            using (Graphics g = Graphics.FromImage(bmp))
-            using (LinearGradientBrush brush = new LinearGradientBrush(
-                new Rectangle(0, 0, this.Width, this.Height),
-                color1,
-                color2,
-                LinearGradientMode.Vertical)) // Change direction if needed
-            {
-                g.FillRectangle(brush, 0, 0, this.Width, this.Height);
-            }
-            this.BackgroundImage = bmp;
-        }
 
 
         private void EditDataForm_Load(object sender, EventArgs e)

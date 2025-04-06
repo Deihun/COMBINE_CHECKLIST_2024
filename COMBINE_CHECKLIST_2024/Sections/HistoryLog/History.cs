@@ -1,4 +1,5 @@
-﻿using SQL_Connection_support;
+﻿using COMBINE_CHECKLIST_2024.Addons;
+using SQL_Connection_support;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -13,10 +14,11 @@ namespace COMBINE_CHECKLIST_2024.Sections.HistoryLog
 {
     public partial class History: Form
     {
-        private SQL_Support sql = new SQL_Support("DESKTOP-HBKPAB1\\SQLEXPRESS", "GOODYEAR_MACHINE_HISTORY");
-        public History()
+        private SQL_Support sql;
+        public History(SQL_Support sql)
         {
             InitializeComponent();
+            this.sql = sql;
         }
 
         private void History_VisibleChanged(object sender, EventArgs e)
@@ -27,6 +29,8 @@ namespace COMBINE_CHECKLIST_2024.Sections.HistoryLog
             dataGridView1.DataSource = data;
             dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
+            var theme = new theme_management();
+            theme.SetGradientBackground(this);
         }
     }
 }

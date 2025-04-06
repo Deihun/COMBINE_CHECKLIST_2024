@@ -292,6 +292,7 @@
             // 
             // tableLayoutPanel1
             // 
+            this.tableLayoutPanel1.BackColor = System.Drawing.Color.Transparent;
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 500F));
@@ -308,6 +309,7 @@
             // 
             // flowLayoutPanel2
             // 
+            this.flowLayoutPanel2.BackColor = System.Drawing.Color.Transparent;
             this.flowLayoutPanel2.Controls.Add(this.create_new_history_btn);
             this.flowLayoutPanel2.Controls.Add(this.after_panel);
             this.flowLayoutPanel2.Location = new System.Drawing.Point(877, 0);
@@ -318,6 +320,7 @@
             // 
             // guide_flp
             // 
+            this.guide_flp.BackColor = System.Drawing.Color.Transparent;
             this.guide_flp.Dock = System.Windows.Forms.DockStyle.Fill;
             this.guide_flp.Location = new System.Drawing.Point(0, 0);
             this.guide_flp.Margin = new System.Windows.Forms.Padding(0);

@@ -1,4 +1,5 @@
-﻿using COMBINE_CHECKLIST_2024.DateToText;
+﻿using COMBINE_CHECKLIST_2024.Addons;
+using COMBINE_CHECKLIST_2024.DateToText;
 using COMBINE_CHECKLIST_2024.ExcelManagement;
 using COMBINE_CHECKLIST_2024.OpenFilePath;
 using SQL_Connection_support;
@@ -17,10 +18,10 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
 {
     public partial class MachineViewer: Form
     {
-        List<Form> ViewList = new List<Form>();
-        private SQL_Support sql = new SQL_Support("DESKTOP-HBKPAB1\\SQLEXPRESS", "GOODYEAR_MACHINE_HISTORY");
+        private SQL_Support sql;
         private gridview_adjustment g_adjust;
         private int selectedID = -1;
+        private theme_management theme = new theme_management();
 
 
         private const int maximum_object_in_page = 20;
@@ -29,10 +30,10 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
         private List<FlowLayoutPanel> list_of_pages = new List<FlowLayoutPanel>();
         private List<Button> list_of_item = new List<Button>();
 
-        public MachineViewer()
+        public MachineViewer(SQL_Support sql)
         {
             InitializeComponent();
-            
+            this.sql = sql;
             g_adjust = new gridview_adjustment(sql, dataPerSection);
             g_adjust.dataPerHistoryLog_flp = dataPerSection;
 
@@ -41,6 +42,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
             button_container_flp.HorizontalScroll.Maximum = 0;
             button_container_flp.AutoScrollMinSize = new Size(0, 1);
             chart1.Titles.Add("STATUS");
+            chart1.Titles[0].ForeColor = theme.get_font_color();
             instantiate_all_object();
         }
 
@@ -191,27 +193,18 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
                 chart1.Series["S1"].Points.Last().LabelForeColor = System.Drawing.Color.Black;
                 chart1.Series["S1"].Points.Last().Font = new Font("Arial", 10, System.Drawing.FontStyle.Bold);
             }
-            SetGradientBackground("#D1FFC3", "#79AE86");
+            
+            theme.SetGradientBackground(this);
+            tableLayoutPanel4.BackColor = theme.get_color_bottom_bar();
+            panel1.BackColor = theme.get_color_bottom_bar();
+            button_container_flp.BackColor = theme.get_color_buttonPerItem();
+            Page_panel.BackColor = theme.get_color_top_board();
+            chart1.BackColor = theme.get_color_top_board();
+            page_label.ForeColor = theme.get_font_color();
+            TotalAmount_label.ForeColor = theme.get_font_color();
+            label1.ForeColor = theme.get_font_color();
         }
 
-
-        private void SetGradientBackground(string hexColor1, string hexColor2)
-        {
-            Color color1 = ColorTranslator.FromHtml(hexColor1);
-            Color color2 = ColorTranslator.FromHtml(hexColor2);
-
-            Bitmap bmp = new Bitmap(this.Width, this.Height);
-            using (Graphics g = Graphics.FromImage(bmp))
-            using (LinearGradientBrush brush = new LinearGradientBrush(
-                new Rectangle(0, 0, this.Width, this.Height),
-                color1,
-                color2,
-                LinearGradientMode.Vertical)) // Change direction if needed
-            {
-                g.FillRectangle(brush, 0, 0, this.Width, this.Height);
-            }
-            this.BackgroundImage = bmp;
-        }
 
 
 
@@ -238,7 +231,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer
 
         private void bulkPrint_btn_Click(object sender, EventArgs e)
         {
-            BulkPrintSelection bulkprint = new BulkPrintSelection();
+            BulkPrintSelection bulkprint = new BulkPrintSelection(sql);
             bulkprint.ShowDialog();
         }
 

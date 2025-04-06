@@ -25,18 +25,20 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
     public partial class Create: Form
     {
         public List <Form> groupOf_groupforms = new List<Form>();
-        SQL_Support sql = new SQL_Support("DESKTOP-HBKPAB1\\SQLEXPRESS", "GOODYEAR_MACHINE_HISTORY");
+        private theme_management theme = new theme_management();
+        SQL_Support sql;
         int _last_identity;
-        public Create()
+        public Create(SQL_Support sql)
         {
             InitializeComponent();
+            this.sql = sql;
             this.AutoScaleMode = AutoScaleMode.Dpi;
 
         }
 
         private void additem_btn_Click(object sender, EventArgs e)
         {
-            Add_Group_confirmation confirm = new Add_Group_confirmation(this.flowLayoutPanel1, this, sql.FilterQuery(monitor_tb.Text), sql.FilterQuery(machine_tb.Text), sql.FilterQuery(location_tb.Text));
+            Add_Group_confirmation confirm = new Add_Group_confirmation(this.flowLayoutPanel1, this, sql.FilterQuery(monitor_tb.Text), sql.FilterQuery(machine_tb.Text), sql.FilterQuery(location_tb.Text),sql);
             confirm.ShowDialog();
         }
 
@@ -130,24 +132,6 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
         private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
         {}
 
-        private void SetGradientBackground(string hexColor1, string hexColor2)
-        {
-            Color color1 = ColorTranslator.FromHtml(hexColor1);
-            Color color2 = ColorTranslator.FromHtml(hexColor2);
-
-            Bitmap bmp = new Bitmap(this.Width, this.Height);
-            using (Graphics g = Graphics.FromImage(bmp))
-            using (LinearGradientBrush brush = new LinearGradientBrush(
-                new Rectangle(0, 0, this.Width, this.Height),
-                color1,
-                color2,
-                LinearGradientMode.Vertical)) 
-            {
-                g.FillRectangle(brush, 0, 0, this.Width, this.Height);
-            }
-            this.BackgroundImage = bmp;
-        }
-
         private void Create_VisibleChanged(object sender, EventArgs e)
         {
             after_panel.Hide();
@@ -176,7 +160,14 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
             foreach (Control control in flowLayoutPanel1.Controls) control.Dispose();
             flowLayoutPanel1.Controls.Clear();
             after_panel.Hide();
-            SetGradientBackground("#D1FFC3", "#79AE86");
+            
+            theme.SetGradientBackground(this);
+            panel1.BackColor = theme.get_color_bottom_bar();
+            top_panel.BackColor = theme.get_color_bottom_bar();
+            label1.ForeColor = theme.get_font_color();
+            label2.ForeColor = theme.get_font_color();
+            label3.ForeColor = theme.get_font_color();
+            label4.ForeColor = theme.get_font_color();
         }
 
         private void setAutoComplete(TextBox textbox, AutoCompleteStringCollection acsc)
@@ -402,6 +393,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
                 label.AutoSize = false;
                 label.ForeColor = Color.White;
                 label.Height = 75;
+                label.ForeColor = theme.get_font_color();
                 guide_flp.Controls.Add(label);
                 label.Margin = new Padding(25, 15, 25, 0);
                 label.Show();
@@ -410,7 +402,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
 
         private void button2_Click(object sender, EventArgs e)
         {
-            grouping_of_items grouping_Of_Items = new grouping_of_items(DateTime.Now, DateTime.Now, monitor_tb.Text, machine_tb.Text, location_tb.Text);
+            grouping_of_items grouping_Of_Items = new grouping_of_items(DateTime.Now, DateTime.Now, monitor_tb.Text, machine_tb.Text, location_tb.Text, sql);
             grouping_Of_Items.main_parentcreate = this;
             grouping_Of_Items.TopLevel = false;
             flowLayoutPanel1.Controls.Add(grouping_Of_Items);
@@ -421,13 +413,13 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
         {
             List<int> already_taken_id = new List<int>();
             foreach (grouping_of_items group in flowLayoutPanel1.Controls) foreach (Item_Record item in group.items_in_flp.Controls) if (item.ID_inQueue != -1) already_taken_id.Add(item.ID_inQueue);
-            Select_An_Item_To_Add_Form select_An_Item_To_Add_Form = new Select_An_Item_To_Add_Form(add_with_preset_id, already_taken_id);
+            Select_An_Item_To_Add_Form select_An_Item_To_Add_Form = new Select_An_Item_To_Add_Form(add_with_preset_id, already_taken_id, sql);
             select_An_Item_To_Add_Form.ShowDialog();
         }
         private void add_with_preset_id(List<int> preset_id)
         {
             if (preset_id.Count < 1) return;
-            grouping_of_items group = new grouping_of_items(DateTime.Now, DateTime.Now, monitor_tb.Text, machine_tb.Text, location_tb.Text);
+            grouping_of_items group = new grouping_of_items(DateTime.Now, DateTime.Now, monitor_tb.Text, machine_tb.Text, location_tb.Text, sql);
             group.main_parentcreate = this;
             group.TopLevel = false;
             flowLayoutPanel1.Controls.Add(group);
@@ -435,7 +427,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
             foreach (int id in preset_id)
             {
                 DataRow datas = sql.ExecuteQuery($"SELECT * FROM LOG_MACHINETABLE WHERE ID = {id};").Rows[0];
-                Item_Record item = new Item_Record();
+                Item_Record item = new Item_Record(sql);
                 item.ID_inQueue = id;
                 item.setAutoComplete();
                 item._checkby_textbox.Text = datas["checked_by"].ToString();

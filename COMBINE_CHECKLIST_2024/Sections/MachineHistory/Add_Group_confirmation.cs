@@ -1,5 +1,6 @@
 ﻿using COMBINE_CHECKLIST_2024.DateToText;
 using COMBINE_CHECKLIST_2024.Sections.Currugator;
+using SQL_Connection_support;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -17,15 +18,17 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistory
         private double selectedPresetDate = 3;
         private FlowLayoutPanel parent;
         private Create creation_parent;
+        private SQL_Support sql;
 
         private string monitor;
         private string machine;
         private string location;
 
         private DateTime finalConfirmedDateFrom = new DateTime();
-        public Add_Group_confirmation(FlowLayoutPanel flowlayout, Create creation_parent, string monitor, string machine, string location)
+        public Add_Group_confirmation(FlowLayoutPanel flowlayout, Create creation_parent, string monitor, string machine, string location, SQL_Support sql)
         {
             InitializeComponent();
+            this.sql = sql;
             from_dtpicker.Value = from_dtpicker.Value;
             to_dtpicker.Value = to_dtpicker.Value;
             parent = flowlayout;
@@ -54,7 +57,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistory
                 return;
             }
 
-            grouping_of_items group = new grouping_of_items(datefrom,finalConfirmedDateFrom,monitor,machine,location);
+            grouping_of_items group = new grouping_of_items(datefrom,finalConfirmedDateFrom,monitor,machine,location, sql);
             creation_parent.addNewGroups(group);
             group.TopLevel = false;
             parent.Controls.Add(group);
@@ -72,7 +75,7 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistory
 
             foreach (DateTime range in dateRange)
             {
-                Item_Record item = new Item_Record(group);
+                Item_Record item = new Item_Record(group, sql);
                 item.my_targeted_date = range;
                 item.setAutoComplete();
                 group.add_item(item);

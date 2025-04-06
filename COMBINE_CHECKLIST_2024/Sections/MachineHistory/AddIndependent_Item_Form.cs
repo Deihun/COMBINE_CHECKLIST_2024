@@ -15,17 +15,18 @@ namespace COMBINE_CHECKLIST_2024.Sections.MachineHistory
 {
     public partial class AddIndependent_Item_Form: Form
     {
-        private SQL_Support sql = new SQL_Support("DESKTOP-HBKPAB1\\SQLEXPRESS", "GOODYEAR_MACHINE_HISTORY");
+        private SQL_Support sql;
         Item_Record item_record;
-        public AddIndependent_Item_Form()
+        public AddIndependent_Item_Form(SQL_Support sql)
         {
             InitializeComponent();
+            this.sql = sql;
             instantiate_item();
         }
 
         private void instantiate_item()
         {
-            item_record = new Item_Record();
+            item_record = new Item_Record(sql);
             item_record.TopLevel = false;
             panel1.Controls.Add(item_record);
             item_record.Show();

@@ -61,32 +61,6 @@ namespace COMBINE_CHECKLIST_2024.InitialDiagnostics
         }
 
 
-        bool CanConnectToDatabase(string serverName, string databaseName)
-        {
-            string connectionString = $"Server={serverName};Database={databaseName};Integrated Security=True;";
-
-            try
-            {
-                using (SqlConnection conn = new SqlConnection(connectionString))
-                {
-                    conn.Open();
-                    return true; // If it opens, the database exists
-                }
-            }
-            catch
-            {
-                return false; // Connection failed, assume database doesn't exist
-            }
-        }
-
-        private void exit_Click(object sender, EventArgs e)
-        {
-            if (!CanRestart) Application.Exit();
-            else Application.Restart();
-        }
-
-
-
         private void InitialDiagnostic_Load(object sender, EventArgs e)
         {
             var stored_string = new savecacheHandler();

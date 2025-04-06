@@ -32,15 +32,15 @@ namespace SQL_Connection_support
             try
             {
 
-                string sqlInstance = GetSQLServerInstance(); // Store once
+                string sqlInstance = GetSQLServerInstance(); 
 
                 if (!string.IsNullOrEmpty(user) && !string.IsNullOrEmpty(password))
                 {
-                    _connection_server = $"Server={sqlInstance};Database={database};User Id={user};Password={password};";
+                    _connection_server = $"Server={server};Database={database};User Id={user};Password={password};";
                 }
                 else
                 {
-                    _connection_server = $"Server={sqlInstance};Database={database};Integrated Security=True;";
+                    _connection_server = $"Server={server};Database={database};Integrated Security=True;";
                 }
 
             }
@@ -49,6 +49,39 @@ namespace SQL_Connection_support
                 if (_isDebugShow) Console.WriteLine($"\n\n//ERROR: " + e.Message);
             }
         }
+
+        public bool CanAccessSql()
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connection_server))
+                {
+                    conn.Open();
+                    return true; 
+                }
+            }
+            catch (SqlException ex)
+            {
+                if (ex.Number == 18456) 
+                {
+                    return false;
+                }
+                else
+                {
+                    MessageBox.Show($"SQL Error {ex.Number}: {ex.Message}");
+                    Application.Restart();
+                    return false; 
+                }
+            }
+            catch (Exception ex)
+            {
+
+                MessageBox.Show($"SQL Error: {ex.Message}");
+                Application.Restart();
+                return false;
+            }
+        }
+
 
         public void RestoreToExistingDatabase()
         {

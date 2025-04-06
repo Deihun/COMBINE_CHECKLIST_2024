@@ -54,14 +54,14 @@
             // 
             // currugator_expanded_panel
             // 
-            this.currugator_expanded_panel.BackColor = System.Drawing.Color.SeaGreen;
+            this.currugator_expanded_panel.BackColor = System.Drawing.Color.Transparent;
             this.currugator_expanded_panel.Controls.Add(this.edititem_currugator_btn);
             this.currugator_expanded_panel.Controls.Add(this.btn_currugator);
             this.currugator_expanded_panel.Controls.Add(this.checklist_dashboard_btn);
             this.currugator_expanded_panel.Controls.Add(this.btn_currugator_machine_history);
             this.currugator_expanded_panel.Location = new System.Drawing.Point(3, 3);
             this.currugator_expanded_panel.Name = "currugator_expanded_panel";
-            this.currugator_expanded_panel.Size = new System.Drawing.Size(306, 40);
+            this.currugator_expanded_panel.Size = new System.Drawing.Size(306, 161);
             this.currugator_expanded_panel.TabIndex = 2;
             this.currugator_expanded_panel.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
             // 
@@ -83,9 +83,10 @@
             // 
             // btn_currugator
             // 
+            this.btn_currugator.BackColor = System.Drawing.Color.Transparent;
             this.btn_currugator.FlatAppearance.BorderSize = 0;
             this.btn_currugator.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btn_currugator.Font = new System.Drawing.Font("Monospac821 BT", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_currugator.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btn_currugator.ForeColor = System.Drawing.SystemColors.Control;
             this.btn_currugator.Location = new System.Drawing.Point(4, 5);
             this.btn_currugator.Name = "btn_currugator";
@@ -93,7 +94,7 @@
             this.btn_currugator.TabIndex = 1;
             this.btn_currugator.Text = "MACHINE HISTORY";
             this.btn_currugator.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btn_currugator.UseVisualStyleBackColor = true;
+            this.btn_currugator.UseVisualStyleBackColor = false;
             this.btn_currugator.Click += new System.EventHandler(this.btn_currugator_Click);
             // 
             // checklist_dashboard_btn
@@ -131,7 +132,7 @@
             // 
             // dashboard_flowlayout
             // 
-            this.dashboard_flowlayout.BackColor = System.Drawing.Color.SeaGreen;
+            this.dashboard_flowlayout.BackColor = System.Drawing.Color.Purple;
             this.dashboard_flowlayout.Controls.Add(this.currugator_expanded_panel);
             this.dashboard_flowlayout.Controls.Add(this.system_panel);
             this.dashboard_flowlayout.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -145,14 +146,14 @@
             // 
             // system_panel
             // 
-            this.system_panel.BackColor = System.Drawing.Color.SeaGreen;
+            this.system_panel.BackColor = System.Drawing.Color.Transparent;
             this.system_panel.Controls.Add(this.exit_btn);
             this.system_panel.Controls.Add(this.System_btn);
             this.system_panel.Controls.Add(this.history_btn);
             this.system_panel.Controls.Add(this.settings_btn);
-            this.system_panel.Location = new System.Drawing.Point(3, 49);
+            this.system_panel.Location = new System.Drawing.Point(3, 170);
             this.system_panel.Name = "system_panel";
-            this.system_panel.Size = new System.Drawing.Size(306, 52);
+            this.system_panel.Size = new System.Drawing.Size(306, 172);
             this.system_panel.TabIndex = 3;
             // 
             // exit_btn
@@ -175,11 +176,11 @@
             // 
             this.System_btn.FlatAppearance.BorderSize = 0;
             this.System_btn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.System_btn.Font = new System.Drawing.Font("Monospac821 BT", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.System_btn.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.System_btn.ForeColor = System.Drawing.SystemColors.Control;
             this.System_btn.Location = new System.Drawing.Point(5, 0);
             this.System_btn.Name = "System_btn";
-            this.System_btn.Size = new System.Drawing.Size(308, 28);
+            this.System_btn.Size = new System.Drawing.Size(308, 44);
             this.System_btn.TabIndex = 1;
             this.System_btn.Text = "SYSTEM";
             this.System_btn.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -291,6 +292,7 @@
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Main_Dashboard_FormClosed);
             this.Load += new System.EventHandler(this.Form1_Load);
+            this.VisibleChanged += new System.EventHandler(this.Main_Dashboard_VisibleChanged);
             this.currugator_expanded_panel.ResumeLayout(false);
             this.dashboard_flowlayout.ResumeLayout(false);
             this.system_panel.ResumeLayout(false);

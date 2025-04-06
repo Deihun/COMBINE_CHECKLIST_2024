@@ -1,5 +1,6 @@
 ﻿using COMBINE_CHECKLIST_2024.InitialDiagnostics;
 using COMBINE_CHECKLIST_2024.SQLFolder;
+using Microsoft.SqlServer.Management.Smo;
 using Microsoft.Win32;
 using SQL_Connection_support;
 using System;
@@ -11,6 +12,7 @@ using System.Drawing;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,6 +22,7 @@ namespace COMBINE_CHECKLIST_2024.InitialDiagnostic
 {
     public partial class server_instance_management: Form
     {
+        private savecacheHandler savecachehandler = new savecacheHandler();
         public server_instance_management()
         {
             InitializeComponent();
@@ -40,48 +43,110 @@ namespace COMBINE_CHECKLIST_2024.InitialDiagnostic
                     MessageBox.Show("UNABLE TO CONNECT TO THE GIVEN SERVER NAME: EITHER THE CONNECTION SERVER OR THE DATABASE DOESN'T EXIST");
                     return;
                 }
+                else
+                {
+
+                    savecachehandler.EditConnection(textBox1.Text);
+                    this.Parent.Parent.Dispose(); 
+                }
             }
             else
             {
                 if (CanConnectToDatabase(GetSQLServerInstance(), "GOODYEAR_MACHINE_HISTORY"))
                 {
-                    var saveHandler = new savecacheHandler();
-                    saveHandler.EditConnection(GetSQLServerInstance());
+                    MessageBox.Show("IT CAN CONNECT");
+                    savecachehandler.EditConnection(GetSQLServerInstance());
                     initialDiagnostic parent =  this.Parent.Parent as initialDiagnostic;
                     parent.Dispose();
                 }
                 else
                 {
-                    CreateDatabase(GetSQLServerInstance(), "GOODYEAR_MACHINE_HISTORY");
+                    MessageBox.Show("IT CANT CONNECT");
+                    savecachehandler.EditConnection(GetSQLServerInstance());
+                    panelpassword_panel.Show();
                     panel_setup.Hide();
-                    panel_TableCreation.Show();
+                    panel_TableCreation.Hide();
                 }
             }
         }
         void CreateDatabase(string server, string dbName)
         {
-            string connectionString = $"Server={server};Database=master;Integrated Security=True;";
+            if (withuserpassword_rb.Checked)
+            {
+                savecachehandler.EditUser(user_tb.Text);
+                savecachehandler.EditPassword(password_tb.Text);
+            }
+            else
+            {
+                savecachehandler.EditUser("");
+                savecachehandler.EditPassword("");
+            }
+            string user = savecachehandler.User;
+            string password = savecachehandler.Password;
+            bool useSqlAuth = withuserpassword_rb.Checked;
 
-            string query = $"CREATE DATABASE {dbName};" +
-                           $"ALTER DATABASE GOODYEAR_MACHINE_HISTORY SET ONLINE;";
+            if (useSqlAuth)
+            {
+                user = user_tb.Text;
+                password = password_tb.Text;
+                savecachehandler.EditUser(user);
+                savecachehandler.EditPassword(password);
+            }
+            else
+            {
+                savecachehandler.EditUser("");
+                savecachehandler.EditPassword("");
+            }
+
+            string connectionString =  $"Server={server};Database=master;Integrated Security=True;";
+
+            // SQL statements
+            string createDbQuery = $"CREATE DATABASE [{dbName}]; ALTER DATABASE [{dbName}] SET ONLINE;";
+
+            // Optional: Only create login and user if SQL Authentication is used
+            string createLoginAndUserQuery = useSqlAuth
+                ? $@"
+        IF NOT EXISTS (SELECT name FROM sys.sql_logins WHERE name = N'{user}')
+        BEGIN
+            CREATE LOGIN [{user}] WITH PASSWORD = N'{password}', CHECK_POLICY = OFF;
+        END;
+
+        USE [{dbName}];
+
+        IF NOT EXISTS (SELECT name FROM sys.database_principals WHERE name = N'{user}')
+        BEGIN
+            CREATE USER [{user}] FOR LOGIN [{user}];
+            EXEC sp_addrolemember N'db_owner', N'{user}';
+        END;
+        "
+                : "";
+
             try
             {
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
-                    using (SqlCommand cmd = new SqlCommand(query, conn))
+
+                    using (SqlCommand cmd = new SqlCommand(createDbQuery, conn))
                     {
                         cmd.ExecuteNonQuery();
                     }
-                    conn.Close();
+
+                    if (useSqlAuth && !string.IsNullOrWhiteSpace(user) && !string.IsNullOrWhiteSpace(password))
+                    {
+                        using (SqlCommand cmd = new SqlCommand(createLoginAndUserQuery, conn))
+                        {
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
                 }
-                Console.WriteLine($"✅ Database '{dbName}' created successfully!");
-                MessageBox.Show("test");
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"❌ Error: {ex.Message}");
+                MessageBox.Show($"Error: {ex.Message}");
             }
+            panelpassword_panel.Hide();
+            panel_TableCreation.Show();
         }
 
         string GetSQLServerInstance()
@@ -107,7 +172,6 @@ namespace COMBINE_CHECKLIST_2024.InitialDiagnostic
         public bool CanConnectToDatabase(string connectionString, string databaseName)
         {
             string connectionStringWithDatabase = "Server=" +connectionString + $";Initial Catalog={databaseName}; Integrated Security=True;";
-            MessageBox.Show(connectionStringWithDatabase);
             try
             {
                 using (SqlConnection connection = new SqlConnection(connectionStringWithDatabase))
@@ -173,10 +237,9 @@ namespace COMBINE_CHECKLIST_2024.InitialDiagnostic
 
         private void createtable_btn_Click(object sender, EventArgs e)
         {
-
-            SQL_Support sql = new SQL_Support(GetSQLServerInstance(), "GOODYEAR_MACHINE_HISTORY");
+            SQL_Support sql = new SQL_Support(GetSQLServerInstance(), "GOODYEAR_MACHINE_HISTORY", savecachehandler.User, savecachehandler.Password);
             string query = @" " +
-              " CREATE TABLE EXECUTION_HISTORY (" +
+            " CREATE TABLE EXECUTION_HISTORY (" +
                     " id int IDENTITY(1,1)," +
                     " date_commit DATETIME " +
                     "); " +
@@ -213,6 +276,22 @@ namespace COMBINE_CHECKLIST_2024.InitialDiagnostic
             sql.ExecuteQuery(query);
             Thread.Sleep(1000);
             Application.Restart();
+        }
+
+        private void exit_2btn_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void next_btn_Click(object sender, EventArgs e)
+        {
+            CreateDatabase(savecachehandler.ConnectionString, "GOODYEAR_MACHINE_HISTORY");
+        }
+
+        private void withuserpassword_rb_CheckedChanged(object sender, EventArgs e)
+        {
+            password_tb.Enabled = withuserpassword_rb.Checked;
+            user_tb.Enabled = withuserpassword_rb.Enabled;
         }
     }
 }

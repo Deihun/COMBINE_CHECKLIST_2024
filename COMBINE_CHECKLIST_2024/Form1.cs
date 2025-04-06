@@ -8,12 +8,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using COMBINE_CHECKLIST_2024.Addons;
+using COMBINE_CHECKLIST_2024.InitialDiagnostic_Folder;
 using COMBINE_CHECKLIST_2024.InitialDiagnostics;
 using COMBINE_CHECKLIST_2024.Sections.Currugator;
 using COMBINE_CHECKLIST_2024.Sections.EditData;
 using COMBINE_CHECKLIST_2024.Sections.HistoryLog;
 using COMBINE_CHECKLIST_2024.Sections.MachineHistoryViewer;
 using COMBINE_CHECKLIST_2024.Sections.Settings;
+using COMBINE_CHECKLIST_2024.SQLFolder;
 using SQL_Connection_support;
 
 
@@ -27,7 +29,7 @@ namespace COMBINE_CHECKLIST_2024
         private MachineViewer viewMachineHistory;
         private Setting settings;
         private History history;
-
+        private savecacheHandler savecache = new savecacheHandler();
 
         private static Panel viewer;
         SQL_Support sql;
@@ -36,9 +38,18 @@ namespace COMBINE_CHECKLIST_2024
             InitializeComponent();
             initialDiagnostic ini = new initialDiagnostic();
             ini.ShowDialog();
+            sql = new SQL_Support(savecache.ConnectionString, "GOODYEAR_MACHINE_HISTORY", savecache.User, savecache.Password);
+            if (!sql.CanAccessSql())
+            {
+                UserLogin_Form userLogin_Form = new UserLogin_Form();
+                userLogin_Form.Disposed += (sender, e) => { Application.Exit(); };
+                userLogin_Form.ShowDialog();
+                sql = new SQL_Support(savecache.ConnectionString, "GOODYEAR_MACHINE_HISTORY", savecache.User, savecache.Password);
+            }
 
 
-            sql = new SQL_Support("DESKTOP-HBKPAB1\\SQLEXPRESS", "GOODYEAR_MACHINE_HISTORY");
+
+
             Dictionary<string, object> logHistory = new Dictionary<string, object>
                     {
                         { "Context", $"System operation started" },
@@ -47,6 +58,8 @@ namespace COMBINE_CHECKLIST_2024
             sql.InsertData("HISTORY_", logHistory);
         }
 
+
+
         private void Form1_Load(object sender, EventArgs e)
         {
 
@@ -54,11 +67,11 @@ namespace COMBINE_CHECKLIST_2024
 
 
             dashboard = new Dashboard();
-            checklist = new Create();
-            edit = new EditDataForm(this.Width, this.Height);
-            viewMachineHistory = new MachineViewer();
-            settings = new Setting();
-            history = new History();
+            checklist = new Create(sql);
+            edit = new EditDataForm(sql);
+            viewMachineHistory = new MachineViewer(sql);
+            settings = new Setting(sql);
+            history = new History(sql);
 
             dashboard.all_dashboard_Panel = new Panel[] { currugator_expanded_panel, system_panel };
             dashboard.all_SectionTabs = new Form[] { checklist, viewMachineHistory, edit, settings, history };
@@ -133,6 +146,20 @@ namespace COMBINE_CHECKLIST_2024
                     };
             sql.InsertData("HISTORY_", logHistory);
         }
+
+        private void Main_Dashboard_VisibleChanged(object sender, EventArgs e)
+        {
+            var theme = new theme_management();
+            dashboard_flowlayout.BackColor = theme.get_color_from_theme_dashboard();
+            btn_currugator.ForeColor = theme.get_font_color();
+            btn_currugator_machine_history.ForeColor = theme.get_font_color();
+            checklist_dashboard_btn.ForeColor = theme.get_font_color();
+            edititem_currugator_btn.ForeColor = theme.get_font_color();
+            exit_btn.ForeColor = theme.get_font_color();
+            history_btn.ForeColor = theme.get_font_color();
+            settings_btn.ForeColor = theme.get_font_color();
+            System_btn.ForeColor = theme.get_font_color();
+        }
     }
 
 
@@ -163,5 +190,7 @@ namespace COMBINE_CHECKLIST_2024
                 form.Hide();
             }
         }
+
+
     }
 }

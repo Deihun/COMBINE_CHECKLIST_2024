@@ -42,7 +42,6 @@
             this.exit.TabIndex = 3;
             this.exit.Text = "EXIT";
             this.exit.UseVisualStyleBackColor = true;
-            this.exit.Click += new System.EventHandler(this.exit_Click);
             // 
             // createDatabase
             // 

@@ -17,7 +17,8 @@ namespace COMBINE_CHECKLIST_2024.SQLFolder
             "machinehistory_cache");
         private readonly string filePath;
 
-
+        public string Password => LoadCacheValue("_password");
+        public string User => LoadCacheValue("_user");
         public string Theme => LoadCacheValue("_theme");
         public string ConnectionString => LoadCacheValue("_connection_string");
 
@@ -28,7 +29,7 @@ namespace COMBINE_CHECKLIST_2024.SQLFolder
             EnsureFolderExists();
             if (!File.Exists(filePath))
             {
-                SaveCache("standard", "none");
+                SaveCache("standard", "none", "", "");
             }
 
         }
@@ -39,19 +40,48 @@ namespace COMBINE_CHECKLIST_2024.SQLFolder
                 Directory.CreateDirectory(folderPath);
         }
 
-        private void SaveCache(string theme, string connectionString)
+        private void SaveCache(string theme, string connectionString, string user, string password)
         {
             var data = new Dictionary<string, string>
             {
                 { "_theme", theme },
-                { "_connection_string", connectionString }
+                { "_connection_string", connectionString },
+                { "_user", user },
+                { "_password", password }
             };
 
             string json = JsonSerializer.Serialize(data);
             byte[] encrypted = EncryptStringToBytes_Aes(json, key, iv);
             File.WriteAllBytes(filePath, encrypted);
         }
+        public void EditUser(string newUser)
+        {
+            if (!File.Exists(filePath))
+                return;
 
+            string decrypted = DecryptStringFromBytes_Aes(File.ReadAllBytes(filePath), key, iv);
+            var data = JsonSerializer.Deserialize<Dictionary<string, string>>(decrypted);
+
+            data["_user"] = newUser;
+
+            string updatedJson = JsonSerializer.Serialize(data);
+            byte[] encrypted = EncryptStringToBytes_Aes(updatedJson, key, iv);
+            File.WriteAllBytes(filePath, encrypted);
+        }
+        public void EditPassword(string newPassword)
+        {
+            if (!File.Exists(filePath))
+                return;
+
+            string decrypted = DecryptStringFromBytes_Aes(File.ReadAllBytes(filePath), key, iv);
+            var data = JsonSerializer.Deserialize<Dictionary<string, string>>(decrypted);
+
+            data["_password"] = newPassword;
+
+            string updatedJson = JsonSerializer.Serialize(data);
+            byte[] encrypted = EncryptStringToBytes_Aes(updatedJson, key, iv);
+            File.WriteAllBytes(filePath, encrypted);
+        }
         public void EditCacheTheme(string newTheme)
         {
             if (!File.Exists(filePath))

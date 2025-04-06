@@ -18,7 +18,8 @@ namespace COMBINE_CHECKLIST_2024.Sections.Settings
         public Warning_WithDelayConfirmation(string text, string header_text, Action method_when_confirm, int countdown = 5)
         {
             InitializeComponent();
-            countdown_label.Text = this.countdown.ToString();
+            countdown_label.Text = countdown.ToString();
+            countdown_label.Visible = true;
             this.timer.Interval = 1000;
             this.countdown = countdown;
             this.method = method_when_confirm;
@@ -28,11 +29,13 @@ namespace COMBINE_CHECKLIST_2024.Sections.Settings
             {
                 this.countdown--;
                 countdown_label.Text = this.countdown.ToString();
-                if (this.countdown < 0)
+                if (this.countdown == 0)
                 {
+                    countdown_label.Visible =false;
                     timer.Stop();
                     confirm_btn.Enabled = true;
                 }
+
             };
             timer.Start();
         }

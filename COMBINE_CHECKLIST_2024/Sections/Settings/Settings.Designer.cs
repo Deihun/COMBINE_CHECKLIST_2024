@@ -29,6 +29,9 @@
         private void InitializeComponent()
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.button4 = new System.Windows.Forms.Button();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.label4 = new System.Windows.Forms.Label();
             this.button3 = new System.Windows.Forms.Button();
@@ -41,35 +44,38 @@
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.label1 = new System.Windows.Forms.Label();
             this.resetDatabase = new System.Windows.Forms.Button();
-            this.groupBox6 = new System.Windows.Forms.GroupBox();
-            this.button4 = new System.Windows.Forms.Button();
-            this.label5 = new System.Windows.Forms.Label();
             this.main_flp = new System.Windows.Forms.FlowLayoutPanel();
             this.group = new System.Windows.Forms.GroupBox();
-            this.standard_btn = new System.Windows.Forms.Button();
-            this.lavender_btn = new System.Windows.Forms.Button();
-            this.gray_btn = new System.Windows.Forms.Button();
-            this.sky_btn = new System.Windows.Forms.Button();
-            this.warm_btn = new System.Windows.Forms.Button();
+            this.applychanges_btn = new System.Windows.Forms.Button();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.chosencolor_label = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.label6 = new System.Windows.Forms.Label();
             this.darkmode_btn = new System.Windows.Forms.Button();
+            this.gray_btn = new System.Windows.Forms.Button();
+            this.standard_btn = new System.Windows.Forms.Button();
+            this.warm_btn = new System.Windows.Forms.Button();
+            this.lavender_btn = new System.Windows.Forms.Button();
+            this.sky_btn = new System.Windows.Forms.Button();
+            this.label6 = new System.Windows.Forms.Label();
+            this.groupBox8 = new System.Windows.Forms.GroupBox();
+            this.button5 = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
+            this.groupBox6.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
-            this.groupBox6.SuspendLayout();
             this.main_flp.SuspendLayout();
             this.group.SuspendLayout();
             this.groupBox7.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.groupBox8.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
             // 
             this.groupBox1.BackColor = System.Drawing.Color.Transparent;
+            this.groupBox1.Controls.Add(this.groupBox8);
             this.groupBox1.Controls.Add(this.groupBox6);
             this.groupBox1.Controls.Add(this.groupBox5);
             this.groupBox1.Controls.Add(this.groupBox4);
@@ -79,10 +85,48 @@
             this.groupBox1.Location = new System.Drawing.Point(50, 50);
             this.groupBox1.Margin = new System.Windows.Forms.Padding(50);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(598, 397);
+            this.groupBox1.Size = new System.Drawing.Size(598, 457);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "DATABASE";
+            // 
+            // groupBox6
+            // 
+            this.groupBox6.Controls.Add(this.label5);
+            this.groupBox6.Controls.Add(this.button4);
+            this.groupBox6.Location = new System.Drawing.Point(49, 309);
+            this.groupBox6.Name = "groupBox6";
+            this.groupBox6.Size = new System.Drawing.Size(538, 63);
+            this.groupBox6.TabIndex = 1;
+            this.groupBox6.TabStop = false;
+            this.groupBox6.Text = "CHANGE SERVER INSTANCE";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label5.Location = new System.Drawing.Point(36, 21);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(308, 26);
+            this.label5.TabIndex = 3;
+            this.label5.Text = "Restart the application back to the set-up to change the Server \r\nInstance\r\n";
+            // 
+            // button4
+            // 
+            this.button4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.button4.FlatAppearance.BorderColor = System.Drawing.Color.Black;
+            this.button4.FlatAppearance.BorderSize = 2;
+            this.button4.FlatAppearance.CheckedBackColor = System.Drawing.Color.White;
+            this.button4.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button4.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button4.ForeColor = System.Drawing.Color.Black;
+            this.button4.Location = new System.Drawing.Point(356, 12);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(174, 31);
+            this.button4.TabIndex = 2;
+            this.button4.Text = "CHANGE SERVER";
+            this.button4.UseVisualStyleBackColor = false;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
             // groupBox5
             // 
@@ -114,6 +158,7 @@
             this.button3.FlatAppearance.CheckedBackColor = System.Drawing.Color.White;
             this.button3.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button3.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button3.ForeColor = System.Drawing.Color.Black;
             this.button3.Location = new System.Drawing.Point(356, 12);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(176, 31);
@@ -151,6 +196,7 @@
             this.button2.FlatAppearance.CheckedBackColor = System.Drawing.Color.White;
             this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button2.ForeColor = System.Drawing.Color.Black;
             this.button2.Location = new System.Drawing.Point(356, 12);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(176, 31);
@@ -188,6 +234,7 @@
             this.button1.FlatAppearance.CheckedBackColor = System.Drawing.Color.White;
             this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button1.ForeColor = System.Drawing.Color.Black;
             this.button1.Location = new System.Drawing.Point(358, 11);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(174, 31);
@@ -225,6 +272,7 @@
             this.resetDatabase.FlatAppearance.CheckedBackColor = System.Drawing.Color.White;
             this.resetDatabase.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.resetDatabase.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.resetDatabase.ForeColor = System.Drawing.Color.Black;
             this.resetDatabase.Location = new System.Drawing.Point(356, 12);
             this.resetDatabase.Name = "resetDatabase";
             this.resetDatabase.Size = new System.Drawing.Size(176, 31);
@@ -232,43 +280,6 @@
             this.resetDatabase.Text = "RESET DATABASE";
             this.resetDatabase.UseVisualStyleBackColor = false;
             this.resetDatabase.Click += new System.EventHandler(this.resetDatabase_Click);
-            // 
-            // groupBox6
-            // 
-            this.groupBox6.Controls.Add(this.label5);
-            this.groupBox6.Controls.Add(this.button4);
-            this.groupBox6.Location = new System.Drawing.Point(49, 309);
-            this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(538, 63);
-            this.groupBox6.TabIndex = 1;
-            this.groupBox6.TabStop = false;
-            this.groupBox6.Text = "CHANGE SERVER INSTANCE";
-            // 
-            // button4
-            // 
-            this.button4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.button4.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-            this.button4.FlatAppearance.BorderSize = 2;
-            this.button4.FlatAppearance.CheckedBackColor = System.Drawing.Color.White;
-            this.button4.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button4.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button4.Location = new System.Drawing.Point(356, 12);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(174, 31);
-            this.button4.TabIndex = 2;
-            this.button4.Text = "CHANGE SERVER";
-            this.button4.UseVisualStyleBackColor = false;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(36, 21);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(308, 26);
-            this.label5.TabIndex = 3;
-            this.label5.Text = "Restart the application back to the set-up to change the Server \r\nInstance\r\n";
             // 
             // main_flp
             // 
@@ -286,86 +297,49 @@
             // 
             // group
             // 
+            this.group.Controls.Add(this.applychanges_btn);
             this.group.Controls.Add(this.groupBox7);
             this.group.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.group.Location = new System.Drawing.Point(50, 547);
+            this.group.Location = new System.Drawing.Point(50, 607);
             this.group.Margin = new System.Windows.Forms.Padding(50);
             this.group.Name = "group";
-            this.group.Size = new System.Drawing.Size(598, 152);
+            this.group.Size = new System.Drawing.Size(598, 194);
             this.group.TabIndex = 1;
             this.group.TabStop = false;
             this.group.Text = "APPEARANCE";
             // 
-            // standard_btn
+            // applychanges_btn
             // 
-            this.standard_btn.BackColor = System.Drawing.Color.Lime;
-            this.standard_btn.FlatAppearance.BorderSize = 2;
-            this.standard_btn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.standard_btn.Location = new System.Drawing.Point(7, 7);
-            this.standard_btn.Name = "standard_btn";
-            this.standard_btn.Size = new System.Drawing.Size(52, 50);
-            this.standard_btn.TabIndex = 0;
-            this.standard_btn.UseVisualStyleBackColor = false;
-            this.standard_btn.Click += new System.EventHandler(this.standard_btn_Click);
-            // 
-            // lavender_btn
-            // 
-            this.lavender_btn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
-            this.lavender_btn.FlatAppearance.BorderSize = 2;
-            this.lavender_btn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.lavender_btn.Location = new System.Drawing.Point(65, 7);
-            this.lavender_btn.Name = "lavender_btn";
-            this.lavender_btn.Size = new System.Drawing.Size(52, 50);
-            this.lavender_btn.TabIndex = 1;
-            this.lavender_btn.UseVisualStyleBackColor = false;
-            this.lavender_btn.Click += new System.EventHandler(this.lavender_btn_Click);
-            // 
-            // gray_btn
-            // 
-            this.gray_btn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.gray_btn.FlatAppearance.BorderSize = 2;
-            this.gray_btn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.gray_btn.Location = new System.Drawing.Point(238, 7);
-            this.gray_btn.Name = "gray_btn";
-            this.gray_btn.Size = new System.Drawing.Size(52, 50);
-            this.gray_btn.TabIndex = 2;
-            this.gray_btn.UseVisualStyleBackColor = false;
-            this.gray_btn.Click += new System.EventHandler(this.gray_btn_Click);
-            // 
-            // sky_btn
-            // 
-            this.sky_btn.BackColor = System.Drawing.Color.Aquamarine;
-            this.sky_btn.FlatAppearance.BorderSize = 2;
-            this.sky_btn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.sky_btn.Location = new System.Drawing.Point(122, 7);
-            this.sky_btn.Name = "sky_btn";
-            this.sky_btn.Size = new System.Drawing.Size(52, 50);
-            this.sky_btn.TabIndex = 3;
-            this.sky_btn.UseVisualStyleBackColor = false;
-            this.sky_btn.Click += new System.EventHandler(this.sky_btn_Click);
-            // 
-            // warm_btn
-            // 
-            this.warm_btn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(128)))));
-            this.warm_btn.FlatAppearance.BorderSize = 2;
-            this.warm_btn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.warm_btn.Location = new System.Drawing.Point(180, 7);
-            this.warm_btn.Name = "warm_btn";
-            this.warm_btn.Size = new System.Drawing.Size(52, 50);
-            this.warm_btn.TabIndex = 4;
-            this.warm_btn.UseVisualStyleBackColor = false;
-            this.warm_btn.Click += new System.EventHandler(this.warm_btn_Click);
+            this.applychanges_btn.ForeColor = System.Drawing.Color.Black;
+            this.applychanges_btn.Location = new System.Drawing.Point(424, 161);
+            this.applychanges_btn.Name = "applychanges_btn";
+            this.applychanges_btn.Size = new System.Drawing.Size(168, 27);
+            this.applychanges_btn.TabIndex = 6;
+            this.applychanges_btn.Text = "APPLY CHANGES";
+            this.applychanges_btn.UseVisualStyleBackColor = true;
+            this.applychanges_btn.Click += new System.EventHandler(this.applychanges_btn_Click);
             // 
             // groupBox7
             // 
+            this.groupBox7.Controls.Add(this.chosencolor_label);
             this.groupBox7.Controls.Add(this.panel1);
             this.groupBox7.Controls.Add(this.label6);
             this.groupBox7.Location = new System.Drawing.Point(41, 22);
             this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(538, 93);
+            this.groupBox7.Size = new System.Drawing.Size(538, 92);
             this.groupBox7.TabIndex = 5;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "THEME";
+            // 
+            // chosencolor_label
+            // 
+            this.chosencolor_label.AutoSize = true;
+            this.chosencolor_label.ForeColor = System.Drawing.Color.Black;
+            this.chosencolor_label.Location = new System.Drawing.Point(66, 0);
+            this.chosencolor_label.Name = "chosencolor_label";
+            this.chosencolor_label.Size = new System.Drawing.Size(92, 17);
+            this.chosencolor_label.TabIndex = 7;
+            this.chosencolor_label.Text = "STANDARD";
             // 
             // panel1
             // 
@@ -381,16 +355,6 @@
             this.panel1.Size = new System.Drawing.Size(355, 66);
             this.panel1.TabIndex = 5;
             // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(22, 24);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(138, 52);
-            this.label6.TabIndex = 6;
-            this.label6.Text = "Choose a theme to change \r\nthe color appearance of the\r\nsystem\r\n\r\n";
-            // 
             // darkmode_btn
             // 
             this.darkmode_btn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
@@ -402,6 +366,104 @@
             this.darkmode_btn.TabIndex = 5;
             this.darkmode_btn.UseVisualStyleBackColor = false;
             this.darkmode_btn.Click += new System.EventHandler(this.darkmode_btn_Click);
+            // 
+            // gray_btn
+            // 
+            this.gray_btn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.gray_btn.FlatAppearance.BorderSize = 2;
+            this.gray_btn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.gray_btn.Location = new System.Drawing.Point(238, 7);
+            this.gray_btn.Name = "gray_btn";
+            this.gray_btn.Size = new System.Drawing.Size(52, 50);
+            this.gray_btn.TabIndex = 2;
+            this.gray_btn.UseVisualStyleBackColor = false;
+            this.gray_btn.Click += new System.EventHandler(this.gray_btn_Click);
+            // 
+            // standard_btn
+            // 
+            this.standard_btn.BackColor = System.Drawing.Color.Lime;
+            this.standard_btn.FlatAppearance.BorderSize = 2;
+            this.standard_btn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.standard_btn.Location = new System.Drawing.Point(7, 7);
+            this.standard_btn.Name = "standard_btn";
+            this.standard_btn.Size = new System.Drawing.Size(52, 50);
+            this.standard_btn.TabIndex = 0;
+            this.standard_btn.UseVisualStyleBackColor = false;
+            this.standard_btn.Click += new System.EventHandler(this.standard_btn_Click);
+            // 
+            // warm_btn
+            // 
+            this.warm_btn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(128)))));
+            this.warm_btn.FlatAppearance.BorderSize = 2;
+            this.warm_btn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.warm_btn.Location = new System.Drawing.Point(180, 7);
+            this.warm_btn.Name = "warm_btn";
+            this.warm_btn.Size = new System.Drawing.Size(52, 50);
+            this.warm_btn.TabIndex = 4;
+            this.warm_btn.UseVisualStyleBackColor = false;
+            this.warm_btn.Click += new System.EventHandler(this.warm_btn_Click);
+            // 
+            // lavender_btn
+            // 
+            this.lavender_btn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(192)))), ((int)(((byte)(255)))));
+            this.lavender_btn.FlatAppearance.BorderSize = 2;
+            this.lavender_btn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.lavender_btn.Location = new System.Drawing.Point(65, 7);
+            this.lavender_btn.Name = "lavender_btn";
+            this.lavender_btn.Size = new System.Drawing.Size(52, 50);
+            this.lavender_btn.TabIndex = 1;
+            this.lavender_btn.UseVisualStyleBackColor = false;
+            this.lavender_btn.Click += new System.EventHandler(this.lavender_btn_Click);
+            // 
+            // sky_btn
+            // 
+            this.sky_btn.BackColor = System.Drawing.Color.Aquamarine;
+            this.sky_btn.FlatAppearance.BorderSize = 2;
+            this.sky_btn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.sky_btn.Location = new System.Drawing.Point(122, 7);
+            this.sky_btn.Name = "sky_btn";
+            this.sky_btn.Size = new System.Drawing.Size(52, 50);
+            this.sky_btn.TabIndex = 3;
+            this.sky_btn.UseVisualStyleBackColor = false;
+            this.sky_btn.Click += new System.EventHandler(this.sky_btn_Click);
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label6.Location = new System.Drawing.Point(20, 37);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(138, 52);
+            this.label6.TabIndex = 6;
+            this.label6.Text = "Choose a theme to change \r\nthe color appearance of the\r\nsystem\r\n\r\n";
+            // 
+            // groupBox8
+            // 
+            this.groupBox8.Controls.Add(this.button5);
+            this.groupBox8.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.groupBox8.Location = new System.Drawing.Point(49, 378);
+            this.groupBox8.Name = "groupBox8";
+            this.groupBox8.Size = new System.Drawing.Size(538, 63);
+            this.groupBox8.TabIndex = 6;
+            this.groupBox8.TabStop = false;
+            this.groupBox8.Text = "SIGN OUT";
+            // 
+            // button5
+            // 
+            this.button5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.button5.FlatAppearance.BorderColor = System.Drawing.Color.Black;
+            this.button5.FlatAppearance.BorderSize = 2;
+            this.button5.FlatAppearance.CheckedBackColor = System.Drawing.Color.White;
+            this.button5.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button5.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button5.ForeColor = System.Drawing.Color.Black;
+            this.button5.Location = new System.Drawing.Point(356, 12);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(174, 31);
+            this.button5.TabIndex = 2;
+            this.button5.Text = "SIGN OUT";
+            this.button5.UseVisualStyleBackColor = false;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
             // Setting
             // 
@@ -415,6 +477,8 @@
             this.Text = "Settings";
             this.VisibleChanged += new System.EventHandler(this.Setting_VisibleChanged);
             this.groupBox1.ResumeLayout(false);
+            this.groupBox6.ResumeLayout(false);
+            this.groupBox6.PerformLayout();
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
             this.groupBox4.ResumeLayout(false);
@@ -423,13 +487,12 @@
             this.groupBox3.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            this.groupBox6.ResumeLayout(false);
-            this.groupBox6.PerformLayout();
             this.main_flp.ResumeLayout(false);
             this.group.ResumeLayout(false);
             this.groupBox7.ResumeLayout(false);
             this.groupBox7.PerformLayout();
             this.panel1.ResumeLayout(false);
+            this.groupBox8.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -463,5 +526,9 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Button darkmode_btn;
+        private System.Windows.Forms.Button applychanges_btn;
+        private System.Windows.Forms.Label chosencolor_label;
+        private System.Windows.Forms.GroupBox groupBox8;
+        private System.Windows.Forms.Button button5;
     }
 }

@@ -1,4 +1,5 @@
-﻿using COMBINE_CHECKLIST_2024.DateToText;
+﻿using COMBINE_CHECKLIST_2024.Addons;
+using COMBINE_CHECKLIST_2024.DateToText;
 using COMBINE_CHECKLIST_2024.Sections.MachineHistory;
 using GrapeCity.DataVisualization.Chart;
 using SQL_Connection_support;
@@ -32,21 +33,23 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
         public int ID_Edit = -1;
         public int ID_inQueue = -1;
 
-        private SQL_Support sql = new SQL_Support("DESKTOP-HBKPAB1\\SQLEXPRESS", "GOODYEAR_MACHINE_HISTORY");
+        private SQL_Support sql;
 
 
-        public Item_Record(Form myParent)
+        public Item_Record(Form myParent, SQL_Support sql)
         {
             InitializeComponent();
+            this.sql = sql;
             Bind_All_PublicControls();
             this.myParent = myParent;
 
         }
 
 
-        public Item_Record()
+        public Item_Record(SQL_Support sql)
         {
             InitializeComponent();
+            this.sql = sql;
             Bind_All_PublicControls();
         }
 
@@ -517,6 +520,13 @@ namespace COMBINE_CHECKLIST_2024.Sections.Currugator
             }
             catch { }
 
+        }
+
+        private void Item_Record_Load(object sender, EventArgs e)
+        {
+            var theme = new theme_management();
+            this.BackColor = theme.get_color_from_theme_dashboard();
+            panel1.BackColor = theme.get_color_bottom_bar();
         }
     }
 }
